@@ -22,12 +22,23 @@ export interface ValidationResult {
   report: ReportShape | null;
 }
 
+export interface SceneNotes {
+  traits: string[];
+  cautions: string[];
+}
+
 export interface ReportShape {
   summary: string;
+  archetype?: string;
   personality: string[];
   career: string;
   love: string;
   wealth: string;
+  scenes?: {
+    work: SceneNotes;
+    life: SceneNotes;
+    mind: SceneNotes;
+  };
   funScore: number;
   advice: string[];
   lines: { heart: number; head: number; life: number };
@@ -88,12 +99,35 @@ export function validateReport(raw: unknown): ValidationResult {
 
   if (errors.length) return { ok: false, errors, report: null };
 
+  // scenes（可选；结构不完整则整体丢弃，前端隐藏模块）
+  const cleanList = (v: unknown): string[] =>
+    Array.isArray(v)
+      ? (v as unknown[]).filter((s): s is string => typeof s === 'string' && s.trim().length > 0).map((s) => s.trim())
+      : [];
+  let scenes: ReportShape['scenes'] | undefined;
+  const sc = r.scenes as Record<string, unknown> | undefined;
+  if (sc && typeof sc === 'object') {
+    const build = (k: 'work' | 'life' | 'mind'): SceneNotes | null => {
+      const item = sc[k] as Record<string, unknown> | undefined;
+      if (!item) return null;
+      const traits = cleanList(item.traits);
+      const cautions = cleanList(item.cautions);
+      return traits.length && cautions.length ? { traits, cautions } : null;
+    };
+    const work = build('work');
+    const life = build('life');
+    const mind = build('mind');
+    scenes = work && life && mind ? { work, life, mind } : undefined;
+  }
+
   const report: ReportShape = {
     summary: (r.summary as string).trim(),
+    archetype: typeof r.archetype === 'string' && r.archetype.trim() ? r.archetype.trim() : undefined,
     personality,
     career: (r.career as string).trim(),
     love: (r.love as string).trim(),
     wealth: (r.wealth as string).trim(),
+    scenes,
     funScore,
     advice,
     lines,

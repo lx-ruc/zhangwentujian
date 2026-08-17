@@ -250,6 +250,19 @@ body {
 .idx { font-family: var(--font-mono); font-size: 12px; color: var(--cinnabar); font-weight: 700; }
 .advice-text { flex: 1; font-size: 13px; line-height: 1.7; }
 .actions { margin-top: 22px; }
+.archetype { display: block; margin-top: 3px; font-size: 12px; color: var(--cinnabar); font-family: var(--font-display); font-weight: 600; }
+.scene { margin-top: 13px; }
+.scene-head { display: flex; align-items: center; gap: 7px; }
+.scene-icon {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--cinnabar); border-radius: 4px; color: var(--cinnabar);
+  font-family: var(--font-display); font-weight: 900; font-size: 14px; transform: rotate(-6deg);
+}
+.scene-title { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
+.scene-en { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); font-weight: 400; }
+.scene-body { margin-top: 7px; display: flex; flex-direction: column; gap: 6px; }
+.scene-trait { font-size: 12.5px; line-height: 1.7; padding-left: 10px; border-left: 2px solid var(--rule); }
+.scene-caution { font-size: 12px; line-height: 1.7; color: var(--ink-2); background: var(--paper-2); border-radius: 5px; padding: 8px 10px; }
 
 /* ============ ⑤ 历史 ============ */
 .p-history { min-height: 100%; display: flex; flex-direction: column; padding: 20px 24px 24px; }
@@ -398,6 +411,7 @@ body {
         <div>
           <span class="r-eyebrow">READING COMPLETE</span>
           <span class="r-title">解读完成</span>
+          <span class="archetype">「稳扎稳打的实干家」</span>
           <span class="r-meta">右手 · glm-4v-flash</span>
         </div>
         <div class="score-seal"><span class="score">87</span><span class="score-label">趣味评分</span></div>
@@ -428,6 +442,36 @@ body {
           <div class="dim"><span class="dim-title">事业 <span class="dim-en">CAREER</span></span><span class="dim-text">思维线深长清晰，倾向逻辑驱动型选手：适合需要专注与规划的工作，遇到难题反而来劲。</span></div>
           <div class="dim"><span class="dim-title">感情 <span class="dim-en">AFFECTION</span></span><span class="dim-text">情感线走势平缓，情感表达偏内敛：不擅长甜言蜜语，但认定了就很少动摇，属于细水长流型。</span></div>
           <div class="dim"><span class="dim-title">财富 <span class="dim-en">FORTUNE</span></span><span class="dim-text">活力线弧度饱满，行动力在线：财务上倾向稳扎稳打，比起一夜暴富更喜欢看得见的积累。</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-tag">场景速读 · IN PRACTICE</span>
+        <div class="scene">
+          <div class="scene-head"><span class="scene-icon">工</span><span class="scene-title">工作 <span class="scene-en">WORK</span></span></div>
+          <div class="scene-body">
+            <span class="scene-trait">思维线深长平直：线性执行力强，拿到清晰目标能一路推到底，开会习惯先听后说、后发制人。</span>
+            <span class="scene-trait">活力线后劲足：适合长周期项目，起跑不快但越到后半程越稳，是接"烂尾盘"的人选。</span>
+            <span class="scene-caution">留意：临时插队的需求会打乱你的节奏，学着说"可以排进来，但先挪掉一件"。</span>
+            <span class="scene-caution">留意：你在会上太安静，好点子容易被嗓门大的同事截胡——重要方案提前一对一铺垫。</span>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="scene-head"><span class="scene-icon">生</span><span class="scene-title">生活 <span class="scene-en">LIFE</span></span></div>
+          <div class="scene-body">
+            <span class="scene-trait">情感线平缓内敛：社交电量有限，两三好友深聊胜过十人饭局，散场后需要独处回血。</span>
+            <span class="scene-trait">消费风格偏"看得见的积累"：冲动购物理你很远，但为质感买单从不手软。</span>
+            <span class="scene-caution">留意：慢热长情是优点，但别把"再看看"拖成"来不及说"——想念谁就直接讲。</span>
+            <span class="scene-caution">留意：周末躺着刷手机并不算回血，出门走走、动手做点东西对你更有效。</span>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="scene-head"><span class="scene-icon">心</span><span class="scene-title">身心 <span class="scene-en">MIND</span></span></div>
+          <div class="scene-body">
+            <span class="scene-trait">纹路组合偏"高压运转型"：连续冲刺没问题，但断电也断得干脆，半天彻底放空才回得来。</span>
+            <span class="scene-trait">压力上来的先兆是"话变少"：当你开始只回"嗯"，其实是内心在满负荷运转。</span>
+            <span class="scene-caution">留意：情绪往里收、攒久了容易在小事上爆发，找个出口定期清空（写下来/说出来都行）。</span>
+            <span class="scene-caution">留意：以上是生活方式参考，如有身体不适，请以专业人士意见为准。</span>
+          </div>
         </div>
       </div>
       <div class="card">

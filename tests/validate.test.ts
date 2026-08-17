@@ -39,6 +39,37 @@ describe('validateReport · schema', () => {
   });
 });
 
+describe('validateReport · scenes 场景速读', () => {
+  const SCENES = {
+    work: { traits: ['思维线深长：执行力强，先听后说。'], cautions: ['留意：临时插需求会乱节奏，学会排序。'] },
+    life: { traits: ['社交电量有限，小局更自在。'], cautions: ['留意：想念谁就直接讲。'] },
+    mind: { traits: ['连续冲刺后需要半天放空。'], cautions: ['留意：以上是生活方式参考。'] },
+  };
+
+  test('完整 scenes 透传', () => {
+    const r = validateReport({ ...GOOD, scenes: SCENES, archetype: '稳扎稳打的实干家' });
+    expect(r.ok).toBe(true);
+    expect(r.report!.archetype).toBe('稳扎稳打的实干家');
+    expect(r.report!.scenes!.work.traits).toHaveLength(1);
+    expect(r.report!.scenes!.mind.cautions[0]).toContain('留意');
+  });
+
+  test('scenes 缺一个场景 → 整体丢弃（前端隐藏模块）', () => {
+    const partial = { ...SCENES } as Record<string, unknown>;
+    delete partial.life;
+    const r = validateReport({ ...GOOD, scenes: partial });
+    expect(r.ok).toBe(true);
+    expect(r.report!.scenes).toBeUndefined();
+  });
+
+  test('scenes 里的违禁词同样拦截', () => {
+    const bad = { ...SCENES, mind: { traits: ['你最近运气会变好'], cautions: ['留意：多喝水'] } };
+    const r = validateReport({ ...GOOD, scenes: bad });
+    expect(r.ok).toBe(false);
+    expect(r.errors.join()).toContain('运气');
+  });
+});
+
 describe('validateReport · 违禁词黑名单（合规核心）', () => {
   test.each([
     ['运势', '今年运势不错'],
