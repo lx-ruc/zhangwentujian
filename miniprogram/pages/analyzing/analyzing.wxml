@@ -6,9 +6,16 @@
   </view>
   <view class="progress"><view class="bar" style="width: {{progress}}%" /></view>
 
-  <!-- 手掌 plate（呼吸动画） -->
+  <!-- 手掌 plate：用户照片优先（扫描中），无图退回插画（呼吸动画） -->
   <view class="plate">
-    <image class="hand {{done ? 'settled' : ''}}" src="/assets/hand-plate.png" mode="aspectFit" />
+    <block wx:if="{{handImage}}">
+      <view class="photo-wrap">
+        <image class="photo" src="{{handImage}}" mode="aspectFill" />
+        <view class="photo-scan" />
+        <text class="photo-tag">{{handText}} · 解读中</text>
+      </view>
+    </block>
+    <image wx:else class="hand {{done ? 'settled' : ''}}" src="/assets/hand-plate.png" mode="aspectFit" />
   </view>
 
   <!-- 趣味知识轮播 -->

@@ -1,11 +1,15 @@
 // app entry: global lifecycle only; keep pages self-contained
+import type { ReportResult } from './types/index';
+
 interface GlobalData {
   /** 待分析的手掌图（capture → analyzing 传递，分析后即焚） */
   pendingImage: string;
   /** 待分析的手别 */
   pendingHand: 'left' | 'right';
-  /** 当前查看的报告 id（analyzing → report 传递） */
+  /** 当前查看的报告 id（analyzing/history → report 传递） */
   reportId: string;
+  /** 刚生成的报告（analyzing → report 传递；历史复看时为空，从 storage 读） */
+  pendingReport: ReportResult | null;
 }
 
 App<{
@@ -15,6 +19,7 @@ App<{
     pendingImage: '',
     pendingHand: 'right',
     reportId: '',
+    pendingReport: null,
   },
 
   onLaunch() {

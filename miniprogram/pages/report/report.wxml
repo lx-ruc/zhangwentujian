@@ -4,6 +4,7 @@
     <view class="head-text">
       <text class="eyebrow">READING COMPLETE</text>
       <text class="title">解读完成</text>
+      <text class="archetype" wx:if="{{archetype}}">「{{archetype}}」</text>
       <text class="meta">{{handText}} · {{modelVersion}}</text>
     </view>
     <view class="score-seal">
@@ -38,6 +39,21 @@
       <view class="dim" wx:for="{{dimensions}}" wx:key="key">
         <text class="dim-title">{{item.title}}<text class="dim-en"> {{item.en}}</text></text>
         <text class="dim-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 场景速读：工作 / 生活 / 身心 -->
+  <view class="card scenes" wx:if="{{scenes.length}}">
+    <text class="card-tag">场景速读 · IN PRACTICE</text>
+    <view class="scene" wx:for="{{scenes}}" wx:key="key">
+      <view class="scene-head">
+        <text class="scene-icon">{{item.icon}}</text>
+        <text class="scene-title">{{item.title}}<text class="scene-en"> {{item.en}}</text></text>
+      </view>
+      <view class="scene-body">
+        <text class="scene-trait" wx:for="{{item.traits}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+        <text class="scene-caution" wx:for="{{item.cautions}}" wx:for-item="c" wx:key="*this">{{c}}</text>
       </view>
     </view>
   </view>

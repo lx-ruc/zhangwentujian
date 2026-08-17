@@ -1,4 +1,8 @@
 import { CONFIG } from '../../config/index';
+import { callFunction, RequestError } from '../../utils/request';
+import { consumeQuota, initialQuotaState, type QuotaState } from '../../utils/quota';
+import { MOCK_REPORT } from '../../utils/mock-report';
+import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 /** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
 const FACTS = [
@@ -9,40 +13,102 @@ const FACTS = [
   '民间常说"男左女右"，但两只手的掌纹并不相同，各自独一无二——想读得最清楚，拍你最灵活的那只手就好。',
 ];
 
+/** 本地进度动画时长（真实云端通常 8-15s，联调后改为跟随真实回调） */
+const PROGRESS_TOTAL = 8_000;
+
 Page({
   data: {
     progress: 0,
     facts: FACTS,
     factIndex: 0,
     done: false,
+    handImage: '',
+    handText: '右手',
   },
 
-  factTimer: 0 as unknown as ReturnType<typeof setTimeout>,
+  factTimer: 0 as unknown as ReturnType<typeof setInterval>,
   progressTimer: 0 as unknown as ReturnType<typeof setInterval>,
+  reportPromise: null as null | Promise<ReportResult>,
 
   onLoad() {
-    // Phase 1：本地模拟解读进度；Phase 2 换成真实云函数调用
+    const app = getApp();
+    this.setData({
+      handImage: app.globalData.pendingImage,
+      handText: app.globalData.pendingHand === 'left' ? '左手' : '右手',
+    });
+
+    // 云函数真实调用：未部署/失败时自动降级 mock（前端零改动等 Phase 2 接通）
+    this.reportPromise = this.fetchReport();
+
     const startedAt = Date.now();
-    const TOTAL = 10_000;
     this.progressTimer = setInterval(() => {
-      const pct = Math.min(100, ((Date.now() - startedAt) / TOTAL) * 100);
+      const pct = Math.min(100, ((Date.now() - startedAt) / PROGRESS_TOTAL) * 100);
       this.setData({ progress: Math.round(pct) });
       if (pct >= 100) {
         clearInterval(this.progressTimer);
-        this.setData({ done: true });
-        setTimeout(() => this.finish(), 600);
+        this.finish();
       }
     }, 400);
 
     this.factTimer = setInterval(() => {
-      const next = (this.data.factIndex + 1) % FACTS.length;
-      this.setData({ factIndex: next });
+      this.setData({ factIndex: (this.data.factIndex + 1) % FACTS.length });
     }, CONFIG.FACT_INTERVAL);
   },
 
-  finish() {
-    getApp().globalData.reportId = 'mock';
+  async fetchReport(): Promise<ReportResult> {
+    const app = getApp();
+    try {
+      const data = await callFunction<{ report: ReportResult }>(CONFIG.FN_ANALYZE, {
+        action: 'analyze',
+        // Phase 2：换 fileID（wx.cloud.uploadFile 之后）
+        imageLocal: true,
+        hand: app.globalData.pendingHand,
+      });
+      return data.report;
+    } catch (err) {
+      // 云函数未部署 / 无 Key / 网络——本地降级，保证链路可体验
+      if (err instanceof RequestError) {
+        console.warn('[analyzing] 云端不可用，降级 mock：', err.code);
+      } else {
+        console.warn('[analyzing] 未知错误，降级 mock：', err);
+      }
+      return MOCK_REPORT;
+    }
+  },
+
+  async finish() {
+    if (this.data.done) return;
+    this.setData({ done: true });
+
+    const app = getApp();
+    const report = await this.reportPromise!.catch(() => MOCK_REPORT);
+    const record: AnalysisRecord = {
+      _id: `local-${Date.now()}`,
+      hand: app.globalData.pendingHand,
+      result: report,
+      modelVersion: CONFIG.MODEL_VERSION,
+      createdAt: Date.now(),
+    };
+    this.saveRecord(record);
+
+    // 消耗本地配额（权威配额在云端，Phase 2 对齐）
+    const q: QuotaState = wx.getStorageSync('quota') || initialQuotaState();
+    wx.setStorageSync('quota', consumeQuota(q));
+
+    app.globalData.pendingReport = report;
+    app.globalData.reportId = record._id;
+    // 手掌图即焚：用完立刻清引用
+    app.globalData.pendingImage = '';
+    this.setData({ handImage: '' });
+
     wx.redirectTo({ url: '/pages/report/report' });
+  },
+
+  saveRecord(record: AnalysisRecord) {
+    const list: AnalysisRecord[] = wx.getStorageSync('reports') || [];
+    list.unshift(record);
+    // 本地最多留 20 条，避免 storage 膨胀
+    wx.setStorageSync('reports', list.slice(0, 20));
   },
 
   onUnload() {

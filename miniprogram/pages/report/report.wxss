@@ -147,6 +147,66 @@
   color: var(--ink-2);
 }
 
+/* 头部人格称号 */
+.archetype {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* 场景速读 */
+.scene { margin-top: 26rpx; }
+.scene-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.scene-icon {
+  width: 52rpx; height: 52rpx;
+  display: flex; align-items: center; justify-content: center;
+  border: 2rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 28rpx;
+  transform: rotate(-6deg);
+}
+.scene-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 30rpx;
+}
+.scene-en {
+  font-family: var(--font-mono);
+  font-size: 18rpx;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.scene-body {
+  margin-top: 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.scene-trait {
+  font-size: 25rpx;
+  line-height: 1.7;
+  padding-left: 20rpx;
+  border-left: 4rpx solid var(--rule);
+}
+.scene-caution {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border-radius: 10rpx;
+  padding: 16rpx 20rpx;
+}
+
 /* 建议 */
 .advice-item {
   margin-top: 20rpx;
