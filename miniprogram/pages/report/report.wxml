@@ -70,6 +70,7 @@
   <!-- 操作 -->
   <view class="actions">
     <button class="cta" open-type="share" plain="{{false}}">分享给朋友 · 看看准不准</button>
+    <button class="poster-btn" bindtap="openPoster">生成分享海报 · 发朋友圈</button>
     <view class="row-links">
       <text class="link" bindtap="goHistory">查看历史记录</text>
       <text class="sep">·</text>
@@ -78,4 +79,16 @@
   </view>
 
   <text class="disclaimer">{{disclaimer}}</text>
+
+  <!-- 海报弹层 -->
+  <view class="poster-mask" wx:if="{{showPoster}}" catchtap="closePoster">
+    <view class="poster-sheet" catchtap="noop">
+      <canvas type="2d" id="poster" class="poster-canvas {{posterReady ? '' : 'loading'}}" />
+      <text wx:if="{{!posterReady}}" class="poster-tip">海报生成中…</text>
+      <view class="poster-actions">
+        <button class="save" bindtap="savePoster" disabled="{{!posterReady}}">保存到相册</button>
+        <button class="close" catchtap="closePoster">关闭</button>
+      </view>
+    </view>
+  </view>
 </view>

@@ -224,6 +224,75 @@
 
 /* 操作 */
 .actions { margin-top: 44rpx; }
+.poster-btn {
+  margin-top: 20rpx;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2rpx solid var(--ink);
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  padding: 22rpx 0;
+  line-height: 1.5;
+}
+.poster-btn::after { border: none; }
+.poster-btn:active { background: var(--paper-2); }
+
+/* 海报弹层 */
+.poster-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 33, 26, 0.72);
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.poster-sheet {
+  position: relative;
+  width: 500rpx;
+  background: var(--paper);
+  border-radius: 20rpx;
+  padding: 20rpx 20rpx 0;
+}
+.poster-canvas {
+  width: 460rpx;
+  height: 736rpx;
+  border-radius: 12rpx;
+}
+.poster-canvas.loading { opacity: 0.4; }
+.poster-tip {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-2);
+  transform: translateY(-50%);
+}
+.poster-actions {
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 0 24rpx;
+}
+.poster-actions button {
+  flex: 1;
+  font-size: 28rpx;
+  border-radius: 10rpx;
+  padding: 16rpx 0;
+  line-height: 1.5;
+}
+.poster-actions .save {
+  background: var(--cinnabar);
+  color: var(--paper);
+}
+.poster-actions .save::after { border: none; }
+.poster-actions .save[disabled] { background: var(--ink-3); color: var(--paper); }
+.poster-actions .close {
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+.poster-actions .close::after { border: none; }
 .row-links {
   margin-top: 24rpx;
   display: flex;

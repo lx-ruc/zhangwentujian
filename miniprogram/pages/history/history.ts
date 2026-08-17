@@ -1,5 +1,6 @@
 import { DISCLAIMER } from '../../config/index';
 import { formatDateTime, clampScore } from '../../utils/format';
+import { shareHistory } from '../../utils/share';
 import type { AnalysisRecord } from '../../types/index';
 
 Page({
@@ -38,4 +39,6 @@ Page({
   },
 
   goCapture() { wx.redirectTo({ url: '/pages/capture/capture' }); },
+
+  onShareAppMessage: () => shareHistory((wx.getStorageSync('reports') || []).length),
 });

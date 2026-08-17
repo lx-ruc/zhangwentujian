@@ -1,4 +1,5 @@
 import { DISCLAIMER } from '../../config/index';
+import { shareDefault } from '../../utils/share';
 import type { Hand } from '../../types/index';
 
 Page({
@@ -68,4 +69,6 @@ Page({
   },
 
   goBack() { wx.navigateBack(); },
+
+  onShareAppMessage: () => shareDefault(),
 });

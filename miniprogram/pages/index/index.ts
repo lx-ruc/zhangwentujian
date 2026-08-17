@@ -1,5 +1,6 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
 import { remainingQuota, type QuotaState, initialQuotaState } from '../../utils/quota';
+import { shareDefault } from '../../utils/share';
 
 Page({
   data: {
@@ -16,6 +17,9 @@ Page({
   },
 
   goCapture() { wx.navigateTo({ url: '/pages/capture/capture' }); },
+
+  onShareAppMessage: () => shareDefault(),
+  onShareTimeline: () => ({ title: shareDefault().title }),
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
   goAbout() { wx.navigateTo({ url: '/pages/about/about' }); },
 });

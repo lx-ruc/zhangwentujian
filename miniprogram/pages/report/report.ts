@@ -1,6 +1,8 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
 import { toDimensions, clampScore } from '../../utils/format';
 import { MOCK_REPORT } from '../../utils/mock-report';
+import { shareReport, shareDefault } from '../../utils/share';
+import { drawPoster, type CanvasRenderingContextLike, type CanvasImageLike } from '../../utils/poster';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 interface SceneView {
@@ -36,6 +38,8 @@ Page({
     handText: '右手',
     modelVersion: CONFIG.MODEL_VERSION,
     disclaimer: DISCLAIMER,
+    showPoster: false,
+    posterReady: false,
   },
 
   onLoad() {
@@ -70,12 +74,96 @@ Page({
   },
 
   onShareAppMessage() {
-    return {
-      title: `我的掌纹趣味评分 ${this.data.funScore} 分，你猜你的多少？`,
-      path: '/pages/index/index',
-    };
+    const fallback = shareDefault();
+    return this.data.archetype
+      ? shareReport(this.data.funScore, this.data.archetype)
+      : fallback;
   },
+
+  onShareTimeline() {
+    const base = this.data.archetype
+      ? shareReport(this.data.funScore, this.data.archetype)
+      : shareDefault();
+    return { title: base.title, query: '' };
+  },
+
+  // ===== 分享海报 =====
+  openPoster() {
+    this.setData({ showPoster: true, posterReady: false });
+    // 等 wxml 节点渲染后再查 canvas
+    setTimeout(() => this.renderPoster(), 50);
+  },
+
+  renderPoster() {
+    const query = this.createSelectorQuery();
+    query.select('#poster').fields({ node: true, size: true });
+    query.exec((res) => {
+      const { node, width, height } = res[0] as {
+        node: WechatMiniprogram.Canvas;
+        width: number;
+        height: number;
+      };
+      if (!node) return;
+      const dpr = wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : 2;
+      node.width = width * dpr;
+      node.height = height * dpr;
+      const ctx = node.getContext('2d') as unknown as CanvasRenderingContextLike;
+      ctx.scale((width * dpr) / 750, (height * dpr) / 1200);
+
+      const draw = (image: CanvasImageLike | null) => {
+        drawPoster(ctx, {
+          archetype: this.data.archetype || '稳扎稳打的实干家',
+          funScore: this.data.funScore,
+          lines: this.data.lines.map((l) => ({ name: l.name, score: l.score })),
+          tags: (this.data.dimensions.find((d) => d.key === 'personality')?.text || '')
+            .split(' · ')
+            .filter(Boolean),
+          handImagePath: '/assets/hand-plate.png',
+        }, image);
+        this.setData({ posterReady: true });
+      };
+
+      const img = node.createImage() as unknown as HTMLImageElement & CanvasImageLike;
+      img.src = '/assets/hand-plate.png';
+      img.onload = () => draw(img);
+      img.onerror = () => draw(null);
+    });
+  },
+
+  savePoster() {
+    const query = this.createSelectorQuery();
+    query.select('#poster').fields({ node: true });
+    query.exec((res) => {
+      const { node } = res[0] as { node: WechatMiniprogram.Canvas };
+      wx.canvasToTempFilePath({
+        canvas: node,
+        success: (out) => {
+          wx.saveImageToPhotosAlbum({
+            filePath: out.tempFilePath,
+            success: () =>
+              wx.showToast({ title: '已保存到相册', icon: 'success' }),
+            fail: (err) => {
+              if (String(err.errMsg).includes('auth')) {
+                wx.showModal({
+                  title: '需要相册权限',
+                  content: '请在设置中开启「保存到相册」权限后重试',
+                  confirmText: '去设置',
+                  success: (r) => r.confirm && wx.openSetting(),
+                });
+              } else {
+                wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+              }
+            },
+          });
+        },
+        fail: () => wx.showToast({ title: '海报生成失败', icon: 'none' }),
+      });
+    });
+  },
+
+  closePoster() { this.setData({ showPoster: false }); },
 
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
   goIndex() { wx.reLaunch({ url: '/pages/index/index' }); },
+  noop() { /* 阻止弹层冒泡 */ },
 });

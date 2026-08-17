@@ -1,4 +1,5 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
+import { shareDefault } from '../../utils/share';
 
 Page({
   data: {
@@ -6,4 +7,6 @@ Page({
     modelVersion: CONFIG.MODEL_VERSION,
     disclaimer: DISCLAIMER,
   },
+
+  onShareAppMessage: () => shareDefault(),
 });

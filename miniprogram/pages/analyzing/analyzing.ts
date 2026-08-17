@@ -1,4 +1,5 @@
 import { CONFIG } from '../../config/index';
+import { shareDefault } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
 import { consumeQuota, initialQuotaState, type QuotaState } from '../../utils/quota';
 import { MOCK_REPORT } from '../../utils/mock-report';
@@ -115,4 +116,6 @@ Page({
     clearInterval(this.progressTimer);
     clearInterval(this.factTimer);
   },
+
+  onShareAppMessage: () => shareDefault(),
 });
