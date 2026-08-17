@@ -251,6 +251,17 @@ body {
 .advice-text { flex: 1; font-size: 13px; line-height: 1.7; }
 .actions { margin-top: 22px; }
 .archetype { display: block; margin-top: 3px; font-size: 12px; color: var(--cinnabar); font-family: var(--font-display); font-weight: 600; }
+.type-badge { margin-top: 5px; display: flex; align-items: center; gap: 7px; }
+.type-no { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); letter-spacing: 0.5px; }
+.type-name { font-family: var(--font-display); font-weight: 900; font-size: 22px; color: var(--cinnabar); line-height: 1.2; }
+.type-seal {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border: 1.2px solid var(--cinnabar); border-radius: 4px; color: var(--cinnabar);
+  font-family: var(--font-display); font-weight: 900; font-size: 14px; transform: rotate(-6deg);
+}
+.type-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-2); }
+.type-tagline { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 13px; color: var(--ink); }
+.type-compat { display: block; margin-top: 3px; font-size: 10.5px; color: var(--ink-3); }
 .scene { margin-top: 13px; }
 .scene-head { display: flex; align-items: center; gap: 7px; }
 .scene-icon {
@@ -411,7 +422,14 @@ body {
         <div>
           <span class="r-eyebrow">READING COMPLETE</span>
           <span class="r-title">解读完成</span>
-          <span class="archetype">「稳扎稳打的实干家」</span>
+          <div class="type-badge">
+            <span class="type-no">No.02</span>
+            <span class="type-name">燎原星火</span>
+            <span class="type-seal">燎</span>
+          </div>
+          <span class="type-meta">心系·进取 · 趣味稀有度 6%</span>
+          <span class="type-tagline">"爱的时候，是真的烫。"</span>
+          <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
           <span class="r-meta">右手 · glm-4v-flash</span>
         </div>
         <div class="score-seal"><span class="score">87</span><span class="score-label">趣味评分</span></div>
