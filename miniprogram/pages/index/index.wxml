@@ -1,0 +1,31 @@
+<view class="page-index">
+  <!-- 品牌头 -->
+  <view class="hero">
+    <text class="eyebrow">Palm Insight · 趣味掌纹解读</text>
+    <view class="display">你的性格底稿\n写在<text class="em">掌心</text></view>
+    <text class="lede">拍摄一张手掌照片，AI 读取三条主线的形态，为你生成一份性格倾向报告。</text>
+  </view>
+
+  <!-- 手掌图鉴 plate -->
+  <view class="plate">
+    <text class="figtag">PLATE Ⅰ — 三大主线</text>
+    <image class="hand" src="/assets/hand-plate.png" mode="aspectFit" />
+    <view class="line-legend">
+      <view class="legend-item"><text class="dot" />情感线 · 情感表达</view>
+      <view class="legend-item"><text class="dot" />思维线 · 思维风格</view>
+      <view class="legend-item"><text class="dot" />活力线 · 活力状态</view>
+    </view>
+  </view>
+
+  <!-- 底部操作区 -->
+  <view class="foot">
+    <button class="cta" bindtap="goCapture">拍摄手掌 · 开始解读</button>
+    <text class="quota-chip">今日还可解读 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
+    <view class="row-links">
+      <text class="link" bindtap="goHistory">历史记录</text>
+      <text class="sep">·</text>
+      <text class="link" bindtap="goAbout">关于与隐私</text>
+    </view>
+    <text class="disclaimer">{{disclaimer}}</text>
+  </view>
+</view>

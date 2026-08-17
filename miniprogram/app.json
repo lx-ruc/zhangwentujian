@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/capture/capture",
+    "pages/analyzing/analyzing",
+    "pages/report/report",
+    "pages/history/history",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F9F5EC",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "掌纹测运",
+    "backgroundColor": "#EBE3D1",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "requiredPrivateInfos": ["chooseMedia"]
+}

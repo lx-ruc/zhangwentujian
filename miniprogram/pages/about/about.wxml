@@ -1,0 +1,23 @@
+<view class="page-about">
+  <view class="head">
+    <text class="title">关于「掌纹测运」</text>
+    <text class="ver">v{{version}} · {{modelVersion}}</text>
+  </view>
+
+  <view class="card">
+    <text class="h">娱乐性质说明</text>
+    <text class="p">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。报告中的性格倾向描述均使用"倾向于""可能""仅供参考"等非绝对化表述。</text>
+  </view>
+
+  <view class="card">
+    <text class="h">隐私说明</text>
+    <text class="p">· 手掌照片仅在解读过程中临时使用，分析完成后立即删除，云端不保留任何照片。\n· 历史记录仅保存文字报告，可随时删除。\n· 我们不收集姓名、手机号等个人身份信息。\n· 相机与相册权限仅用于拍摄手掌照片，可在系统设置中随时关闭。</text>
+  </view>
+
+  <view class="card">
+    <text class="h">三大主线小知识</text>
+    <text class="p">掌纹在胎儿期约第 13 周成形，终生基本不变。产品中的三条主线为：情感线（情感表达）、思维线（思维风格）、活力线（活力状态）——均是对掌纹形态的趣味化描述。</text>
+  </view>
+
+  <text class="disclaimer">{{disclaimer}}</text>
+</view>

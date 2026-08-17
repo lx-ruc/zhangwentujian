@@ -1,0 +1,87 @@
+/**
+ * 掌纹测运 · 全局样式（宣纸/墨/朱砂「图鉴」风）
+ * Tokens 与 design/preview.html 保持一致
+ */
+page {
+  /* design tokens */
+  --paper: #F9F5EC;        /* 宣纸 */
+  --paper-2: #F0E9DA;      /* 纸影 */
+  --page-bg: #EBE3D1;      /* 页面底 */
+  --ink: #26211A;          /* 墨 */
+  --ink-2: #6F6759;        /* 淡墨 */
+  --ink-3: #A79D8B;        /* 极淡墨 */
+  --cinnabar: #BC3F21;     /* 朱砂 */
+  --cinnabar-deep: #9E3319;
+  --rule: #D8CFBB;         /* 界格线 */
+  --font-display: 'Songti SC', 'STSong', 'Noto Serif SC', serif;
+  --font-mono: 'SF Mono', Menlo, monospace;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 28rpx;
+  line-height: 1.6;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+}
+
+/* ===== 通用：免责声明 ===== */
+.disclaimer {
+  margin-top: 24rpx;
+  padding: 0 48rpx;
+  font-size: 20rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+  text-align: center;
+}
+
+/* ===== 通用：印章（旋转方章） ===== */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  transform: rotate(-6deg);
+  box-shadow: inset 0 0 0 2rpx rgba(188, 63, 33, 0.25);
+}
+
+/* ===== 通用：朱砂主按钮 ===== */
+.cta {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  padding: 26rpx 0;
+  background: var(--cinnabar);
+  color: var(--paper);
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  box-shadow: 0 6rpx 24rpx rgba(188, 63, 33, 0.28);
+}
+.cta::after { border: none; }
+.cta:active { background: var(--cinnabar-deep); }
+.cta[disabled] {
+  background: var(--ink-3);
+  color: var(--paper);
+  box-shadow: none;
+}
+
+/* ===== 通用：界格卡片 ===== */
+.card {
+  background: var(--paper);
+  border: 1rpx solid var(--rule);
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+/* ===== 通用：空态 ===== */
+.empty {
+  padding: 96rpx 48rpx;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 26rpx;
+}

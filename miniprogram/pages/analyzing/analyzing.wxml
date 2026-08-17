@@ -1,0 +1,28 @@
+<view class="page-analyzing">
+  <!-- 头部 -->
+  <view class="head">
+    <text class="title">正在解读</text>
+    <text class="eta">READING · 约 10 秒</text>
+  </view>
+  <view class="progress"><view class="bar" style="width: {{progress}}%" /></view>
+
+  <!-- 手掌 plate（呼吸动画） -->
+  <view class="plate">
+    <image class="hand {{done ? 'settled' : ''}}" src="/assets/hand-plate.png" mode="aspectFit" />
+  </view>
+
+  <!-- 趣味知识轮播 -->
+  <view class="fact-card">
+    <text class="fact-tag">掌纹小议 · {{factIndex + 1}}/{{facts.length}}</text>
+    <text class="fact-text">{{facts[factIndex]}}</text>
+    <view class="dots">
+      <view
+        wx:for="{{facts}}"
+        wx:key="index"
+        class="dot {{index === factIndex ? 'on' : ''}}"
+      />
+    </view>
+  </view>
+
+  <text class="disclaimer">解读完成后手掌照片立即删除，仅保留文字报告</text>
+</view>

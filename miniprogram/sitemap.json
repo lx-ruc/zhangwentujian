@@ -1,0 +1,13 @@
+{
+  "desc": "掌纹测运：仅首页允许被微信索引",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "pages/index/index"
+    },
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

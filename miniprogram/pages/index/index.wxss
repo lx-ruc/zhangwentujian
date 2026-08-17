@@ -1,0 +1,96 @@
+.page-index {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 40rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* ===== 品牌头 ===== */
+.hero { padding: 24rpx 0 8rpx; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-2);
+}
+.display {
+  margin-top: 20rpx;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 72rpx;
+  line-height: 1.18;
+  white-space: pre-line;
+}
+.display .em {
+  color: var(--cinnabar);
+  text-decoration: underline;
+  text-decoration-thickness: 6rpx;
+  text-underline-offset: 10rpx;
+}
+.lede {
+  margin-top: 24rpx;
+  max-width: 560rpx;
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+
+/* ===== 手掌 plate ===== */
+.plate {
+  margin-top: 40rpx;
+  position: relative;
+  border-top: 1rpx solid var(--rule);
+  border-bottom: 1rpx solid var(--rule);
+  padding: 28rpx 0 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.figtag {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-2);
+  padding-bottom: 16rpx;
+}
+.hand { width: 420rpx; height: 440rpx; }
+.line-legend {
+  margin-top: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+}
+.legend-item { display: flex; align-items: center; gap: 12rpx; }
+.legend-item .dot {
+  width: 28rpx; height: 0;
+  border-top: 5rpx solid var(--cinnabar);
+  border-radius: 3rpx;
+}
+
+/* ===== 底部 ===== */
+.foot { margin-top: 48rpx; }
+.quota-chip {
+  display: block;
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.quota-chip .num {
+  color: var(--cinnabar);
+  font-weight: 700;
+  font-size: 30rpx;
+}
+.row-links {
+  margin-top: 28rpx;
+  display: flex;
+  justify-content: center;
+  gap: 20rpx;
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+.link { padding: 8rpx 12rpx; }
+.sep { color: var(--rule); }

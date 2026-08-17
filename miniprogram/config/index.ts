@@ -1,0 +1,17 @@
+/** 全局常量：改这里，不要散落到页面 */
+export const CONFIG = {
+  /** 每日免费次数（纯防刷，不收费） */
+  DAILY_QUOTA: 3,
+  /** 云函数名 */
+  FN_ANALYZE: 'analyze',
+  /** 模型标识（展示用，实际调用在云端） */
+  MODEL_VERSION: 'glm-4v-flash',
+  /** 模型超时（ms），云函数侧同步配置 */
+  MODEL_TIMEOUT: 30_000,
+  /** 分析页趣味知识轮播间隔（ms） */
+  FACT_INTERVAL: 4_000,
+} as const;
+
+/** 免责声明（三处必放：首页/报告页/分享海报） */
+export const DISCLAIMER =
+  '本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。';

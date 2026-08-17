@@ -1,0 +1,39 @@
+.page-about {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 48rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.head {
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid var(--rule);
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 44rpx;
+}
+.ver {
+  display: block;
+  margin-top: 10rpx;
+  font-family: var(--font-mono);
+  font-size: 21rpx;
+  color: var(--ink-3);
+}
+
+.card { margin-top: 32rpx; }
+.h {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 30rpx;
+}
+.p {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.9;
+  color: var(--ink-2);
+  white-space: pre-line;
+}

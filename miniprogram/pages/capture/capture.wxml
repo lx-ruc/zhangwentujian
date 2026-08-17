@@ -1,0 +1,38 @@
+<view class="page-capture">
+  <!-- 顶部导航 -->
+  <view class="nav">
+    <text class="back" bindtap="goBack">‹ 返回</text>
+    <text class="title">拍摄手掌</text>
+    <text class="back ghost">‹</text>
+  </view>
+
+  <!-- 取景框 -->
+  <view class="viewfinder">
+    <view class="corner tl" /><view class="corner tr" />
+    <view class="corner bl" /><view class="corner br" />
+    <view class="scan" />
+    <image class="hand-guide" src="/assets/hand-outline.png" mode="aspectFit" />
+    <text class="vf-hint">手掌正对镜头 · 五指自然张开</text>
+  </view>
+
+  <!-- 左右手 -->
+  <view class="hand-pick">
+    <text class="pick on" data-hand="right" bindtap="pickHand">右手 · 常用手</text>
+    <text class="pick {{hand === 'left' ? 'on' : ''}}" data-hand="left" bindtap="pickHand">左手</text>
+  </view>
+
+  <!-- 拍摄提示 -->
+  <view class="tips">
+    <view class="tip good"><text class="tag">TIP · 宜</text>光线明亮均匀，掌心无阴影</view>
+    <view class="tip bad"><text class="tag">TIP · 忌</text>移开戒指、手表等饰品</view>
+  </view>
+
+  <!-- 快门 -->
+  <view class="shutter-row">
+    <text class="album" bindtap="chooseAlbum">相册</text>
+    <view class="shutter" bindtap="shoot" />
+    <text class="flip" bindtap="shoot">拍照</text>
+  </view>
+
+  <text class="disclaimer">{{disclaimer}}</text>
+</view>

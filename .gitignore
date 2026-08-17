@@ -2,5 +2,6 @@
 *.png
 !design/preview.html
 !design/logo.png
+!miniprogram/assets/*.png
 .DS_Store
 node_modules/
