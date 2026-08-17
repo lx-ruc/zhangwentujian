@@ -232,6 +232,7 @@ export interface CanvasRenderingContextLike {
   closePath(): void;
   translate(x: number, y: number): void;
   rotate(angle: number): void;
+  scale(x: number, y: number): void;
   save(): void;
   restore(): void;
   drawImage(img: CanvasImageSource, x: number, y: number, w: number, h: number): void;
