@@ -157,6 +157,7 @@ body {
 }
 @keyframes scan { 0% { top: 12%; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
 .hand-guide { width: 220px; height: 230px; opacity: 0.9; }
+.hand-guide.mirror { transform: scaleX(-1); }
 .vf-hint {
   position: absolute; bottom: 18px; color: var(--paper);
   font-size: 12px; letter-spacing: 1px; opacity: 0.85;
@@ -352,12 +353,12 @@ body {
         <span class="corner tl"></span><span class="corner tr"></span>
         <span class="corner bl"></span><span class="corner br"></span>
         <span class="scan"></span>
-        <img class="hand-guide" src="../miniprogram/assets/hand-outline.png" />
-        <span class="vf-hint">手掌正对镜头 · 五指自然张开</span>
+        <img class="hand-guide" id="hand-guide" src="../miniprogram/assets/hand-outline.png" />
+        <span class="vf-hint" id="vf-hint">右手掌心正对镜头 · 五指自然张开</span>
       </div>
       <div class="hand-pick">
-        <span class="pick on">右手 · 常用手</span>
-        <span class="pick" onclick="toggleHand(this)">左手</span>
+        <span class="pick on" data-hand="right" onclick="pickHand(this)">右手 · 常用手</span>
+        <span class="pick" data-hand="left" onclick="pickHand(this)">左手</span>
       </div>
       <div class="tips">
         <div class="tip good"><span class="tag">TIP · 宜</span>光线明亮均匀，掌心无阴影</div>
@@ -546,13 +547,13 @@ function showFact(i) {
   document.querySelectorAll('#fact-dots i').forEach((d, j) => d.classList.toggle('on', j === i));
 }
 
-function toggleHand(el) {
-  const picks = el.parentElement.children;
-  picks[0].textContent = picks[0].classList.contains('on') ? '右手 · 常用手' : '右手';
-  picks[0].classList.remove('on');
-  picks[1].classList.remove('on');
+function pickHand(el) {
+  [...el.parentElement.children].forEach(p => p.classList.remove('on'));
   el.classList.add('on');
-  el.textContent = el.textContent === '左手' ? '左手' : '左手';
+  const isLeft = el.dataset.hand === 'left';
+  document.getElementById('hand-guide').classList.toggle('mirror', isLeft);
+  document.getElementById('vf-hint').textContent =
+    (isLeft ? '左手' : '右手') + '掌心正对镜头 · 五指自然张开';
 }
 
 let toastTimer;

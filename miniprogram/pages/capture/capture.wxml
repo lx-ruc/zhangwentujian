@@ -11,8 +11,8 @@
     <view class="corner tl" /><view class="corner tr" />
     <view class="corner bl" /><view class="corner br" />
     <view class="scan" />
-    <image class="hand-guide" src="/assets/hand-outline.png" mode="aspectFit" />
-    <text class="vf-hint">手掌正对镜头 · 五指自然张开</text>
+    <image class="hand-guide {{hand === 'left' ? 'mirror' : ''}}" src="/assets/hand-outline.png" mode="aspectFit" />
+    <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
   </view>
 
   <!-- 左右手 -->

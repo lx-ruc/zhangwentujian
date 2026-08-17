@@ -53,6 +53,8 @@
   100% { top: 88%; opacity: 0; }
 }
 .hand-guide { width: 440rpx; height: 460rpx; opacity: 0.9; }
+/* 镜头视角：右手掌对镜头拇指在左（默认图）；左手为其镜像 */
+.hand-guide.mirror { transform: scaleX(-1); }
 .vf-hint {
   position: absolute;
   bottom: 36rpx;
