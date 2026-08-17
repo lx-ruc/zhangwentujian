@@ -4,7 +4,16 @@
     <view class="head-text">
       <text class="eyebrow">READING COMPLETE</text>
       <text class="title">解读完成</text>
-      <text class="archetype" wx:if="{{archetype}}">「{{archetype}}」</text>
+      <block wx:if="{{palmType}}">
+        <view class="type-badge">
+          <text class="type-no">{{palmType.no}}</text>
+          <text class="type-name">{{palmType.name}}</text>
+          <text class="type-seal">{{palmType.seal}}</text>
+        </view>
+        <text class="type-meta">{{palmType.dominantLabel}}·{{palmType.styleLabel}} · 趣味稀有度 {{palmType.rarity}}</text>
+        <text class="type-tagline">"{{palmType.tagline}}"</text>
+        <text class="type-compat">最合拍：{{palmType.compat[0]}} / {{palmType.compat[1]}}</text>
+      </block>
       <text class="meta">{{handText}} · {{modelVersion}}</text>
     </view>
     <view class="score-seal">

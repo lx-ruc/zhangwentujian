@@ -1,6 +1,7 @@
 import { DISCLAIMER } from '../../config/index';
 import { formatDateTime, clampScore } from '../../utils/format';
 import { shareHistory } from '../../utils/share';
+import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import type { AnalysisRecord } from '../../types/index';
 
 Page({
@@ -20,14 +21,23 @@ Page({
     // Phase 2 联调时改读云数据库 analyses 集合；当前读本地 storage
     const list: AnalysisRecord[] = wx.getStorageSync('reports') || [];
     this.setData({
-      records: list.map((r) => ({
-        id: r._id,
-        date: formatDateTime(r.createdAt),
-        hand: r.hand === 'left' ? '左手' : '右手',
-        digest: (r.result.summary || '').slice(0, 52),
-        tags: (r.result.personality || []).slice(0, 3),
-        score: clampScore(r.result.funScore),
-      })),
+      records: list.map((r) => {
+        const t = r.result.lines
+          ? classifyPalmType({
+              heart: clampScore(r.result.lines.heart),
+              head: clampScore(r.result.lines.head),
+              life: clampScore(r.result.lines.life),
+            })
+          : classifyByScore(clampScore(r.result.funScore));
+        return {
+          id: r._id,
+          date: formatDateTime(r.createdAt),
+          hand: r.hand === 'left' ? '左手' : '右手',
+          digest: (r.result.summary || '').slice(0, 52),
+          tags: [`${t.no} ${t.name}`, ...(r.result.personality || []).slice(0, 2)],
+          score: clampScore(r.result.funScore),
+        };
+      }),
     });
   },
 

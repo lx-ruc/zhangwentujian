@@ -16,10 +16,11 @@ export function shareDefault(): ShareMessage {
   };
 }
 
-/** 报告页分享（带分数，制造好奇钩子） */
-export function shareReport(score: number, archetype: string): ShareMessage {
+/** 报告页分享（类型名 + 稀有度，制造好奇钩子） */
+export function shareReport(score: number, typeName: string, rarity?: string): ShareMessage {
+  const rare = rarity ? `，据说只有 ${rarity} 的手掌是这个型` : '';
   return {
-    title: `我测出「${archetype}」，趣味评分 ${score} 分——你猜你的多少？`,
+    title: `我测出「${typeName}」${rare}——你是什么型？`,
     path: '/pages/index/index',
   };
 }

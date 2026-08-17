@@ -4,6 +4,9 @@
  */
 
 export interface PosterData {
+  /** 图鉴类型（优先） */
+  type?: { no: string; name: string; rarity: string; tagline: string; seal: string };
+  /** 兜底：模型称号（无类型时） */
   archetype: string;
   funScore: number;
   /** 三主线 [情感, 思维, 活力] 0-100 */
@@ -52,18 +55,33 @@ export function drawPoster(
   ctx.font = `500 24px ${FONT_MONO}`;
   drawTracked(ctx, 'PALM INSIGHT · 趣味掌纹解读', W / 2, 116, 6);
 
-  // 引题
+  // 引题 + 图鉴编号
   ctx.fillStyle = C.ink3;
   ctx.font = `400 30px ${FONT_BODY}`;
   drawTracked(ctx, '我的掌纹人格是', W / 2, 200, 10);
+  if (data.type) {
+    ctx.fillStyle = C.ink2;
+    ctx.font = `500 28px ${FONT_MONO}`;
+    ctx.fillText(data.type.no, W / 2 - ctx.measureText(data.type.no).width / 2, 252);
+  }
 
-  // 人格称号（朱砂大字，自动缩字）
+  // 类型名/称号（朱砂大字，自动缩字）
+  const headline = data.type ? data.type.name : `「${data.archetype}」`;
   ctx.fillStyle = C.cinnabar;
-  ctx.font = `900 ${fitFontSize(ctx, `「${data.archetype}」`, 84, 560, FONT_SERIF)}px ${FONT_SERIF}`;
+  ctx.font = `900 ${fitFontSize(ctx, headline, 84, 560, FONT_SERIF)}px ${FONT_SERIF}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(`「${data.archetype}」`, W / 2, 292);
+  ctx.fillText(headline, W / 2, 316);
   ctx.textAlign = 'left';
+
+  // 稀有度 / tagline
+  if (data.type) {
+    ctx.fillStyle = C.ink2;
+    ctx.font = `400 28px ${FONT_BODY}`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`趣味稀有度 ${data.type.rarity} · "${data.type.tagline}"`, W / 2, 396);
+    ctx.textAlign = 'left';
+  }
 
   // 评分印章（旋转方章）
   drawSeal(ctx, W / 2, 470, data.funScore);

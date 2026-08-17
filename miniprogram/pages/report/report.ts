@@ -3,6 +3,8 @@ import { toDimensions, clampScore } from '../../utils/format';
 import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault } from '../../utils/share';
 import { drawPoster, type CanvasRenderingContextLike, type CanvasImageLike } from '../../utils/poster';
+import { classifyPalmType, classifyByScore } from '../../utils/classify';
+import type { PalmType } from '../../data/palm-types';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 interface SceneView {
@@ -31,6 +33,7 @@ Page({
     funScore: 0,
     summary: '',
     archetype: '',
+    palmType: null as PalmType | null,
     lines: [] as Array<{ key: string; name: string; desc: string; score: number }>,
     dimensions: [] as ReturnType<typeof toDimensions>,
     scenes: [] as SceneView[],
@@ -57,33 +60,43 @@ Page({
     }
     app.globalData.pendingReport = null; // 一次性，防止复看旧数据
 
+    // 图鉴类型：三线数值 → 12 型（本地确定性分类，模型不参与）
+    const lineScores = {
+      heart: clampScore(report.lines?.heart),
+      head: clampScore(report.lines?.head),
+      life: clampScore(report.lines?.life),
+    };
+    const palmType = report.lines
+      ? classifyPalmType(lineScores)
+      : classifyByScore(clampScore(report.funScore));
+
     this.setData({
       funScore: clampScore(report.funScore),
       summary: report.summary,
       archetype: report.archetype ?? '',
+      palmType,
       dimensions: toDimensions(report),
       scenes: toScenes(report),
       advice: report.advice,
       handText: hand === 'left' ? '左手' : '右手',
       lines: [
-        { key: 'heart', name: '情感线', desc: '情感表达', score: clampScore(report.lines?.heart) },
-        { key: 'head', name: '思维线', desc: '思维风格', score: clampScore(report.lines?.head) },
-        { key: 'life', name: '活力线', desc: '活力状态', score: clampScore(report.lines?.life) },
+        { key: 'heart', name: '情感线', desc: '情感表达', score: lineScores.heart },
+        { key: 'head', name: '思维线', desc: '思维风格', score: lineScores.head },
+        { key: 'life', name: '活力线', desc: '活力状态', score: lineScores.life },
       ],
     });
   },
 
   onShareAppMessage() {
-    const fallback = shareDefault();
-    return this.data.archetype
-      ? shareReport(this.data.funScore, this.data.archetype)
-      : fallback;
+    const t = this.data.palmType;
+    return t
+      ? shareReport(this.data.funScore, t.name, t.rarity)
+      : shareDefault();
   },
 
   onShareTimeline() {
-    const base = this.data.archetype
-      ? shareReport(this.data.funScore, this.data.archetype)
-      : shareDefault();
+    const t = this.data.palmType;
+    const base = t ? shareReport(this.data.funScore, t.name, t.rarity) : shareDefault();
     return { title: base.title, query: '' };
   },
 
@@ -111,7 +124,11 @@ Page({
       ctx.scale((width * dpr) / 750, (height * dpr) / 1200);
 
       const draw = (image: CanvasImageLike | null) => {
+        const t = this.data.palmType;
         drawPoster(ctx, {
+          type: t
+            ? { no: t.no, name: t.name, rarity: t.rarity, tagline: t.tagline, seal: t.seal }
+            : undefined,
           archetype: this.data.archetype || '稳扎稳打的实干家',
           funScore: this.data.funScore,
           lines: this.data.lines.map((l) => ({ name: l.name, score: l.score })),

@@ -157,6 +157,57 @@
   font-weight: 600;
 }
 
+/* 图鉴类型徽章 */
+.type-badge {
+  margin-top: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.type-no {
+  font-family: var(--font-mono);
+  font-size: 22rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
+.type-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 44rpx;
+  color: var(--cinnabar);
+  line-height: 1.2;
+}
+.type-seal {
+  width: 52rpx; height: 52rpx;
+  display: flex; align-items: center; justify-content: center;
+  border: 2.5rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 28rpx;
+  transform: rotate(-6deg);
+}
+.type-meta {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+}
+.type-tagline {
+  display: block;
+  margin-top: 8rpx;
+  font-family: var(--font-display);
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.type-compat {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: var(--ink-3);
+}
+
 /* 场景速读 */
 .scene { margin-top: 26rpx; }
 .scene-head {
