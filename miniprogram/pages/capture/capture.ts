@@ -5,6 +5,25 @@ Page({
   data: {
     hand: 'right' as Hand,
     disclaimer: DISCLAIMER,
+    privacyHint: '',
+  },
+
+  onLoad() {
+    // 隐私协议状态自检：后台未配置《用户隐私保护指引》时 chooseMedia 会被直接禁用
+    if (wx.getPrivacySetting) {
+      wx.getPrivacySetting({
+        success: (res) => {
+          console.log('[privacy]', res);
+          if (res.needAuthorization) {
+            this.setData({ privacyHint: '隐私协议未授权：后台需已配置《用户隐私保护指引》' });
+          }
+        },
+        fail: (err) => {
+          console.warn('[privacy] 查询失败（通常=后台未配置隐私指引）', err.errMsg);
+          this.setData({ privacyHint: '隐私指引可能未配置：请到公众平台后台填写' });
+        },
+      });
+    }
   },
 
   pickHand(e: WechatMiniprogram.TouchEvent) {
@@ -34,6 +53,16 @@ Page({
         getApp().globalData.pendingImage = file.tempFilePath;
         getApp().globalData.pendingHand = this.data.hand;
         wx.navigateTo({ url: '/pages/analyzing/analyzing' });
+      },
+      fail: (err) => {
+        console.error('[chooseMedia]', err.errMsg);
+        // 隐私协议未配置/系统权限被拒等场景给出可读提示
+        const msg = err.errMsg.includes('privacy')
+          ? '需要先在后台配置隐私协议（见控制台日志）'
+          : err.errMsg.includes('auth') || err.errMsg.includes('deny')
+            ? '相机/相册权限被拒绝，请在设置中开启'
+            : '未能打开相机，详见控制台';
+        wx.showToast({ title: msg, icon: 'none', duration: 2500 });
       },
     });
   },

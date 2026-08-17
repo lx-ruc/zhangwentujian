@@ -103,6 +103,13 @@
 .tip.good .tag { color: var(--cinnabar); border: 1rpx solid var(--cinnabar); }
 .tip.bad .tag { color: var(--ink-3); border: 1rpx solid var(--ink-3); }
 
+.privacy-hint {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--cinnabar);
+}
+
 /* ===== 快门 ===== */
 .shutter-row {
   margin-top: 40rpx;

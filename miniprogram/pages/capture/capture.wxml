@@ -34,5 +34,6 @@
     <text class="flip" bindtap="shoot">拍照</text>
   </view>
 
+  <text wx:if="{{privacyHint}}" class="privacy-hint">{{privacyHint}}</text>
   <text class="disclaimer">{{disclaimer}}</text>
 </view>
