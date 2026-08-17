@@ -1,0 +1,47 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Status
+
+Greenfield project (no code yet). **`PLAN.md` is the source of truth** for architecture, milestones, and constraints — read it before starting any work.
+
+Product: WeChat Mini Program for AI palm-line "fun personality analysis" (趣味测试). Deliberately positioned as entertainment, NOT fortune-telling.
+
+## Tech Stack (decided, do not change without discussion)
+
+- **Frontend**: Native WeChat Mini Program + TypeScript, in `miniprogram/`
+- **Backend**: WeChat Cloud Development (云开发) — cloud functions in `cloudfunctions/`, Node.js 18
+- **AI**: Zhipu GLM-4V-Flash (free vision model). API key lives ONLY in cloud function env vars, never in miniprogram code
+- **Tests**: jest for units (`tests/`), miniprogram-automator for E2E (`e2e/`)
+
+No build/lint/test commands exist yet — scaffold them in Phase 1 and document the actual commands here when they exist.
+
+## Architecture
+
+Data flow: `wx.chooseMedia` → `wx.cloud.uploadFile` → cloud function `analyze` (quota check → fetch image → base64 → Zhipu API → JSON schema validation with 1 retry → persist text-only report to `analyses` collection → delete uploaded image).
+
+Key decisions that span multiple files:
+
+- **Images are ephemeral**: palm photos are deleted from cloud storage immediately after analysis. DB stores text reports only. Never add code that persists photos.
+- **Daily quota** (3/day per openid) enforced in cloud function `quota.ts`, mirrored client-side in `miniprogram/utils/quota.ts` — keep both pure functions with unit tests.
+- **Model output is untrusted**: `cloudfunctions/analyze/validate.ts` must schema-validate the LLM's JSON and keyword-filter banned terms before persistence. On failure: retry once, then serve fallback copy — never a blank screen.
+- **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
+
+## Compliance Rules (critical — project-killing if violated)
+
+WeChat bans 算命/占卜/看相 content as 封建迷信. All user-facing copy and generated content must follow:
+
+1. **Banned vocabulary** in names, titles, UI copy: 手相、算命、占卜、大师、运势、命运、风水、吉凶 (and equivalents in share cards/posters)
+2. **Banned content** in reports (enforced via prompt + validate.ts filter): lifespan/death predictions, health diagnoses, absolute claims (必定/命中注定), disaster/凶险 statements
+3. **Required disclaimer** on index, report page, and share poster: content is 趣味解读, 仅供娱乐
+4. Reports use hedged phrasing only: 倾向于/可能/仅供参考
+
+When writing any user-facing string, report template, or prompt text — apply these rules proactively.
+
+## Conventions
+
+- Error handling at every layer; user-friendly messages client-side, detailed logging in cloud functions
+- Pure, immutable functions for logic in `utils/` and cloud function helpers (no in-place mutation)
+- Chinese for all user-facing copy; code identifiers and comments in English
+- Files < 800 lines, functions < 50 lines
