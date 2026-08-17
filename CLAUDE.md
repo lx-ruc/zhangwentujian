@@ -27,6 +27,7 @@ Key decisions that span multiple files:
 - **Daily quota** (3/day per openid) enforced in cloud function `quota.ts`, mirrored client-side in `miniprogram/utils/quota.ts` — keep both pure functions with unit tests.
 - **Model output is untrusted**: `cloudfunctions/analyze/validate.ts` must schema-validate the LLM's JSON and keyword-filter banned terms before persistence. On failure: retry once, then serve fallback copy — never a blank screen.
 - **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
+- **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: 掌纹图鉴.
 
 ## Compliance Rules (critical — project-killing if violated)
 

@@ -464,15 +464,15 @@ button { font-family: inherit; cursor: pointer; }
                 <path d="m414 230.36c3.32-0.17 7.79 0.78 11.75 2.38 3.59 1.46 6.76 3.45 8.25 5.62"/>
                 <path d="m110.5 306.86c-2.91 2.25-5.74 4.94-8.41 7.59-2.897 2.87-5.618 5.7-8.09 7.91"/>
               </g>
-              <!-- 三条主线（朱砂）。情感线上移贴指根：穿过指蹼 V 口（指蹼实测 y≈229-270） -->
-              <path class="mainline line-draw l1" pathLength="1" d="m190 259c14-6 33-14.5 45-17 12-2.6 25-5.4 31.5-7 14.4-2.4 30.3-6.6 43-2.6 11.3 2 24.9 10.6 32.5 13.6 6.9 3.7 17 13.2 23.5 17 8.3 4.9 17.6 13.8 21.5 16.7"/>
-              <path class="mainline line-draw l2" pathLength="1" d="m220.5 288.36c9.77 7.27 24.24 15 31.5 18 4.95 2.05 20.61 6.81 27 9.5 6.83 3.5 21.49 3.73 29 6.5 13.97 2.92 20.99 4.43 34 10 14.25 4.6 27.43 3.35 37 9"/>
+              <!-- 三条主线（朱砂）。情感线：食指/中指蹼下方起（220,265）→ 凹形谷底（~305,295）→ 小指指根下方短尾收束（408,289，回升仅 6px）；思维线整体下移 12px；两线最小间距 34.4px，300 点采样 + 3px 缓冲 0 出界；与图版 03 保持同一路径 -->
+              <path class="mainline line-draw l1" pathLength="1" d="m220 265c38 7 60 30 85 30 25 0 63 -2 103 -6"/>
+              <path class="mainline line-draw l2" pathLength="1" d="m220.5 300.36c9.77 7.27 24.24 15 31.5 18 4.95 2.05 20.61 6.81 27 9.5 6.83 3.5 21.49 3.73 29 6.5 13.97 2.92 20.99 4.43 34 10 14.25 4.6 27.43 3.35 37 9"/>
               <path class="mainline line-draw l3" pathLength="1" d="m204 312.36c6.66-0.37 21.01 12.02 32 21 8.6 9.32 21.21 25.42 26.5 35 4.53 9.07 10.98 23.8 13.5 33.5 2.58 9.96 7 25.75 8 38.5 1 12.67 4.73 30.9 4 42"/>
               <!-- 引线标注：坐标取自 getPointAtLength 实测（点必须落在线上） -->
-              <line class="leader plate-fade" x1="373.7" y1="268.7" x2="432" y2="262"/><circle class="dot" cx="373.7" cy="268.7" r="3"/>
-              <text class="lbl-zh" x="437" y="260">情感线</text><text class="lbl-en" x="437" y="269">HEART</text>
-              <line class="leader plate-fade" x1="379" y1="341" x2="432" y2="352"/><circle class="dot" cx="379" cy="341" r="3"/>
-              <text class="lbl-zh" x="437" y="356">思维线</text><text class="lbl-en" x="437" y="365">HEAD</text>
+              <line class="leader plate-fade" x1="368" y1="292.4" x2="432" y2="284"/><circle class="dot" cx="368" cy="292.4" r="3"/>
+              <text class="lbl-zh" x="437" y="282">情感线</text><text class="lbl-en" x="437" y="291">HEART</text>
+              <line class="leader plate-fade" x1="379" y1="353.4" x2="432" y2="364"/><circle class="dot" cx="379" cy="353.4" r="3"/>
+              <text class="lbl-zh" x="437" y="368">思维线</text><text class="lbl-en" x="437" y="377">HEAD</text>
               <line class="leader plate-fade" x1="283" y1="433" x2="240" y2="452"/><circle class="dot" cx="283" cy="433" r="3"/>
               <text class="lbl-zh" x="168" y="468">活力线</text><text class="lbl-en" x="168" y="477">LIFE</text>
             </svg>
@@ -560,8 +560,8 @@ button { font-family: inherit; cursor: pointer; }
                 <path d="m414 230.36c3.32-0.17 7.79 0.78 11.75 2.38 3.59 1.46 6.76 3.45 8.25 5.62"/>
                 <path d="m110.5 306.86c-2.91 2.25-5.74 4.94-8.41 7.59-2.897 2.87-5.618 5.7-8.09 7.91"/>
               </g>
-              <path class="mainline line-loop l1" pathLength="1" d="m196 269.36c14.46-5.14 34.25-14.22 45.5-17 12.09-2 25.23-5.11 31.5-7 14.43-2.17 30.28-6.24 43-2 11.31 2.1 24.95 10.88 32.5 14 6.91 3.8 17.04 13.59 23.5 17.5 8.29 5.02 17.65 14.12 21.5 17"/>
-              <path class="mainline line-loop l2" pathLength="1" d="m220.5 288.36c9.77 7.27 24.24 15 31.5 18 4.95 2.05 20.61 6.81 27 9.5 6.83 3.5 21.49 3.73 29 6.5 13.97 2.92 20.99 4.43 34 10 14.25 4.6 27.43 3.35 37 9"/>
+              <path class="mainline line-loop l1" pathLength="1" d="m220 265c38 7 60 30 85 30 25 0 63 -2 103 -6"/>
+              <path class="mainline line-loop l2" pathLength="1" d="m220.5 300.36c9.77 7.27 24.24 15 31.5 18 4.95 2.05 20.61 6.81 27 9.5 6.83 3.5 21.49 3.73 29 6.5 13.97 2.92 20.99 4.43 34 10 14.25 4.6 27.43 3.35 37 9"/>
               <path class="mainline line-loop l3" pathLength="1" d="m204 312.36c6.66-0.37 21.01 12.02 32 21 8.6 9.32 21.21 25.42 26.5 35 4.53 9.07 10.98 23.8 13.5 33.5 2.58 9.96 7 25.75 8 38.5 1 12.67 4.73 30.9 4 42"/>
             </svg>
           </div>

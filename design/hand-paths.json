@@ -1,6 +1,15 @@
 {
   "_source": "freesvg.org SVG #36174 'Hand palm' — Public Domain (CC0), by OpenClipart",
+  "_adjustments": {
+    "pathPaumeHaut": "UI 中重做为凹形曲线：m220 265c38 7 60 30 85 30 25 0 63 -2 103 -6（食指/中指蹼下方起 220,265 → 谷底 ~305,295 → 小指指根下方短尾收束 408,289，回升仅 6px；掌缘物理极限为 x≈425，x≥426 出界）。300 点采样 + 3px 缓冲 0 出界，与思维线最小间距 34.4px；preview.html 图版 01/03 共用此路径",
+    "pathPaumeMilieu": "UI 中整体下移 12px（起点 y 288.36→300.36），为情感线让出间距，同时与活力线保持 ≥16.8px；preview.html 图版 01/03 共用此路径"
   "_viewBox": "0 0 481 588",
+  "_naming": {
+    "_note": "产品命名 vs 传统名称对照（写 prompt.ts 掌纹知识注入时使用）",
+    "情感线": "传统「感情线」HEART — 掌上部横线：小指下方 → 食指/中指下方",
+    "思维线": "传统「智慧线/头脑线」HEAD — 掌中部横线。勿改名「事业线」：事业线传统上是手腕→中指的竖线（本图未画），且该词有俚语歧义、别名「命运线」含禁用词",
+    "活力线": "传统「生命线」LIFE — 包绕拇指根部的弧线（改名以避开寿命暗示，合规红线第 2 条）"
+  },
   "_license": "https://creativecommons.org/publicdomain/zero/1.0/",
   "_anatomy": {
     "pathContourMain": "hand outline (palm + 5 fingers)",
