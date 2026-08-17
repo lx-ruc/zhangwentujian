@@ -309,6 +309,38 @@ body {
 .h { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
 .p { display: block; margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--ink-2); white-space: pre-line; }
 
+/* ===== 图鉴收集 ===== */
+.p-collection { min-height: 100%; display: flex; flex-direction: column; padding: 24px 24px 24px; }
+.col-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.h-title { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 900; font-size: 24px; }
+.col-sub { display: block; margin-top: 4px; font-size: 11.5px; color: var(--ink-2); }
+.col-sub b { color: var(--cinnabar); font-size: 14px; }
+.progress-ring {
+  width: 70px; height: 70px; border: 2.5px solid var(--cinnabar); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(188,63,33,.04);
+}
+.pr-num { font-family: var(--font-display); font-weight: 900; font-size: 26px; line-height: 1; color: var(--cinnabar); }
+.pr-label { margin-top: 2px; font-size: 9px; color: var(--cinnabar); }
+.col-track { margin-top: 12px; height: 4px; background: var(--paper-2); border-radius: 2px; overflow: hidden; }
+.col-fill { height: 100%; background: linear-gradient(90deg, var(--cinnabar-deep), var(--cinnabar)); }
+.col-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.col-cell {
+  border: 1px solid var(--rule); border-radius: 7px; padding: 10px 6px 8px;
+  display: flex; flex-direction: column; align-items: center; background: var(--paper); cursor: pointer;
+}
+.col-cell.off { background: var(--paper-2); opacity: .75; }
+.cell-no { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); }
+.cell-seal {
+  margin-top: 5px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  border: 1.2px solid var(--cinnabar); border-radius: 5px; transform: rotate(-6deg);
+  color: var(--cinnabar); font-family: var(--font-display); font-weight: 900; font-size: 20px;
+}
+.cell-seal.ghost { border-color: var(--ink-3); color: var(--ink-3); }
+.cell-name { margin-top: 6px; font-family: var(--font-display); font-weight: 700; font-size: 12.5px; }
+.col-cell.off .cell-name { color: var(--ink-3); font-weight: 400; }
+.cell-rarity { margin-top: 2px; font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-3); }
+.p-collection .cta { margin-top: 20px; }
+
 /* toast */
 #toast {
   position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%);
@@ -327,6 +359,7 @@ body {
   <button data-p="analyzing">分析中</button>
   <button data-p="report">报告</button>
   <button data-p="history">历史</button>
+  <button data-p="collection">图鉴</button>
   <button data-p="about">关于</button>
 </div>
 <div class="hint">壳内按钮可真实跳转（快门→分析→报告）；顶部可直达任意页</div>
@@ -531,6 +564,24 @@ body {
     </div>
   </div>
 
+  <!-- ⑥b 图鉴收集 -->
+  <div class="screen" id="s-collection">
+    <div class="p-collection">
+      <div class="col-head">
+        <div>
+          <span class="eyebrow">PALM FIELD GUIDE</span>
+          <span class="h-title">掌纹人格图鉴</span>
+          <span class="col-sub">已解锁 <b id="col-count">3</b>/12 · 每次解读解锁一种</span>
+        </div>
+        <div class="progress-ring"><span class="pr-num">3</span><span class="pr-label">已收集</span></div>
+      </div>
+      <div class="col-track"><div class="col-fill" style="width:25%"></div></div>
+      <div class="col-grid" id="col-grid"></div>
+      <button class="cta" onclick="go('capture')">再测一次 · 解锁新类型</button>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
   <!-- ⑥ 关于 -->
   <div class="screen" id="s-about">
     <div class="p-about">
@@ -562,7 +613,7 @@ body {
 </div>
 
 <script>
-const PAGES = ['index', 'capture', 'analyzing', 'report', 'history', 'about'];
+const PAGES = ['index', 'capture', 'analyzing', 'report', 'history', 'collection', 'about'];
 const FACTS = [
   '掌纹在胎儿期约第 13 周就已成形，此后终生基本不变——你的三条主线是名副其实的"出厂设置"。',
   '世界上找不到两张完全相同的手掌：就算同卵双胞胎，掌纹也各不相同。',
@@ -626,6 +677,40 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
+
+// ===== 图鉴收集页 =====
+const PALM_TYPES = [
+  { no: 'No.01', name: '深潭映月', seal: '潭', rarity: '9%', on: false, tag: '表面平静，底下全是戏。', meta: '心系·沉稳' },
+  { no: 'No.02', name: '燎原星火', seal: '燎', rarity: '6%', on: true, tag: '爱的时候，是真的烫。', meta: '心系·进取' },
+  { no: 'No.03', name: '春风拂面', seal: '风', rarity: '12%', on: false, tag: '谁都处得来，走心的没几个。', meta: '心系·灵动' },
+  { no: 'No.04', name: '暗河涌动', seal: '河', rarity: '2%', on: false, tag: '嘴上说没事，心里已演完三部曲。', meta: '心系·深沉' },
+  { no: 'No.05', name: '磐石棋手', seal: '磐', rarity: '7%', on: true, tag: '走一步看十步，情绪不许插手。', meta: '脑系·沉稳' },
+  { no: 'No.06', name: '破壁先锋', seal: '破', rarity: '4%', on: false, tag: '难题是最好的兴奋剂。', meta: '脑系·进取' },
+  { no: 'No.07', name: '千面棱镜', seal: '棱', rarity: '3%', on: false, tag: '同一个问题，永远有第三个角度。', meta: '脑系·灵动' },
+  { no: 'No.08', name: '深空观测者', seal: '观', rarity: '1.5%', on: false, tag: '话少，但想的事比谁都远。', meta: '脑系·深沉' },
+  { no: 'No.09', name: '长途行者', seal: '行', rarity: '8%', on: false, tag: '起跑不快，但从不中途退场。', meta: '身系·沉稳' },
+  { no: 'No.10', name: '奔流入海', seal: '奔', rarity: '5%', on: false, tag: '能量过剩，闲下来反而难受。', meta: '身系·进取' },
+  { no: 'No.11', name: '山间清风', seal: '清', rarity: '10%', on: true, tag: '精力只花在好玩的事上。', meta: '身系·灵动' },
+  { no: 'No.12', name: '蛰伏火山', seal: '伏', rarity: '2.5%', on: false, tag: '平时省电模式，关键时刻倾尽全力。', meta: '身系·深沉' },
+];
+(function renderGrid() {
+  const grid = document.getElementById('col-grid');
+  if (!grid) return;
+  grid.innerHTML = PALM_TYPES.map((t, i) => `
+    <div class="col-cell ${t.on ? '' : 'off'}" data-i="${i}">
+      <span class="cell-no">${t.no}</span>
+      <span class="cell-seal ${t.on ? '' : 'ghost'}">${t.on ? t.seal : '？'}</span>
+      <span class="cell-name">${t.on ? t.name : '？？？'}</span>
+      <span class="cell-rarity">${t.rarity}</span>
+    </div>`).join('');
+  grid.addEventListener('click', (e) => {
+    const cell = e.target.closest('.col-cell');
+    if (!cell) return;
+    const t = PALM_TYPES[+cell.dataset.i];
+    if (t.on) toast(`${t.no} ${t.name} · ${t.meta}\n"${t.tag}"（真机此处为详情弹层）`);
+    else toast(`尚未解锁 · 趣味稀有度 ${t.rarity}`);
+  });
+})();
 </script>
 </body>
 </html>
