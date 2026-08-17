@@ -1,0 +1,218 @@
+.page-collection {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 48rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* ===== 头部 ===== */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid var(--rule);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--ink-2);
+}
+.title {
+  display: block;
+  margin-top: 8rpx;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 48rpx;
+}
+.sub {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--ink-2);
+}
+.progress-ring {
+  width: 140rpx;
+  height: 140rpx;
+  border: 5rpx solid var(--cinnabar);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(188, 63, 33, 0.04);
+}
+.pr-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 52rpx;
+  line-height: 1;
+  color: var(--cinnabar);
+}
+.pr-label {
+  margin-top: 4rpx;
+  font-size: 18rpx;
+  color: var(--cinnabar);
+}
+
+/* ===== 进度条 ===== */
+.track {
+  margin-top: 24rpx;
+  height: 8rpx;
+  background: var(--paper-2);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cinnabar-deep), var(--cinnabar));
+  border-radius: 4rpx;
+  transition: width 0.6s ease-out;
+}
+
+/* ===== 12 型网格 ===== */
+.grid {
+  margin-top: 32rpx;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+.cell {
+  border: 1rpx solid var(--rule);
+  border-radius: 14rpx;
+  padding: 20rpx 12rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--paper);
+}
+.cell.off { background: var(--paper-2); opacity: 0.75; }
+.cell-no {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 18rpx;
+  color: var(--ink-3);
+}
+.cell-seal {
+  margin-top: 10rpx;
+  width: 76rpx;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5rpx solid var(--cinnabar);
+  border-radius: 10rpx;
+  transform: rotate(-6deg);
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 40rpx;
+}
+.cell-seal.ghost {
+  border-color: var(--ink-3);
+  color: var(--ink-3);
+}
+.cell-name {
+  margin-top: 12rpx;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 25rpx;
+}
+.cell.off .cell-name { color: var(--ink-3); font-weight: 400; }
+.cell-rarity {
+  margin-top: 4rpx;
+  font-family: var(--font-mono);
+  font-size: 19rpx;
+  color: var(--ink-3);
+}
+
+.page-collection .cta { margin-top: 40rpx; }
+
+/* ===== 详情弹层 ===== */
+.detail-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 33, 26, 0.72);
+  z-index: 99;
+  display: flex;
+  align-items: flex-end;
+}
+.detail-sheet {
+  width: 100%;
+  background: var(--paper);
+  border-radius: 28rpx 28rpx 0 0;
+  padding: 44rpx 48rpx calc(44rpx + env(safe-area-inset-bottom));
+}
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.d-no {
+  font-family: var(--font-mono);
+  font-size: 22rpx;
+  color: var(--ink-2);
+}
+.d-name {
+  display: block;
+  margin-top: 4rpx;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 56rpx;
+  color: var(--cinnabar);
+}
+.d-meta {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+}
+.d-seal {
+  width: 96rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid var(--cinnabar);
+  border-radius: 14rpx;
+  transform: rotate(-6deg);
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 52rpx;
+}
+.d-tagline {
+  display: block;
+  margin-top: 24rpx;
+  font-family: var(--font-display);
+  font-size: 30rpx;
+}
+.d-desc {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+.d-compat {
+  margin-top: 24rpx;
+  background: var(--paper-2);
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.d-compat-title {
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  color: var(--cinnabar);
+}
+.d-compat-names {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26rpx;
+}
+.d-share { margin-top: 32rpx; }

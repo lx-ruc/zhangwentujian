@@ -22,9 +22,11 @@
     <button class="cta" bindtap="goCapture">拍摄手掌 · 开始解读</button>
     <text class="quota-chip">今日还可解读 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
     <view class="row-links">
+      <text class="link" bindtap="goCollection">图鉴收集</text>
+      <text class="sep">·</text>
       <text class="link" bindtap="goHistory">历史记录</text>
       <text class="sep">·</text>
-      <text class="link" bindtap="goAbout">关于与隐私</text>
+      <text class="link" bindtap="goAbout">关于</text>
     </view>
     <text class="disclaimer">{{disclaimer}}</text>
   </view>

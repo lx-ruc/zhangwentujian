@@ -81,7 +81,9 @@
     <button class="cta" open-type="share" plain="{{false}}">分享给朋友 · 看看准不准</button>
     <button class="poster-btn" bindtap="openPoster">生成分享海报 · 发朋友圈</button>
     <view class="row-links">
-      <text class="link" bindtap="goHistory">查看历史记录</text>
+      <text class="link" bindtap="goCollection">图鉴收集</text>
+      <text class="sep">·</text>
+      <text class="link" bindtap="goHistory">历史记录</text>
       <text class="sep">·</text>
       <text class="link" bindtap="goIndex">再来一次</text>
     </view>

@@ -5,6 +5,7 @@
     "pages/analyzing/analyzing",
     "pages/report/report",
     "pages/history/history",
+    "pages/collection/collection",
     "pages/about/about"
   ],
   "window": {

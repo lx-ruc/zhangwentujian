@@ -181,6 +181,7 @@ Page({
   closePoster() { this.setData({ showPoster: false }); },
 
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
+  goCollection() { wx.navigateTo({ url: '/pages/collection/collection' }); },
   goIndex() { wx.reLaunch({ url: '/pages/index/index' }); },
   noop() { /* 阻止弹层冒泡 */ },
 });

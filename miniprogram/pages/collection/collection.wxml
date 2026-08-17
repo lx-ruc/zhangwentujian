@@ -1,0 +1,54 @@
+<view class="page-collection">
+  <view class="head">
+    <view class="head-text">
+      <text class="eyebrow">PALM FIELD GUIDE</text>
+      <text class="title">掌纹人格图鉴</text>
+      <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次解读解锁一种</text>
+    </view>
+    <view class="progress-ring">
+      <text class="pr-num">{{unlockedCount}}</text>
+      <text class="pr-label">已收集</text>
+    </view>
+  </view>
+  <view class="track"><view class="fill" style="width: {{unlockedCount / total * 100}}%" /></view>
+
+  <!-- 12 型网格 -->
+  <view class="grid">
+    <view
+      wx:for="{{types}}"
+      wx:key="id"
+      class="cell {{item.unlocked ? 'on' : 'off'}}"
+      data-id="{{item.id}}"
+      bindtap="openType"
+    >
+      <text class="cell-no">{{item.no}}</text>
+      <view class="cell-seal {{item.unlocked ? '' : 'ghost'}}">{{item.unlocked ? item.seal : '？'}}</view>
+      <text class="cell-name">{{item.unlocked ? item.name : '？？？'}}</text>
+      <text class="cell-rarity">{{item.rarity}}</text>
+    </view>
+  </view>
+
+  <button class="cta" bindtap="goCapture">再测一次 · 解锁新类型</button>
+  <text class="disclaimer">{{disclaimer}}</text>
+
+  <!-- 类型详情弹层 -->
+  <view class="detail-mask" wx:if="{{showDetail}}" catchtap="closeDetail">
+    <view class="detail-sheet" catchtap="noop" wx:if="{{detail}}">
+      <view class="detail-head">
+        <view class="detail-left">
+          <text class="d-no">{{detail.no}}</text>
+          <text class="d-name">{{detail.name}}</text>
+          <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 趣味稀有度 {{detail.rarity}}</text>
+        </view>
+        <view class="d-seal">{{detail.seal}}</view>
+      </view>
+      <text class="d-tagline">"{{detail.tagline}}"</text>
+      <text class="d-desc">{{detail.desc}}</text>
+      <view class="d-compat">
+        <text class="d-compat-title">最合拍</text>
+        <text class="d-compat-names">{{detail.compat[0]}} · {{detail.compat[1]}}</text>
+      </view>
+      <button class="cta d-share" open-type="share">炫耀一下</button>
+    </view>
+  </view>
+</view>

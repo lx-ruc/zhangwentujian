@@ -17,6 +17,7 @@ Page({
   },
 
   goCapture() { wx.navigateTo({ url: '/pages/capture/capture' }); },
+  goCollection() { wx.navigateTo({ url: '/pages/collection/collection' }); },
 
   onShareAppMessage: () => shareDefault(),
   onShareTimeline: () => ({ title: shareDefault().title }),
