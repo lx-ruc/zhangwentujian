@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>掌纹测运 · 小程序页面预览（HTML 版）</title>
+<style>
+/* ============ tokens（与 miniprogram/app.wxss 一致，1rpx=0.5px） ============ */
+:root {
+  --paper: #F9F5EC;
+  --paper-2: #F0E9DA;
+  --page-bg: #EBE3D1;
+  --ink: #26211A;
+  --ink-2: #6F6759;
+  --ink-3: #A79D8B;
+  --cinnabar: #BC3F21;
+  --cinnabar-deep: #9E3319;
+  --rule: #D8CFBB;
+  --font-display: 'Songti SC', 'STSong', 'Noto Serif SC', serif;
+  --font-mono: 'SF Mono', Menlo, monospace;
+  --font-body: -apple-system, 'PingFang SC', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--page-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 60px;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+/* ============ 页面切换器 ============ */
+.switcher {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 24px; max-width: 560px;
+}
+.switcher button {
+  font-family: var(--font-body); font-size: 13px;
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--paper);
+  color: var(--ink-2); cursor: pointer;
+}
+.switcher button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.hint { font-size: 12px; color: var(--ink-3); margin-bottom: 20px; }
+
+/* ============ 手机壳 ============ */
+.phone {
+  width: 375px; height: 780px;
+  background: var(--paper);
+  border: 10px solid #1d1a15;
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(38, 33, 26, 0.25);
+}
+.statusbar {
+  height: 34px; flex: none;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; font-size: 12px; font-weight: 600;
+  background: var(--paper);
+}
+.home-indicator {
+  height: 18px; flex: none;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
+}
+.home-indicator::after {
+  content: ''; width: 120px; height: 4px; border-radius: 2px; background: var(--ink-3);
+}
+
+.screen {
+  height: calc(780px - 34px - 18px);
+  overflow-y: auto; overflow-x: hidden;
+  display: none;
+}
+.screen.on { display: block; }
+
+/* ============ 通用组件（app.wxss 翻译） ============ */
+.disclaimer {
+  margin-top: 12px; padding: 0 24px;
+  font-size: 10px; line-height: 1.7; color: var(--ink-3); text-align: center;
+  display: block;
+}
+.cta {
+  display: block; width: 100%;
+  padding: 13px 0;
+  background: var(--cinnabar); color: var(--paper);
+  font-size: 16px; font-weight: 600; letter-spacing: 1px;
+  text-align: center; border: none; border-radius: 6px;
+  box-shadow: 0 3px 12px rgba(188, 63, 33, 0.28);
+  cursor: pointer; font-family: var(--font-body);
+}
+.cta:active { background: var(--cinnabar-deep); }
+.row-links {
+  margin-top: 12px; display: flex; justify-content: center; gap: 10px;
+  font-size: 13px; color: var(--ink-2);
+}
+.row-links .link { padding: 4px 6px; cursor: pointer; }
+.row-links .sep { color: var(--rule); }
+
+/* ============ ① 首页 ============ */
+.p-index {
+  min-height: 100%; display: flex; flex-direction: column;
+  padding: 20px 24px 24px;
+}
+.eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ink-2); }
+.display {
+  margin-top: 10px; font-family: var(--font-display); font-weight: 900;
+  font-size: 36px; line-height: 1.18; white-space: pre-line;
+}
+.display .em {
+  color: var(--cinnabar);
+  text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px;
+}
+.lede { margin-top: 12px; max-width: 280px; font-size: 13px; color: var(--ink-2); }
+.plate {
+  margin-top: 20px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  padding: 14px 0 10px; display: flex; flex-direction: column; align-items: center;
+}
+.figtag {
+  align-self: flex-start; font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 1px; color: var(--ink-2); padding-bottom: 8px;
+}
+.hand { width: 210px; height: 220px; }
+.line-legend { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--ink-2); }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-item .dot { width: 14px; height: 0; border-top: 2.5px solid var(--cinnabar); border-radius: 1.5px; }
+.foot { margin-top: 24px; }
+.quota-chip { display: block; margin-top: 10px; text-align: center; font-size: 12px; color: var(--ink-2); }
+.quota-chip .num { color: var(--cinnabar); font-weight: 700; font-size: 15px; }
+
+/* ============ ② 拍摄页 ============ */
+.p-capture {
+  min-height: 100%; display: flex; flex-direction: column;
+  padding: 12px 24px 20px;
+}
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 12px; }
+.back { font-size: 15px; color: var(--ink-2); padding: 4px; cursor: pointer; }
+.back.ghost { visibility: hidden; }
+.nav .title { font-family: var(--font-display); font-weight: 900; font-size: 17px; }
+.viewfinder {
+  position: relative; height: 360px; background: #26211A;
+  border-radius: 10px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.corner { position: absolute; width: 22px; height: 22px; border: 0 solid var(--rule); }
+.corner.tl { top: 12px; left: 12px; border-top-width: 2px; border-left-width: 2px; }
+.corner.tr { top: 12px; right: 12px; border-top-width: 2px; border-right-width: 2px; }
+.corner.bl { bottom: 12px; left: 12px; border-bottom-width: 2px; border-left-width: 2px; }
+.corner.br { bottom: 12px; right: 12px; border-bottom-width: 2px; border-right-width: 2px; }
+.scan {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cinnabar), transparent);
+  animation: scan 2.6s ease-in-out infinite;
+}
+@keyframes scan { 0% { top: 12%; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
+.hand-guide { width: 220px; height: 230px; opacity: 0.9; }
+.vf-hint {
+  position: absolute; bottom: 18px; color: var(--paper);
+  font-size: 12px; letter-spacing: 1px; opacity: 0.85;
+}
+.hand-pick { margin-top: 16px; display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.pick { flex: 1; text-align: center; padding: 10px 0; font-size: 13.5px; color: var(--ink-2); background: var(--paper); cursor: pointer; }
+.pick.on { background: var(--ink); color: var(--paper); font-weight: 600; }
+.tips { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+.tip { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+.tip .tag { font-family: var(--font-mono); font-size: 9.5px; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.5px; }
+.tip.good .tag { color: var(--cinnabar); border: 1px solid var(--cinnabar); }
+.tip.bad .tag { color: var(--ink-3); border: 1px solid var(--ink-3); }
+.shutter-row { margin-top: 20px; display: flex; align-items: center; justify-content: space-around; }
+.album, .flip {
+  width: 64px; text-align: center; font-size: 13.5px; color: var(--ink-2);
+  padding: 8px 0; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper-2); cursor: pointer;
+}
+.shutter {
+  width: 66px; height: 66px; border-radius: 50%;
+  background: var(--cinnabar); border: 5px solid rgba(188, 63, 33, 0.25);
+  cursor: pointer;
+}
+.shutter:active { transform: scale(0.94); }
+
+/* ============ ③ 分析中 ============ */
+.p-analyzing {
+  min-height: 100%; display: flex; flex-direction: column; align-items: center;
+  padding: 32px 28px 24px;
+}
+.a-head { text-align: center; }
+.a-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; letter-spacing: 2px; }
+.eta { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
+.progress { margin-top: 14px; width: 100%; height: 3px; background: var(--paper-2); border-radius: 1.5px; overflow: hidden; }
+.bar { height: 100%; width: 0; background: var(--cinnabar); border-radius: 1.5px; transition: width 0.4s linear; }
+.breath-hand { margin-top: 18px; width: 190px; height: 200px; animation: breathe 2.2s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.03); opacity: 1; } }
+.fact-card {
+  margin-top: 22px; width: 100%; background: var(--paper-2);
+  border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px;
+}
+.fact-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--cinnabar); }
+.fact-text { display: block; margin-top: 8px; min-height: 60px; font-size: 13.5px; line-height: 1.8; }
+.dots { margin-top: 10px; display: flex; justify-content: center; gap: 6px; }
+.dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); opacity: 0.4; }
+.dots i.on { background: var(--cinnabar); opacity: 1; }
+.burn-note { margin-top: 14px; font-size: 10px; color: var(--ink-3); text-align: center; display: block; }
+
+/* ============ ④ 报告页 ============ */
+.p-report {
+  min-height: 100%; display: flex; flex-direction: column;
+  padding: 24px 24px 24px;
+}
+.r-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 16px; border-bottom: 1px solid var(--rule);
+}
+.r-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
+.r-title { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 900; font-size: 24px; }
+.r-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-3); }
+.score-seal {
+  width: 84px; height: 84px; flex: none;
+  border: 2.5px solid var(--cinnabar); border-radius: 10px;
+  transform: rotate(-6deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 1.5px rgba(188, 63, 33, 0.2);
+  background: rgba(188, 63, 33, 0.04);
+}
+.score { font-family: var(--font-display); font-weight: 900; font-size: 36px; line-height: 1; color: var(--cinnabar); }
+.score-label { margin-top: 3px; font-size: 10px; color: var(--cinnabar); letter-spacing: 1px; }
+.card {
+  margin-top: 16px; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px;
+}
+.card-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--ink-2); }
+.summary-text { display: block; margin-top: 10px; font-size: 14px; line-height: 1.9; }
+.line-row { margin-top: 14px; }
+.line-row:first-of-type { margin-top: 10px; }
+.line-head { display: flex; align-items: baseline; gap: 7px; }
+.line-name { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
+.line-desc { flex: 1; font-size: 11px; color: var(--ink-3); }
+.line-score { font-family: var(--font-mono); font-size: 14px; color: var(--cinnabar); font-weight: 700; }
+.line-track { margin-top: 6px; height: 5px; background: var(--paper-2); border-radius: 2.5px; overflow: hidden; }
+.line-fill { height: 100%; background: linear-gradient(90deg, var(--cinnabar-deep), var(--cinnabar)); border-radius: 2.5px; }
+.dim-grid { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dim { background: var(--paper-2); border-radius: 6px; padding: 12px; }
+.dim-title { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
+.dim-en { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); font-weight: 400; }
+.dim-text { display: block; margin-top: 7px; font-size: 11.5px; line-height: 1.7; color: var(--ink-2); }
+.advice-item { margin-top: 10px; display: flex; gap: 8px; align-items: baseline; }
+.idx { font-family: var(--font-mono); font-size: 12px; color: var(--cinnabar); font-weight: 700; }
+.advice-text { flex: 1; font-size: 13px; line-height: 1.7; }
+.actions { margin-top: 22px; }
+
+/* ============ ⑤ 历史 ============ */
+.p-history { min-height: 100%; display: flex; flex-direction: column; padding: 20px 24px 24px; }
+.h-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: 14px; border-bottom: 1px solid var(--rule);
+}
+.h-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; }
+.privacy-chip {
+  font-size: 10.5px; color: var(--cinnabar); border: 1px solid var(--cinnabar);
+  border-radius: 999px; padding: 3px 9px;
+}
+.record { margin-top: 14px; }
+.record-head { display: flex; align-items: center; gap: 8px; }
+.date { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); }
+.hand-tag { font-size: 10.5px; color: var(--ink-2); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 6px; }
+.mini-seal {
+  margin-left: auto; width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--cinnabar); border-radius: 5px;
+  transform: rotate(-6deg); color: var(--cinnabar);
+  font-family: var(--font-display); font-weight: 900; font-size: 17px;
+}
+.digest { display: block; margin-top: 9px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.tags { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 6px; }
+.tag2 { font-size: 10.5px; color: var(--ink-2); background: var(--paper-2); border-radius: 3px; padding: 3px 8px; }
+
+/* ============ ⑥ 关于 ============ */
+.p-about { min-height: 100%; display: flex; flex-direction: column; padding: 24px 24px 24px; }
+.about-head { padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.about-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; }
+.about-ver { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); }
+.h { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
+.p { display: block; margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--ink-2); white-space: pre-line; }
+
+/* toast */
+#toast {
+  position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%);
+  background: rgba(38, 33, 26, 0.88); color: var(--paper);
+  font-size: 12px; padding: 9px 16px; border-radius: 8px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s; max-width: 300px; text-align: center;
+}
+#toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="switcher" id="switcher">
+  <button data-p="index" class="on">首页</button>
+  <button data-p="capture">拍摄</button>
+  <button data-p="analyzing">分析中</button>
+  <button data-p="report">报告</button>
+  <button data-p="history">历史</button>
+  <button data-p="about">关于</button>
+</div>
+<div class="hint">壳内按钮可真实跳转（快门→分析→报告）；顶部可直达任意页</div>
+
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>··· ᯤ ▮</span></div>
+
+  <!-- ① 首页 -->
+  <div class="screen on" id="s-index">
+    <div class="p-index">
+      <div class="hero">
+        <span class="eyebrow">Palm Insight · 趣味掌纹解读</span>
+        <div class="display">你的性格底稿
+写在<span class="em">掌心</span></div>
+        <span class="lede">拍摄一张手掌照片，AI 读取三条主线的形态，为你生成一份性格倾向报告。</span>
+      </div>
+      <div class="plate">
+        <span class="figtag">PLATE Ⅰ — 三大主线</span>
+        <img class="hand" src="../miniprogram/assets/hand-plate.png" />
+        <div class="line-legend">
+          <div class="legend-item"><span class="dot"></span>情感线 · 情感表达</div>
+          <div class="legend-item"><span class="dot"></span>思维线 · 思维风格</div>
+          <div class="legend-item"><span class="dot"></span>活力线 · 活力状态</div>
+        </div>
+      </div>
+      <div class="foot">
+        <button class="cta" onclick="go('capture')">拍摄手掌 · 开始解读</button>
+        <span class="quota-chip">今日还可解读 <span class="num">3</span> 次 · 每日 0 点重置</span>
+        <div class="row-links">
+          <span class="link" onclick="go('history')">历史记录</span>
+          <span class="sep">·</span>
+          <span class="link" onclick="go('about')">关于与隐私</span>
+        </div>
+      </div>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
+  <!-- ② 拍摄 -->
+  <div class="screen" id="s-capture">
+    <div class="p-capture">
+      <div class="nav">
+        <span class="back" onclick="go('index')">‹ 返回</span>
+        <span class="title">拍摄手掌</span>
+        <span class="back ghost">‹</span>
+      </div>
+      <div class="viewfinder">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+        <span class="scan"></span>
+        <img class="hand-guide" src="../miniprogram/assets/hand-outline.png" />
+        <span class="vf-hint">手掌正对镜头 · 五指自然张开</span>
+      </div>
+      <div class="hand-pick">
+        <span class="pick on">右手 · 常用手</span>
+        <span class="pick" onclick="toggleHand(this)">左手</span>
+      </div>
+      <div class="tips">
+        <div class="tip good"><span class="tag">TIP · 宜</span>光线明亮均匀，掌心无阴影</div>
+        <div class="tip bad"><span class="tag">TIP · 忌</span>移开戒指、手表等饰品</div>
+      </div>
+      <div class="shutter-row">
+        <span class="album" onclick="toast('HTML 预览：此处调起相册（真机为系统相册）')">相册</span>
+        <span class="shutter" onclick="startAnalyze()"></span>
+        <span class="flip" onclick="startAnalyze()">拍照</span>
+      </div>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
+  <!-- ③ 分析中 -->
+  <div class="screen" id="s-analyzing">
+    <div class="p-analyzing">
+      <div class="a-head">
+        <span class="a-title">正在解读</span>
+        <span class="eta">READING · 约 10 秒</span>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <img class="breath-hand" src="../miniprogram/assets/hand-plate.png" />
+      <div class="fact-card">
+        <span class="fact-tag" id="fact-tag">掌纹小议 · 1/4</span>
+        <span class="fact-text" id="fact-text"></span>
+        <div class="dots" id="fact-dots"><i class="on"></i><i></i><i></i><i></i></div>
+      </div>
+      <span class="burn-note">解读完成后手掌照片立即删除，仅保留文字报告</span>
+    </div>
+  </div>
+
+  <!-- ④ 报告 -->
+  <div class="screen" id="s-report">
+    <div class="p-report">
+      <div class="r-head">
+        <div>
+          <span class="r-eyebrow">READING COMPLETE</span>
+          <span class="r-title">解读完成</span>
+          <span class="r-meta">右手 · glm-4v-flash</span>
+        </div>
+        <div class="score-seal"><span class="score">87</span><span class="score-label">趣味评分</span></div>
+      </div>
+      <div class="card">
+        <span class="card-tag">总评 · SUMMARY</span>
+        <span class="summary-text">整体纹路清晰深长，三条主线走向分明。你的掌心透着一股稳中带劲的节奏感：想得清楚、做得踏实，情绪来得慢去得也慢，是朋友圈里公认的"靠谱担当"。以上为趣味解读，仅供参考。</span>
+      </div>
+      <div class="card">
+        <span class="card-tag">三大主线 · MAIN LINES</span>
+        <div class="line-row">
+          <div class="line-head"><span class="line-name">情感线</span><span class="line-desc">情感表达</span><span class="line-score">85</span></div>
+          <div class="line-track"><div class="line-fill" style="width:85%"></div></div>
+        </div>
+        <div class="line-row">
+          <div class="line-head"><span class="line-name">思维线</span><span class="line-desc">思维风格</span><span class="line-score">72</span></div>
+          <div class="line-track"><div class="line-fill" style="width:72%"></div></div>
+        </div>
+        <div class="line-row">
+          <div class="line-head"><span class="line-name">活力线</span><span class="line-desc">活力状态</span><span class="line-score">78</span></div>
+          <div class="line-track"><div class="line-fill" style="width:78%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-tag">四维速读 · PROFILE</span>
+        <div class="dim-grid">
+          <div class="dim"><span class="dim-title">性格 <span class="dim-en">NATURE</span></span><span class="dim-text">沉稳务实 · 慢热长情 · 暗中较劲</span></div>
+          <div class="dim"><span class="dim-title">事业 <span class="dim-en">CAREER</span></span><span class="dim-text">思维线深长清晰，倾向逻辑驱动型选手：适合需要专注与规划的工作，遇到难题反而来劲。</span></div>
+          <div class="dim"><span class="dim-title">感情 <span class="dim-en">AFFECTION</span></span><span class="dim-text">情感线走势平缓，情感表达偏内敛：不擅长甜言蜜语，但认定了就很少动摇，属于细水长流型。</span></div>
+          <div class="dim"><span class="dim-title">财富 <span class="dim-en">FORTUNE</span></span><span class="dim-text">活力线弧度饱满，行动力在线：财务上倾向稳扎稳打，比起一夜暴富更喜欢看得见的积累。</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-tag">掌上锦囊 · ADVICE</span>
+        <div class="advice-item"><span class="idx">1</span><span class="advice-text">给自己留一段"不务正业"的时间，灵感往往从那里来。</span></div>
+        <div class="advice-item"><span class="idx">2</span><span class="advice-text">重要决定睡一觉再做，你的第二天判断力通常更准。</span></div>
+        <div class="advice-item"><span class="idx">3</span><span class="advice-text">情绪内敛是优点，但偶尔把话说出口，关系会更近一步。</span></div>
+      </div>
+      <div class="actions">
+        <button class="cta" onclick="toast('HTML 预览：此处为微信原生分享（真机可用）')">分享给朋友 · 看看准不准</button>
+        <div class="row-links">
+          <span class="link" onclick="go('history')">查看历史记录</span>
+          <span class="sep">·</span>
+          <span class="link" onclick="go('index')">再来一次</span>
+        </div>
+      </div>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
+  <!-- ⑤ 历史 -->
+  <div class="screen" id="s-history">
+    <div class="p-history">
+      <div class="h-head">
+        <span class="h-title">解读记录</span>
+        <span class="privacy-chip">照片即焚 · 仅存文字</span>
+      </div>
+      <div class="record card">
+        <div class="record-head"><span class="date">8月17日 19:24</span><span class="hand-tag">右手</span><span class="mini-seal">87</span></div>
+        <span class="digest">纹路清晰深长，稳中带劲的节奏感：想得清楚、做得踏实，靠谱担当。</span>
+        <div class="tags"><span class="tag2">沉稳务实</span><span class="tag2">慢热长情</span></div>
+      </div>
+      <div class="record card">
+        <div class="record-head"><span class="date">8月16日 20:11</span><span class="hand-tag">左手</span><span class="mini-seal">81</span></div>
+        <span class="digest">情感线平缓内敛，细水长流型；活力线饱满，行动力在线。</span>
+        <div class="tags"><span class="tag2">细水长流</span><span class="tag2">行动派</span></div>
+      </div>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
+  <!-- ⑥ 关于 -->
+  <div class="screen" id="s-about">
+    <div class="p-about">
+      <div class="about-head">
+        <span class="about-title">关于「掌纹测运」</span>
+        <span class="about-ver">v0.1.0 · glm-4v-flash</span>
+      </div>
+      <div class="card">
+        <span class="h">娱乐性质说明</span>
+        <span class="p">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。报告中的性格倾向描述均使用"倾向于""可能""仅供参考"等非绝对化表述。</span>
+      </div>
+      <div class="card">
+        <span class="h">隐私说明</span>
+        <span class="p">· 手掌照片仅在解读过程中临时使用，分析完成后立即删除，云端不保留任何照片。
+· 历史记录仅保存文字报告，可随时删除。
+· 我们不收集姓名、手机号等个人身份信息。
+· 相机与相册权限仅用于拍摄手掌照片，可在系统设置中随时关闭。</span>
+      </div>
+      <div class="card">
+        <span class="h">三大主线小知识</span>
+        <span class="p">掌纹在胎儿期约第 13 周成形，终生基本不变。产品中的三条主线为：情感线（情感表达）、思维线（思维风格）、活力线（活力状态）——均是对掌纹形态的趣味化描述。</span>
+      </div>
+      <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const PAGES = ['index', 'capture', 'analyzing', 'report', 'history', 'about'];
+const FACTS = [
+  '掌纹在胎儿期约第 13 周就已成形，此后终生基本不变——你的三条主线是名副其实的"出厂设置"。',
+  '世界上找不到两张完全相同的手掌：就算同卵双胞胎，掌纹也各不相同。',
+  '掌纹其实是皮肤为了方便手部弯曲产生的褶皱，长期握持工具的人，纹路通常更深。',
+  '三条主线的深浅长短因人而异，所谓解读，是把形态差异翻译成性格倾向的趣味描述。',
+];
+let factIdx = 0, factTimer = null, progTimer = null;
+
+function go(p) {
+  PAGES.forEach(x => document.getElementById('s-' + x).classList.toggle('on', x === p));
+  document.querySelectorAll('#switcher button').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  if (p === 'analyzing') startAnalyze();
+  stopTimers();
+}
+function stopTimers() { clearInterval(factTimer); clearInterval(progTimer); }
+
+document.getElementById('switcher').addEventListener('click', e => {
+  if (e.target.dataset.p) go(e.target.dataset.p);
+});
+
+function startAnalyze() {
+  go('analyzing');
+  stopTimers();
+  factIdx = 0;
+  showFact(0);
+  factTimer = setInterval(() => showFact((factIdx + 1) % FACTS.length), 4000);
+  const bar = document.getElementById('bar');
+  bar.style.width = '0%';
+  const t0 = Date.now(), TOTAL = 6000; // 预览版加速至 6s
+  progTimer = setInterval(() => {
+    const pct = Math.min(100, ((Date.now() - t0) / TOTAL) * 100);
+    bar.style.width = pct + '%';
+    if (pct >= 100) {
+      clearInterval(progTimer);
+      setTimeout(() => { stopTimers(); go('report'); }, 500);
+    }
+  }, 300);
+}
+function showFact(i) {
+  factIdx = i;
+  document.getElementById('fact-text').textContent = FACTS[i];
+  document.getElementById('fact-tag').textContent = `掌纹小议 · ${i + 1}/${FACTS.length}`;
+  document.querySelectorAll('#fact-dots i').forEach((d, j) => d.classList.toggle('on', j === i));
+}
+
+function toggleHand(el) {
+  const picks = el.parentElement.children;
+  picks[0].textContent = picks[0].classList.contains('on') ? '右手 · 常用手' : '右手';
+  picks[0].classList.remove('on');
+  picks[1].classList.remove('on');
+  el.classList.add('on');
+  el.textContent = el.textContent === '左手' ? '左手' : '左手';
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
