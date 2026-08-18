@@ -5,7 +5,7 @@
 
 export interface PosterData {
   /** 图鉴类型（优先） */
-  type?: { no: string; name: string; rarity: string; tagline: string; seal: string };
+  type?: { no: string; name: string; rarity: string; tagline: string; seal: string; code: string };
   /** 兜底：模型称号（无类型时） */
   archetype: string;
   funScore: number;
@@ -70,9 +70,10 @@ export function drawPoster(
   ctx.font = `400 30px ${FONT_BODY}`;
   drawTracked(ctx, '我的掌纹人格是', W / 2, 200, 10);
   if (data.type) {
+    const noStr = `${data.type.no} · ${data.type.code}`;
     ctx.fillStyle = C.ink2;
-    ctx.font = `500 28px ${FONT_MONO}`;
-    ctx.fillText(data.type.no, W / 2 - ctx.measureText(data.type.no).width / 2, 252);
+    ctx.font = `500 30px ${FONT_MONO}`;
+    ctx.fillText(noStr, W / 2 - ctx.measureText(noStr).width / 2, 252);
   }
 
   // 类型名/称号（朱砂大字，自动缩字）

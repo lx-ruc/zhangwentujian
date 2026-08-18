@@ -16,11 +16,12 @@ export function shareDefault(): ShareMessage {
   };
 }
 
-/** 报告页分享（类型名 + 稀有度，制造好奇钩子） */
-export function shareReport(score: number, typeName: string, rarity?: string): ShareMessage {
+/** 报告页分享（巴掌TI 代码 + 类型名 + 稀有度，制造好奇钩子） */
+export function shareReport(score: number, typeName: string, rarity?: string, code?: string): ShareMessage {
+  const label = code ? `${code}·${typeName}` : typeName;
   const rare = rarity ? `，据说只有 ${rarity} 的手掌是这个型` : '';
   return {
-    title: `我测出「${typeName}」${rare}——你是什么型？`,
+    title: `我的巴掌TI是「${label}」${rare}——你是什么型？`,
     path: '/pages/index/index',
   };
 }

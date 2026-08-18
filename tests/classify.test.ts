@@ -8,6 +8,16 @@ describe('掌纹人格图鉴 · 数据完整性', () => {
     expect(nos.size).toBe(12);
   });
 
+  test('巴掌TI 代码：12 个且唯一，与主导线/风格字母一致', () => {
+    const codes = PALM_TYPE_LIST.map((t) => t.code);
+    expect(new Set(codes).size).toBe(12);
+    const domLetter = { heart: 'H', head: 'R', life: 'V' } as const;
+    const styLetter = { calm: 'S', bold: 'A', agile: 'N', deep: 'D' } as const;
+    for (const t of PALM_TYPE_LIST) {
+      expect(t.code).toBe(domLetter[t.dominant] + styLetter[t.style]);
+    }
+  });
+
   test('相性引用的类型名都存在', () => {
     const names = new Set(PALM_TYPE_LIST.map((t) => t.name));
     for (const t of PALM_TYPE_LIST) {

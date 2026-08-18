@@ -90,13 +90,13 @@ Page({
   onShareAppMessage() {
     const t = this.data.palmType;
     return t
-      ? shareReport(this.data.funScore, t.name, t.rarity)
+      ? shareReport(this.data.funScore, t.name, t.rarity, t.code)
       : shareDefault();
   },
 
   onShareTimeline() {
     const t = this.data.palmType;
-    const base = t ? shareReport(this.data.funScore, t.name, t.rarity) : shareDefault();
+    const base = t ? shareReport(this.data.funScore, t.name, t.rarity, t.code) : shareDefault();
     return { title: base.title, query: '' };
   },
 
@@ -127,7 +127,7 @@ Page({
         const t = this.data.palmType;
         drawPoster(ctx, {
           type: t
-            ? { no: t.no, name: t.name, rarity: t.rarity, tagline: t.tagline, seal: t.seal }
+            ? { no: t.no, name: t.name, rarity: t.rarity, tagline: t.tagline, seal: t.seal, code: t.code }
             : undefined,
           archetype: this.data.archetype || '稳扎稳打的实干家',
           funScore: this.data.funScore,

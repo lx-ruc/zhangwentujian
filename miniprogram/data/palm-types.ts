@@ -10,6 +10,8 @@ export type TypeId = `${Dominant}-${Style}`;
 
 export interface PalmType {
   id: TypeId;
+  /** 巴掌TI 代码（MBTI 式：主导线字母+风格字母，如 HA/RD/VN） */
+  code: string;
   /** 图鉴编号 No.01-12 */
   no: string;
   /** 类型名（4 字画面感命名） */
@@ -35,7 +37,7 @@ export interface PalmType {
 export const PALM_TYPES: Record<TypeId, PalmType> = {
   // ===== 心系 · 情感线主导 =====
   'heart-calm': {
-    id: 'heart-calm', no: 'No.01', name: '深潭映月',
+    id: 'heart-calm', code: 'HS', no: 'No.01', name: '深潭映月',
     dominant: 'heart', dominantLabel: '心系', style: 'calm', styleLabel: '沉稳',
     rarity: '9%',
     tagline: '表面平静，底下全是戏。',
@@ -44,7 +46,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '潭',
   },
   'heart-bold': {
-    id: 'heart-bold', no: 'No.02', name: '燎原星火',
+    id: 'heart-bold', code: 'HA', no: 'No.02', name: '燎原星火',
     dominant: 'heart', dominantLabel: '心系', style: 'bold', styleLabel: '进取',
     rarity: '6%',
     tagline: '爱的时候，是真的烫。',
@@ -53,7 +55,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '燎',
   },
   'heart-agile': {
-    id: 'heart-agile', no: 'No.03', name: '春风拂面',
+    id: 'heart-agile', code: 'HN', no: 'No.03', name: '春风拂面',
     dominant: 'heart', dominantLabel: '心系', style: 'agile', styleLabel: '灵动',
     rarity: '12%',
     tagline: '谁都处得来，走心的没几个。',
@@ -62,7 +64,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '风',
   },
   'heart-deep': {
-    id: 'heart-deep', no: 'No.04', name: '暗河涌动',
+    id: 'heart-deep', code: 'HD', no: 'No.04', name: '暗河涌动',
     dominant: 'heart', dominantLabel: '心系', style: 'deep', styleLabel: '深沉',
     rarity: '2%',
     tagline: '嘴上说没事，心里已演完三部曲。',
@@ -73,7 +75,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
 
   // ===== 脑系 · 思维线主导 =====
   'head-calm': {
-    id: 'head-calm', no: 'No.05', name: '磐石棋手',
+    id: 'head-calm', code: 'RS', no: 'No.05', name: '磐石棋手',
     dominant: 'head', dominantLabel: '脑系', style: 'calm', styleLabel: '沉稳',
     rarity: '7%',
     tagline: '走一步看十步，情绪不许插手。',
@@ -82,7 +84,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '磐',
   },
   'head-bold': {
-    id: 'head-bold', no: 'No.06', name: '破壁先锋',
+    id: 'head-bold', code: 'RA', no: 'No.06', name: '破壁先锋',
     dominant: 'head', dominantLabel: '脑系', style: 'bold', styleLabel: '进取',
     rarity: '4%',
     tagline: '难题是最好的兴奋剂。',
@@ -91,7 +93,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '破',
   },
   'head-agile': {
-    id: 'head-agile', no: 'No.07', name: '千面棱镜',
+    id: 'head-agile', code: 'RN', no: 'No.07', name: '千面棱镜',
     dominant: 'head', dominantLabel: '脑系', style: 'agile', styleLabel: '灵动',
     rarity: '3%',
     tagline: '同一个问题，永远有第三个角度。',
@@ -100,7 +102,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '棱',
   },
   'head-deep': {
-    id: 'head-deep', no: 'No.08', name: '深空观测者',
+    id: 'head-deep', code: 'RD', no: 'No.08', name: '深空观测者',
     dominant: 'head', dominantLabel: '脑系', style: 'deep', styleLabel: '深沉',
     rarity: '1.5%',
     tagline: '话少，但想的事比谁都远。',
@@ -111,7 +113,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
 
   // ===== 身系 · 活力线主导 =====
   'life-calm': {
-    id: 'life-calm', no: 'No.09', name: '长途行者',
+    id: 'life-calm', code: 'VS', no: 'No.09', name: '长途行者',
     dominant: 'life', dominantLabel: '身系', style: 'calm', styleLabel: '沉稳',
     rarity: '8%',
     tagline: '起跑不快，但从不中途退场。',
@@ -120,7 +122,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '行',
   },
   'life-bold': {
-    id: 'life-bold', no: 'No.10', name: '奔流入海',
+    id: 'life-bold', code: 'VA', no: 'No.10', name: '奔流入海',
     dominant: 'life', dominantLabel: '身系', style: 'bold', styleLabel: '进取',
     rarity: '5%',
     tagline: '能量过剩，闲下来反而难受。',
@@ -129,7 +131,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '奔',
   },
   'life-agile': {
-    id: 'life-agile', no: 'No.11', name: '山间清风',
+    id: 'life-agile', code: 'VN', no: 'No.11', name: '山间清风',
     dominant: 'life', dominantLabel: '身系', style: 'agile', styleLabel: '灵动',
     rarity: '10%',
     tagline: '精力只花在好玩的事上。',
@@ -138,7 +140,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     seal: '清',
   },
   'life-deep': {
-    id: 'life-deep', no: 'No.12', name: '蛰伏火山',
+    id: 'life-deep', code: 'VD', no: 'No.12', name: '蛰伏火山',
     dominant: 'life', dominantLabel: '身系', style: 'deep', styleLabel: '深沉',
     rarity: '2.5%',
     tagline: '平时省电模式，关键时刻倾尽全力。',
