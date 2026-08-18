@@ -17,37 +17,42 @@
 .back.ghost { visibility: hidden; }
 .title { font-family: var(--font-display); font-weight: 900; font-size: 34rpx; }
 
-/* ===== 取景框（弹性撑满中段，操作区自然贴底） ===== */
-.viewfinder {
-  position: relative;
+/* ===== 取景区：弹性居中，卡片固定比例（遮罩与轮廓严格对位） ===== */
+.vf-wrap {
   flex: 1;
-  min-height: 500rpx;
-  background: #26211A;
-  border-radius: 20rpx;
-  overflow: hidden;
+  min-height: 400rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-/* 内嵌相机铺满取景框 */
+.viewfinder {
+  position: relative;
+  width: 654rpx;
+  height: 664rpx; /* 与 vf-mask.png 641:650 同比例，scaleToFill 无形变 */
+  background: #14100C;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+/* 内嵌相机铺满取景卡（原生组件用展开定位，不用 inset 简写） */
 .camera {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
 }
-/* 引导轮廓叠加在相机画面上（透明底，尽量撑满取景框） */
-.guide-overlay {
+/* 取景遮罩：轮廓外黑、轮廓内透明（露相机），洞缘虚线一体；左手时水平镜像 */
+.vf-mask {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 600rpx;
-  height: 700rpx;
-  transform: translate(-50%, -50%);
-  opacity: 0.9;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
-.guide-overlay.mirror { transform: translate(-50%, -50%) scaleX(-1); }
+.vf-mask.mirror { transform: scaleX(-1); }
 /* 权限被拒占位 */
 .cam-placeholder {
   position: absolute;
@@ -95,14 +100,18 @@
   100% { top: 88%; opacity: 0; }
 }
 .hand-guide { width: 440rpx; height: 460rpx; opacity: 0.9; }
-.hand-guide.mirror { transform: scaleX(-1); }
 .vf-hint {
   position: absolute;
-  bottom: 36rpx;
+  bottom: 20rpx;
+  left: 24rpx;
+  right: 24rpx;
+  text-align: center;
   color: var(--paper);
-  font-size: 24rpx;
+  font-size: 22rpx;
   letter-spacing: 2rpx;
-  opacity: 0.85;
+  background: rgba(20, 16, 12, 0.55);
+  border-radius: 999rpx;
+  padding: 10rpx 16rpx;
 }
 
 /* ===== 左右手 ===== */
@@ -153,22 +162,12 @@
   color: var(--cinnabar);
 }
 
-/* ===== 快门 ===== */
+/* ===== 快门（仅拍摄，居中） ===== */
 .shutter-row {
-  margin-top: 40rpx;
+  margin-top: 36rpx;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-}
-.album, .flip {
-  width: 128rpx;
-  text-align: center;
-  font-size: 27rpx;
-  color: var(--ink-2);
-  padding: 16rpx 0;
-  border: 1rpx solid var(--rule);
-  border-radius: 12rpx;
-  background: var(--paper-2);
+  justify-content: center;
 }
 .shutter {
   width: 132rpx; height: 132rpx;

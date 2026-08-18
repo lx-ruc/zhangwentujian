@@ -6,31 +6,35 @@
     <text class="back ghost">‹</text>
   </view>
 
-  <!-- 取景框：内嵌相机，黑框即实时取景 -->
-  <view class="viewfinder">
-    <camera
-      wx:if="{{!cameraBroken}}"
-      class="camera"
-      device-position="{{cameraPos}}"
-      flash="off"
-      resolution="high"
-      frame-size="medium"
-      binderror="onCameraError"
-    />
+  <!-- 取景区：固定比例卡片居中（遮罩与轮廓严格对位） -->
+  <view class="vf-wrap">
+    <view class="viewfinder">
+      <!-- 相机铺满取景卡（inset 展开写法，原生组件对简写支持不稳） -->
+      <camera
+        wx:if="{{!cameraBroken}}"
+        class="camera"
+        style="left: 0; right: 0; top: 0; bottom: 0;"
+        device-position="{{cameraPos}}"
+        flash="off"
+        resolution="high"
+        binderror="onCameraError"
+      />
 
-    <!-- 相机不可用占位（权限被拒 / 模拟器） -->
-    <view wx:if="{{cameraDenied}}" class="cam-placeholder">
-      <text class="cam-tip">相机权限未开启</text>
-      <button class="cam-setting-btn" bindtap="openSetting">去开启相机权限</button>
-      <text class="cam-tip-sub">开启后返回本页即可实时取景</text>
+      <!-- 权限被拒占位 -->
+      <view wx:if="{{cameraDenied}}" class="cam-placeholder">
+        <text class="cam-tip">相机权限未开启</text>
+        <button class="cam-setting-btn" bindtap="openSetting">去开启相机权限</button>
+        <text class="cam-tip-sub">开启后返回本页即可实时取景</text>
+      </view>
+
+      <!-- 取景遮罩：轮廓外黑、轮廓内透明（露相机），洞缘虚线一体 -->
+      <image class="vf-mask {{hand === 'left' ? 'mirror' : ''}}" src="/assets/vf-mask.png" mode="scaleToFill" />
+
+      <!-- 顶部四角 + 扫描线（仅相机正常时） -->
+      <view class="corner tl" /><view class="corner tr" />
+      <view class="scan" wx:if="{{!cameraBroken}}" />
+      <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
     </view>
-
-    <!-- 叠加层：引导轮廓（透明底）+ 四角 + 扫描线 -->
-    <image class="guide-overlay {{hand === 'left' ? 'mirror' : ''}}" src="/assets/hand-outline-tp.png" mode="aspectFit" />
-    <view class="corner tl" /><view class="corner tr" />
-    <view class="corner bl" /><view class="corner br" />
-    <view class="scan" wx:if="{{!cameraBroken}}" />
-    <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
   </view>
 
   <!-- 左右手 -->
@@ -45,13 +49,10 @@
     <view class="tip bad"><text class="tag">TIP · 忌</text>移开戒指、手表等饰品</view>
   </view>
 
-  <!-- 快门 -->
+  <!-- 快门：仅拍摄 -->
   <view class="shutter-row">
-    <text class="album" bindtap="chooseAlbum">相册</text>
     <view class="shutter" bindtap="shoot" />
-    <text class="flip" bindtap="flipCamera">翻转</text>
   </view>
 
   <text wx:if="{{privacyHint}}" class="privacy-hint">{{privacyHint}}</text>
-  <text class="disclaimer">{{disclaimer}}</text>
 </view>

@@ -57,14 +57,10 @@ Page({
     });
   },
 
-  flipCamera() {
-    this.setData({ cameraPos: this.data.cameraPos === 'back' ? 'front' : 'back' });
-  },
-
-  /** 红色快门：相机可用直接拍；不可用（模拟器/异常）回退系统拍摄 */
+  /** 红色快门：相机可用直接拍；不可用（模拟器/异常）回退系统相机 */
   shoot() {
     if (this.data.cameraBroken) {
-      this.choose(['camera', 'album']);
+      this.choose(['camera']);
       return;
     }
     const ctx = wx.createCameraContext();
@@ -78,15 +74,12 @@ Page({
         this.submit(res.tempImagePath);
       },
       fail: (err) => {
-        console.warn('[takePhoto] 回退系统拍摄：', err.errMsg);
-        this.choose(['camera', 'album']);
+        console.warn('[takePhoto] 回退系统相机：', err.errMsg);
+        this.choose(['camera']);
       },
     });
   },
 
-  chooseAlbum() {
-    this.choose(['album']);
-  },
   choose(sources: string[]) {
     if (this.data.uploading) return;
     wx.chooseMedia({

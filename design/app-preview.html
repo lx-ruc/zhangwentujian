@@ -141,10 +141,14 @@ body {
 .back.ghost { visibility: hidden; }
 .nav .title { font-family: var(--font-display); font-weight: 900; font-size: 17px; }
 .viewfinder {
-  position: relative; flex: 1; min-height: 250px; background: #26211A;
-  border-radius: 10px; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  position: relative; width: 295px; height: 300px; margin: 6px auto;
+  background: #14100C; border-radius: 10px; overflow: hidden;
 }
+.vf-mask {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+.vf-mask.mirror { transform: scaleX(-1); }
 .corner { position: absolute; width: 22px; height: 22px; border: 0 solid var(--rule); }
 .corner.tl { top: 12px; left: 12px; border-top-width: 2px; border-left-width: 2px; }
 .corner.tr { top: 12px; right: 12px; border-top-width: 2px; border-right-width: 2px; }
@@ -157,7 +161,6 @@ body {
 }
 @keyframes scan { 0% { top: 12%; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
 .hand-guide { width: 220px; height: 230px; opacity: 0.9; }
-.hand-guide.mirror { transform: scaleX(-1); }
 .vf-hint {
   position: absolute; bottom: 18px; color: var(--paper);
   font-size: 12px; letter-spacing: 1px; opacity: 0.85;
@@ -408,9 +411,8 @@ body {
       </div>
       <div class="viewfinder">
         <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
         <span class="scan"></span>
-        <img class="hand-guide" id="hand-guide" src="../miniprogram/assets/hand-outline.png" />
+        <img class="vf-mask" id="vf-mask-img" src="../miniprogram/assets/vf-mask.png" />
         <span class="vf-hint" id="vf-hint">右手掌心正对镜头 · 五指自然张开</span>
       </div>
       <div class="hand-pick">
@@ -422,9 +424,7 @@ body {
         <div class="tip bad"><span class="tag">TIP · 忌</span>移开戒指、手表等饰品</div>
       </div>
       <div class="shutter-row">
-        <span class="album" onclick="toast('HTML 预览：此处调起相册（真机为系统相册）')">相册</span>
         <span class="shutter" onclick="startAnalyze()"></span>
-        <span class="flip" onclick="startAnalyze()">拍照</span>
       </div>
       <span class="disclaimer">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</span>
     </div>
@@ -664,7 +664,7 @@ function pickHand(el) {
   [...el.parentElement.children].forEach(p => p.classList.remove('on'));
   el.classList.add('on');
   const isLeft = el.dataset.hand === 'left';
-  document.getElementById('hand-guide').classList.toggle('mirror', isLeft);
+  document.getElementById('vf-mask-img').classList.toggle('mirror', isLeft);
   document.getElementById('vf-hint').textContent =
     (isLeft ? '左手' : '右手') + '掌心正对镜头 · 五指自然张开';
 }

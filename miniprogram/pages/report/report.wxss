@@ -275,6 +275,13 @@
 
 /* 操作 */
 .actions { margin-top: 44rpx; }
+/* 分享主按钮：字多保持一行不换行 */
+.actions .cta {
+  font-size: 27rpx;
+  padding: 24rpx 12rpx;
+  white-space: nowrap;
+  overflow: hidden;
+}
 .poster-btn {
   margin-top: 20rpx;
   background: var(--paper);
