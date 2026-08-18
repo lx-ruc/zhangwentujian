@@ -2,6 +2,7 @@
 project.private.config.json
 cloudfunctions/analyze/*.js
 cloudfunctions/analyze/config.json
+cloudbaserc.json
 *.png
 !design/preview.html
 !design/logo.png

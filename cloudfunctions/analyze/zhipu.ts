@@ -46,12 +46,43 @@ export function extractJson(text: string): unknown {
 }
 
 /**
- * 实际调用（fetch 在 Node 18 云函数环境可用）
- * 429（免费模型限流，code 1305）按指数退避重试；其余错误直接抛给上层重试逻辑
+ * 实际调用 —— Node 内置 https（云函数 runtime 为 Node16，无原生 fetch）
+ * 429（免费模型限流）按指数退避重试；其余错误抛给上层重试逻辑
  */
+import * as https from 'https';
+
 const RATE_LIMIT_STATUS = 429;
 const RATE_LIMIT_RETRIES = 3;
 const RATE_LIMIT_BASE_DELAY = 1_000;
+
+interface HttpResult {
+  status: number;
+  body: string;
+}
+
+/** POST JSON（内置 https，兼容 Node16；超时由 req.setTimeout 控制） */
+function postJson(url: string, headers: Record<string, string>, body: string, timeoutMs: number): Promise<HttpResult> {
+  return new Promise((resolve, reject) => {
+    const u = new URL(url);
+    const req = https.request(
+      {
+        hostname: u.hostname,
+        path: u.pathname + u.search,
+        method: 'POST',
+        headers: { ...headers, 'Content-Length': Buffer.byteLength(body) },
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on('data', (c: Buffer) => chunks.push(c));
+        res.on('end', () => resolve({ status: res.statusCode ?? 0, body: Buffer.concat(chunks).toString('utf8') }));
+      },
+    );
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`zhipu timeout after ${timeoutMs}ms`)));
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
 
 export async function callZhipu(
   apiKey: string,
@@ -63,15 +94,15 @@ export async function callZhipu(
     if (attempt > 0) {
       await new Promise((r) => setTimeout(r, RATE_LIMIT_BASE_DELAY * 2 ** (attempt - 1)));
     }
-    const res = await fetch(ZHIPU_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify(buildRequestBody(imageBase64, hand)),
-      signal: AbortSignal.timeout(CONFIG.MODEL_TIMEOUT),
-    });
+    const res = await postJson(
+      ZHIPU_URL,
+      { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      JSON.stringify(buildRequestBody(imageBase64, hand)),
+      CONFIG.MODEL_TIMEOUT,
+    );
     if (res.status === RATE_LIMIT_STATUS && attempt < RATE_LIMIT_RETRIES) continue;
-    if (!res.ok) throw new Error(`zhipu http ${res.status}`);
-    const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    if (res.status !== 200) throw new Error(`zhipu http ${res.status}: ${res.body.slice(0, 200)}`);
+    const data = JSON.parse(res.body) as { choices?: Array<{ message?: { content?: string } }> };
     text = data.choices?.[0]?.message?.content ?? '';
     break;
   }
