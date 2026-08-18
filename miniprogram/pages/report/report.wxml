@@ -9,7 +9,7 @@
           <text class="type-name">{{palmType.name}}</text>
           <text class="type-seal">{{palmType.seal}}</text>
         </view>
-        <text class="type-meta">{{palmType.dominantLabel}}·{{palmType.styleLabel}} · 趣味稀有度 {{palmType.rarity}}</text>
+        <text class="type-meta">{{palmType.dominantLabel}}·{{palmType.styleLabel}} · 掌纹稀有度 {{palmType.rarity}}</text>
         <text class="type-tagline">"{{palmType.tagline}}"</text>
         <text class="type-compat">最合拍：{{palmType.compat[0]}} / {{palmType.compat[1]}}</text>
       </block>
@@ -17,7 +17,7 @@
     </view>
     <view class="score-seal">
       <text class="score">{{funScore}}</text>
-      <text class="score-label">趣味评分</text>
+      <text class="score-label">掌纹评分</text>
     </view>
   </view>
 

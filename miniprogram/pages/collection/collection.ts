@@ -48,7 +48,7 @@ Page({
       this.setData({ showDetail: true, detail: t });
     } else {
       wx.showToast({
-        title: `尚未解锁 · 趣味稀有度 ${t.rarity}`,
+        title: `尚未解锁 · 掌纹稀有度 ${t.rarity}`,
         icon: 'none',
         duration: 1800,
       });

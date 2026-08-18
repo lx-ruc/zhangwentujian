@@ -481,12 +481,12 @@ body {
             <span class="type-name">燎原星火</span>
             <span class="type-seal">燎</span>
           </div>
-          <span class="type-meta">心系·进取 · 趣味稀有度 6%</span>
+          <span class="type-meta">心系·进取 · 掌纹稀有度 6%</span>
           <span class="type-tagline">"爱的时候，是真的烫。"</span>
           <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
           <span class="r-meta">右手 · 巴掌TI 报告</span>
         </div>
-        <div class="score-seal"><span class="score">87</span><span class="score-label">趣味评分</span></div>
+        <div class="score-seal"><span class="score">87</span><span class="score-label">掌纹评分</span></div>
       </div>
       <div class="palm-hero">
         <div class="palm-box">
@@ -729,7 +729,7 @@ const PALM_TYPES = [
     if (!cell) return;
     const t = PALM_TYPES[+cell.dataset.i];
     if (t.on) toast(`${t.no} ${t.name} · ${t.meta}\n"${t.tag}"（真机此处为详情弹层）`);
-    else toast(`尚未解锁 · 趣味稀有度 ${t.rarity}`);
+    else toast(`尚未解锁 · 掌纹稀有度 ${t.rarity}`);
   });
 })();
 </script>

@@ -36,7 +36,7 @@
       <view class="detail-head">
         <view class="detail-left">
           <text class="d-name">{{detail.name}}</text>
-          <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 趣味稀有度 {{detail.rarity}}</text>
+          <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 掌纹稀有度 {{detail.rarity}}</text>
         </view>
         <view class="d-seal">{{detail.seal}}</view>
       </view>

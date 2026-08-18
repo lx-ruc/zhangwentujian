@@ -85,7 +85,7 @@ export function drawPoster(
     ctx.fillStyle = C.ink2;
     ctx.font = `400 28px ${FONT_BODY}`;
     ctx.textAlign = 'center';
-    ctx.fillText(`趣味稀有度 ${data.type.rarity} · "${data.type.tagline}"`, W / 2, 396);
+    ctx.fillText(`掌纹稀有度 ${data.type.rarity} · "${data.type.tagline}"`, W / 2, 396);
     ctx.textAlign = 'left';
   }
 
@@ -201,7 +201,7 @@ function drawSeal(ctx: CanvasRenderingContextLike, cx: number, cy: number, score
   ctx.font = `900 64px ${FONT_SERIF}`;
   ctx.fillText(String(score), 0, -18);
   ctx.font = `400 24px ${FONT_BODY}`;
-  ctx.fillText('趣味评分', 0, 38);
+  ctx.fillText('掌纹评分', 0, 38);
   ctx.restore();
   ctx.textAlign = 'left';
 }
