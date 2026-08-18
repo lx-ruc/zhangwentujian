@@ -1,5 +1,5 @@
 import { DISCLAIMER } from '../../config/index';
-import { shareDefault } from '../../utils/share';
+import { shareDefault, triggerShareBonus } from '../../utils/share';
 import { uploadPalmImage, UploadError } from '../../utils/upload';
 import type { Hand } from '../../types/index';
 
@@ -131,5 +131,5 @@ Page({
 
   goBack() { wx.navigateBack(); },
 
-  onShareAppMessage: () => shareDefault(),
+  onShareAppMessage() { triggerShareBonus('forward'); return shareDefault(); },
 });

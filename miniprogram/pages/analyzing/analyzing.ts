@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config/index';
-import { shareDefault } from '../../utils/share';
+import { shareDefault, triggerShareBonus } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
 import { consumeQuota, normalizeQuotaState } from '../../utils/quota';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
@@ -162,5 +162,5 @@ Page({
     clearTimeout(this.watchdogTimer);
   },
 
-  onShareAppMessage: () => shareDefault(),
+  onShareAppMessage() { triggerShareBonus('forward'); return shareDefault(); },
 });

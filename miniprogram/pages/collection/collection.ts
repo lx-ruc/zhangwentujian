@@ -3,7 +3,7 @@ import { clampScore } from '../../utils/format';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { PALM_TYPE_LIST } from '../../data/palm-types';
 import type { PalmType } from '../../data/palm-types';
-import { shareCollection } from '../../utils/share';
+import { shareCollection, triggerShareBonus } from '../../utils/share';
 import type { AnalysisRecord } from '../../types/index';
 
 interface TypeCard extends PalmType {
@@ -60,6 +60,7 @@ Page({
   goCapture() { wx.redirectTo({ url: '/pages/capture/capture' }); },
 
   onShareAppMessage() {
+    triggerShareBonus('forward');
     return shareCollection(this.data.unlockedCount ?? 0);
   },
 });

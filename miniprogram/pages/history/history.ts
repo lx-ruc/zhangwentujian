@@ -1,6 +1,6 @@
 import { DISCLAIMER } from '../../config/index';
 import { formatDateTime, clampScore } from '../../utils/format';
-import { shareHistory } from '../../utils/share';
+import { shareHistory, triggerShareBonus } from '../../utils/share';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import type { AnalysisRecord } from '../../types/index';
 
@@ -50,5 +50,5 @@ Page({
 
   goCapture() { wx.redirectTo({ url: '/pages/capture/capture' }); },
 
-  onShareAppMessage: () => shareHistory((wx.getStorageSync('reports') || []).length),
+  onShareAppMessage() { triggerShareBonus('forward'); return shareHistory((wx.getStorageSync('reports') || []).length); },
 });

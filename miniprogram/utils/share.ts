@@ -1,6 +1,23 @@
 /**
  * 统一分享配置 —— 全站转发卡片文案（合规：无运/命/吉凶词，钩子化措辞）
  */
+import { CONFIG } from '../config/index';
+import { callFunction } from './request';
+
+/** 分享奖励触发（fire-and-forget：任何页面分享都应调用，云端记账防刷） */
+export async function triggerShareBonus(channel: 'forward' | 'timeline'): Promise<void> {
+  try {
+    const data = await callFunction<{ granted: number; remaining: number }>(CONFIG.FN_ANALYZE, {
+      action: 'shareBonus',
+      channel,
+    });
+    if (data.granted > 0) {
+      wx.showToast({ title: `分享成功 +${data.granted} 次`, icon: 'none' });
+    }
+  } catch {
+    // 奖励失败不阻断分享，静默（下次 onShow 会拉取真实配额）
+  }
+}
 
 interface ShareMessage {
   title: string;

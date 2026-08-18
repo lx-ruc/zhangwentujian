@@ -1,7 +1,7 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
 import { toDimensions, clampScore } from '../../utils/format';
 import { MOCK_REPORT } from '../../utils/mock-report';
-import { shareReport, shareDefault } from '../../utils/share';
+import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
 import { drawPoster, type CanvasRenderingContextLike, type CanvasImageLike } from '../../utils/poster';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import type { PalmType } from '../../data/palm-types';
@@ -88,6 +88,7 @@ Page({
   },
 
   onShareAppMessage() {
+    triggerShareBonus('forward');
     const t = this.data.palmType;
     return t
       ? shareReport(this.data.funScore, t.name, t.rarity, t.code)
@@ -95,6 +96,7 @@ Page({
   },
 
   onShareTimeline() {
+    triggerShareBonus('timeline');
     const t = this.data.palmType;
     const base = t ? shareReport(this.data.funScore, t.name, t.rarity, t.code) : shareDefault();
     return { title: base.title, query: '' };

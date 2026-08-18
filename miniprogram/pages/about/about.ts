@@ -1,5 +1,5 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
-import { shareDefault } from '../../utils/share';
+import { shareDefault, triggerShareBonus } from '../../utils/share';
 
 Page({
   data: {
@@ -8,5 +8,5 @@ Page({
     disclaimer: DISCLAIMER,
   },
 
-  onShareAppMessage: () => shareDefault(),
+  onShareAppMessage() { triggerShareBonus('forward'); return shareDefault(); },
 });
