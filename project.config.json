@@ -13,7 +13,7 @@
     "useCompilerPlugins": [
       "typescript"
     ],
-    "ignoreUploadUnusedFiles": true,
+    "ignoreUploadUnusedFiles": false,
     "packNpmManually": false,
     "urlCheck": true,
     "compileWorklet": false,
