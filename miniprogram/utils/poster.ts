@@ -50,6 +50,16 @@ export function drawPoster(
   ctx.lineWidth = 1;
   strokeRect(ctx, 42, 42, W - 84, H - 84);
 
+  // 手掌设计：居中大水印（图鉴纸纹质感，海报核心视觉）
+  if (image) {
+    ctx.save();
+    ctx.globalAlpha = 0.09;
+    const mw = 640;
+    const mh = mw * (image.height / image.width);
+    ctx.drawImage(image as unknown as CanvasImageSource, (W - mw) / 2, (H - mh) / 2 - 40, mw, mh);
+    ctx.restore();
+  }
+
   // eyebrow
   ctx.fillStyle = C.ink2;
   ctx.font = `500 24px ${FONT_MONO}`;
@@ -127,13 +137,6 @@ export function drawPoster(
       ctx.textAlign = 'left';
       x += widths[i] + 20;
     });
-  }
-
-  // 手掌插画（居中）
-  if (image) {
-    const iw = 300;
-    const ih = iw * (image.height / image.width);
-    ctx.drawImage(image as unknown as CanvasImageSource, (W - iw) / 2, 906, iw, ih);
   }
 
   // 免责（合规三处必放：海报角落）
@@ -238,6 +241,7 @@ export interface CanvasRenderingContextLike {
   font: string;
   textAlign: string;
   textBaseline: string;
+  globalAlpha: number;
   fillRect(x: number, y: number, w: number, h: number): void;
   stroke(): void;
   fill(): void;
