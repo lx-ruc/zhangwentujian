@@ -1,5 +1,5 @@
 .page-capture {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 24rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
@@ -17,10 +17,11 @@
 .back.ghost { visibility: hidden; }
 .title { font-family: var(--font-display); font-weight: 900; font-size: 34rpx; }
 
-/* ===== 取景框 ===== */
+/* ===== 取景框（弹性撑满中段，操作区自然贴底） ===== */
 .viewfinder {
   position: relative;
-  height: 720rpx;
+  flex: 1;
+  min-height: 500rpx;
   background: #26211A;
   border-radius: 20rpx;
   overflow: hidden;
