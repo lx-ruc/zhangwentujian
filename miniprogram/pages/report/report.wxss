@@ -43,7 +43,6 @@
 }
 .tag {
   position: absolute;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: baseline;
   gap: 8rpx;
@@ -68,16 +67,16 @@
 /* 三条线的锚点/引线/标签几何（相对 560×588rpx 手掌盒） */
 /* 情感线：锚(62%,44%) 引线右上 140rpx/-18° 标签(93%,37%) */
 .mk-heart { left: 62.6%; top: 50.2%; }
-.mk-heart .leader { width: 200rpx; transform: rotate(198deg); }
-.mk-heart .tag { left: -276rpx; top: -90rpx; }
+.mk-heart .leader { width: 185rpx; transform: rotate(198deg); }
+.mk-heart .tag { left: -176rpx; top: -57rpx; transform: translate(-100%, -50%); }
 /* 思维线：锚(58%,56%) 引线右 8° 标签(92%,60%) */
 .mk-head { left: 60.2%; top: 56.5%; }
-.mk-head .leader { width: 200rpx; transform: rotate(164deg); }
-.mk-head .tag { left: -278rpx; top: 80rpx; }
+.mk-head .leader { width: 170rpx; transform: rotate(164deg); }
+.mk-head .tag { left: -163rpx; top: -47rpx; transform: translate(-100%, -50%); }
 /* 活力线：锚(46%,64%) 引线左下 标签左侧 */
 .mk-life { left: 55.2%; top: 65.4%; }
-.mk-life .leader { width: 180rpx; transform: rotate(22deg); }
-.mk-life .tag { left: 246rpx; top: 99rpx; }
+.mk-life .leader { width: 130rpx; transform: rotate(22deg); }
+.mk-life .tag { left: 120rpx; top: 49rpx; transform: translate(0, -50%); }
 
 /* ===== 头部 ===== */
 .head {
