@@ -5,7 +5,7 @@ export const CONFIG = {
   /** 云函数名 */
   FN_ANALYZE: 'analyze',
   /** 模型标识（展示用，实际调用在云端） */
-  MODEL_VERSION: 'glm-4v-flash',
+  MODEL_VERSION: 'glm-4.6v-flash',
   /** 模型超时（ms），云函数侧同步配置 */
   MODEL_TIMEOUT: 30_000,
   /** 分析页趣味知识轮播间隔（ms） */

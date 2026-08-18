@@ -12,6 +12,8 @@ interface ZhipuRequestBody {
   model: string;
   messages: Array<Record<string, unknown>>;
   temperature: number;
+  /** GLM-4.6V 默认走思考模式（先长篇推理再作答），本场景要快速出 JSON，必须显式关闭 */
+  thinking: { type: 'enabled' | 'disabled' };
   response_format?: { type: string };
 }
 
@@ -29,6 +31,7 @@ export function buildRequestBody(imageBase64: string, hand: string): ZhipuReques
       },
     ],
     temperature: 0.7,
+    thinking: { type: 'disabled' },
   };
 }
 
@@ -42,21 +45,36 @@ export function extractJson(text: string): unknown {
   return JSON.parse(candidate.slice(start, end + 1));
 }
 
-/** 实际调用（Phase 2 联调时接通；fetch 在 Node 18 云函数环境可用） */
+/**
+ * 实际调用（fetch 在 Node 18 云函数环境可用）
+ * 429（免费模型限流，code 1305）按指数退避重试；其余错误直接抛给上层重试逻辑
+ */
+const RATE_LIMIT_STATUS = 429;
+const RATE_LIMIT_RETRIES = 3;
+const RATE_LIMIT_BASE_DELAY = 1_000;
+
 export async function callZhipu(
   apiKey: string,
   imageBase64: string,
   hand: string,
 ): Promise<{ text: string; report: unknown }> {
-  const res = await fetch(ZHIPU_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify(buildRequestBody(imageBase64, hand)),
-    signal: AbortSignal.timeout(CONFIG.MODEL_TIMEOUT),
-  });
-  if (!res.ok) throw new Error(`zhipu http ${res.status}`);
-  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  const text = data.choices?.[0]?.message?.content ?? '';
+  let text = '';
+  for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, RATE_LIMIT_BASE_DELAY * 2 ** (attempt - 1)));
+    }
+    const res = await fetch(ZHIPU_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify(buildRequestBody(imageBase64, hand)),
+      signal: AbortSignal.timeout(CONFIG.MODEL_TIMEOUT),
+    });
+    if (res.status === RATE_LIMIT_STATUS && attempt < RATE_LIMIT_RETRIES) continue;
+    if (!res.ok) throw new Error(`zhipu http ${res.status}`);
+    const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    text = data.choices?.[0]?.message?.content ?? '';
+    break;
+  }
   return { text, report: extractJson(text) };
 }
 

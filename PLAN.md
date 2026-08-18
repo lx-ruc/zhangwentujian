@@ -129,7 +129,7 @@ pages/about      关于页：免责声明全文 + 隐私说明
   result: {             // 模型输出，schema 校验后落库
     summary, personality: [], career, love, wealth, funScore, advice: []
   },
-  modelVersion: 'glm-4v-flash',
+  modelVersion: 'glm-4.6v-flash',
   createdAt
 }
 ```
