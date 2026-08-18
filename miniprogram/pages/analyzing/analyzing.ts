@@ -1,8 +1,7 @@
 import { CONFIG } from '../../config/index';
 import { shareDefault } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
-import { consumeQuota, initialQuotaState, type QuotaState } from '../../utils/quota';
-import { MOCK_REPORT } from '../../utils/mock-report';
+import { todayKey, type QuotaState } from '../../utils/quota';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 /** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
@@ -38,7 +37,7 @@ Page({
       handText: app.globalData.pendingHand === 'left' ? '左手' : '右手',
     });
 
-    // 云函数真实调用：未部署/失败时自动降级 mock（前端零改动等 Phase 2 接通）
+    // 云函数真实调用（失败在 finish 统一兜底提示）
     this.reportPromise = this.fetchReport();
 
     const startedAt = Date.now();
@@ -58,22 +57,29 @@ Page({
 
   async fetchReport(): Promise<ReportResult> {
     const app = getApp();
+    const fileID = app.globalData.pendingFileID;
     try {
-      const data = await callFunction<{ report: ReportResult }>(CONFIG.FN_ANALYZE, {
+      if (!fileID) throw new RequestError('UNKNOWN', '缺少图片，请重新拍摄');
+      const data = await callFunction<{ report: ReportResult; remaining?: number }>(CONFIG.FN_ANALYZE, {
         action: 'analyze',
-        // Phase 2：换 fileID（wx.cloud.uploadFile 之后）
-        imageLocal: true,
+        fileID,
         hand: app.globalData.pendingHand,
       });
+      // 云端权威配额回写本地展示层
+      if (typeof data.remaining === 'number') {
+        const used = Math.max(0, CONFIG.DAILY_QUOTA - data.remaining);
+        const state: QuotaState = { dailyCount: used, lastUsedDate: todayKey() };
+        wx.setStorageSync('quota', state);
+      }
       return data.report;
     } catch (err) {
-      // 云函数未部署 / 无 Key / 网络——本地降级，保证链路可体验
+      // 配额用尽/服务异常：不降级 mock（真实数据才有意义），上抛给 finish 统一处理
       if (err instanceof RequestError) {
-        console.warn('[analyzing] 云端不可用，降级 mock：', err.code);
-      } else {
-        console.warn('[analyzing] 未知错误，降级 mock：', err);
+        console.warn('[analyzing] 云端返回错误：', err.code);
+        throw err;
       }
-      return MOCK_REPORT;
+      console.warn('[analyzing] 未知错误：', err);
+      throw new RequestError('UNKNOWN', '出了点小问题，请重试');
     }
   },
 
@@ -82,7 +88,16 @@ Page({
     this.setData({ done: true });
 
     const app = getApp();
-    const report = await this.reportPromise!.catch(() => MOCK_REPORT);
+    const report = await this.reportPromise!.catch((err: unknown) => {
+      // 失败回拍摄页并给出可读原因（不进报告页、不落假记录）
+      const msg = err instanceof RequestError ? err.userMessage : '出了点小问题，请重试';
+      wx.showToast({ title: msg, icon: 'none', duration: 2500 });
+      setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1200);
+      this.clearPending();
+      return null;
+    });
+    if (!report) return;
+
     const record: AnalysisRecord = {
       _id: `local-${Date.now()}`,
       hand: app.globalData.pendingHand,
@@ -92,17 +107,19 @@ Page({
     };
     this.saveRecord(record);
 
-    // 消耗本地配额（权威配额在云端，Phase 2 对齐）
-    const q: QuotaState = wx.getStorageSync('quota') || initialQuotaState();
-    wx.setStorageSync('quota', consumeQuota(q));
-
     app.globalData.pendingReport = report;
     app.globalData.reportId = record._id;
-    // 手掌图即焚：用完立刻清引用
-    app.globalData.pendingImage = '';
-    this.setData({ handImage: '' });
+    this.clearPending();
 
     wx.redirectTo({ url: '/pages/report/report' });
+  },
+
+  /** 手掌图即焚：本地预览路径与云 fileID 引用一并清空 */
+  clearPending() {
+    const app = getApp();
+    app.globalData.pendingImage = '';
+    app.globalData.pendingFileID = '';
+    this.setData({ handImage: '' });
   },
 
   saveRecord(record: AnalysisRecord) {

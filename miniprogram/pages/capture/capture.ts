@@ -1,5 +1,6 @@
 import { DISCLAIMER } from '../../config/index';
 import { shareDefault } from '../../utils/share';
+import { uploadPalmImage, UploadError } from '../../utils/upload';
 import type { Hand } from '../../types/index';
 
 Page({
@@ -7,6 +8,7 @@ Page({
     hand: 'right' as Hand,
     disclaimer: DISCLAIMER,
     privacyHint: '',
+    uploading: false,
   },
 
   onLoad() {
@@ -31,7 +33,6 @@ Page({
     this.setData({ hand: e.currentTarget.dataset.hand as Hand });
   },
 
-  /** Phase 1：直接调起相机/相册拿图，跳分析页；Phase 2 换成 wx.cloud.uploadFile */
   shoot() {
     this.choose(['camera', 'album']);
   },
@@ -39,6 +40,7 @@ Page({
     this.choose(['album']);
   },
   choose(sources: string[]) {
+    if (this.data.uploading) return;
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
@@ -51,9 +53,7 @@ Page({
           wx.showToast({ title: '图片过小，建议重拍', icon: 'none' });
           return;
         }
-        getApp().globalData.pendingImage = file.tempFilePath;
-        getApp().globalData.pendingHand = this.data.hand;
-        wx.navigateTo({ url: '/pages/analyzing/analyzing' });
+        this.submit(file.tempFilePath);
       },
       fail: (err) => {
         console.error('[chooseMedia]', err.errMsg);
@@ -66,6 +66,26 @@ Page({
         wx.showToast({ title: msg, icon: 'none', duration: 2500 });
       },
     });
+  },
+
+  /** 选图完成：上传云存储拿 fileID，成功后才进分析页（失败留在本页 toast） */
+  async submit(localPath: string) {
+    this.setData({ uploading: true });
+    wx.showLoading({ title: '正在上传…', mask: true });
+    try {
+      const fileID = await uploadPalmImage(localPath);
+      const app = getApp();
+      app.globalData.pendingImage = localPath; // 分析页预览用（本地路径，即焚）
+      app.globalData.pendingFileID = fileID; // 云函数入参
+      app.globalData.pendingHand = this.data.hand;
+      wx.navigateTo({ url: '/pages/analyzing/analyzing' });
+    } catch (err) {
+      const msg = err instanceof UploadError ? err.userMessage : '上传失败，请重试';
+      wx.showToast({ title: msg, icon: 'none', duration: 2500 });
+    } finally {
+      wx.hideLoading();
+      this.setData({ uploading: false });
+    }
   },
 
   goBack() { wx.navigateBack(); },

@@ -13,11 +13,17 @@
     "jest": "^29.7.0",
     "miniprogram-api-typings": "^3.12.0",
     "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "wx-server-sdk": "^4.0.2"
   },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["<rootDir>/tests/**/*.test.ts"]
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.ts"
+    ],
+    "moduleNameMapper": {
+      "^wx-server-sdk$": "<rootDir>/node_modules/wx-server-sdk"
+    }
   }
 }

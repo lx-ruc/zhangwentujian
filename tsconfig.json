@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["ES2020", "DOM"],
-    "types": ["miniprogram-api-typings", "jest"],
+    "types": ["miniprogram-api-typings", "jest", "node"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["miniprogram/*"]
