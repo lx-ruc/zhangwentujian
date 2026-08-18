@@ -2,8 +2,7 @@
   <!-- 头部：标题 + 评分印章 -->
   <view class="head">
     <view class="head-text">
-      <text class="eyebrow">READING COMPLETE</text>
-      <text class="title">解读完成</text>
+      <text class="eyebrow">PALM FIELD GUIDE · 巴掌TI 报告</text>
       <block wx:if="{{palmType}}">
         <view class="type-badge">
           <text class="type-no">{{palmType.no}} · {{palmType.code}}</text>
