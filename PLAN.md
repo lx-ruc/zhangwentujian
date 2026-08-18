@@ -102,10 +102,11 @@
 
 ```
 pages/index      首页：品牌头图 + 拍照入口 + 今日剩余次数 + 免责声明
-pages/capture    拍摄页：相机/相册 + 手掌引导框
-pages/analyzing  分析中：动画 + 轮播文案
-pages/report     报告页：四维卡片 + 分享按钮 + 历史入口
-pages/history    历史列表
+pages/capture    拍摄页：相机/相册 + 手掌引导框（左右手切换实时镜像，引导图为镜头视角）
+pages/analyzing  分析中：用户照片+扫描线 + 轮播文案（云函数真实调用，未部署自动降级 mock）
+pages/report     报告页：图鉴类型徽章 + 三主线 + 四维 + 场景速读 + 分享/海报
+pages/history    历史列表（本地存储，Phase 2 接云端）
+pages/collection 图鉴收集页：12 型网格 + 解锁判定 + 详情弹层
 pages/about      关于页：免责声明全文 + 隐私说明
 ```
 
@@ -160,10 +161,16 @@ zhangwentujian/
 ├── miniprogram/
 │   ├── app.ts / app.json / app.wxss
 │   ├── config/index.ts            # 常量：每日次数、超时、版本
+│   ├── data/palm-types.ts         # 掌纹人格图鉴 12 型数据（产品核心资产）
+│   ├── types/index.ts             # 数据模型（报告/记录/场景）
 │   ├── utils/
 │   │   ├── request.ts             # 云函数调用封装（统一错误处理）
 │   │   ├── quota.ts               # 次数计算（纯函数，可单测）
-│   │   └── format.ts              # 报告数据格式化（纯函数，可单测）
+│   │   ├── format.ts              # 报告数据格式化（纯函数，可单测）
+│   │   ├── classify.ts            # 三线数值→图鉴类型（确定性纯函数）
+│   │   ├── share.ts               # 全站分享文案（类型+稀有度钩子）
+│   │   ├── poster.ts              # Canvas 海报绘制（宣纸图鉴风）
+│   │   └── mock-report.ts         # 云端不可用时的本地降级报告
 │   └── pages/...
 ├── cloudfunctions/
 │   └── analyze/
@@ -191,6 +198,14 @@ zhangwentujian/
 - [x] 项目初始化（TS + 目录结构 + 统一 request 封装）；typecheck 双端零错误，jest 26/26 通过
 - [x] 6 个页面静态布局 + 路由跳转（index/capture/analyzing/report/history/about，图鉴风 1:1 还原；report 用 mock 数据）→ **待微信开发者工具真机预览确认视觉**
 - [x] 视觉风格：宣纸/墨/朱砂「图鉴」风（2026-08-17 定稿，见 design/preview.html——衬线标题、印章评分、界格线；朱砂色仅用于主线/印章/CTA。原「星空紫/暗金」方案作废）
+
+### Phase 1.5 · 体验与传播层（8/17-8/18 提前交付，原计划外增量）
+- [x] **掌纹人格图鉴 12 型体系**（对标 MBTI 传播机制）：`data/palm-types.ts`（12 型：编号/命名/趣味稀有度/tagline/相性/印章字）+ `utils/classify.ts`（三线数值→类型的本地确定性纯函数，**模型不参与分类**，集合封闭可控，43 项单测锁边界）
+- [x] 图鉴收集页：历史记录推导解锁、12 型网格（未解锁显示稀有度钓鱼）、详情弹层、收集进度分享文案
+- [x] 报告场景速读：工作/生活/身心三场景（特质+注意事项）；身心维度仅生活方式层（合规硬边界写进 prompt）
+- [x] 全页面统一分享（utils/share.ts：类型+稀有度钩子文案）+ Canvas 分享海报（宣纸图鉴风，类型名上墙，可存相册）
+- [x] 前端数据链路本地闭环：真图进分析页 → 云函数调用（未部署自动降级 mock）→ 报告落本地库（上限20条）→ 历史真记录 → 配额真实消耗
+- [x] HTML 交互预览版（design/app-preview.html，7 屏手机壳，样式 1:1 翻译）
 
 ### Phase 2 · 核心链路（8/25-8/30）
 - [ ] 拍照/上传 → 云存储 → 云函数 → 智谱 → 报告落库 全链路

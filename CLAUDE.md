@@ -26,6 +26,9 @@ Key decisions that span multiple files:
 - **Images are ephemeral**: palm photos are deleted from cloud storage immediately after analysis. DB stores text reports only. Never add code that persists photos.
 - **Daily quota** (3/day per openid) enforced in cloud function `quota.ts`, mirrored client-side in `miniprogram/utils/quota.ts` — keep both pure functions with unit tests.
 - **Model output is untrusted**: `cloudfunctions/analyze/validate.ts` must schema-validate the LLM's JSON and keyword-filter banned terms before persistence. On failure: retry once, then serve fallback copy — never a blank screen.
+- **Palm-type collection (core viral asset)**: 12 archetypes in `miniprogram/data/palm-types.ts` (No.01-12, rarity, tagline, compat). Classification is a LOCAL deterministic pure function (`utils/classify.ts`: dominant line × style) — the model NEVER classifies; it only produces line scores + descriptions. Type set is closed and test-locked.
+- **Share system**: all copy in `utils/share.ts` (hooks: type name + rarity). Canvas poster in `utils/poster.ts` (paper/ink/cinnabar style; disclaimer required on poster).
+- **Local data loop (until Phase 2)**: reports persist to storage `reports` (max 20), quota in storage `quota`; `utils/mock-report.ts` is the fallback when cloud fn is undeployed.
 - **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
 - **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: 掌纹测运.
 
