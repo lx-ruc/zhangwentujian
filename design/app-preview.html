@@ -218,9 +218,7 @@ body {
 .palm-img { width: 100%; height: 100%; }
 .mark { position: absolute; }
 .dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--cinnabar); transform: translate(-50%, -50%); }
-.leader { position: absolute; background: var(--ink-3); }
-.leader.lv { width: 1px; }
-.leader.lh { height: 1px; }
+.leader { position: absolute; height: 1px; background: var(--ink-3); transform-origin: 0 50%; }
 .tag {
   position: absolute;
   display: flex; align-items: baseline; gap: 4px; white-space: nowrap;
@@ -229,15 +227,14 @@ body {
 .tag-name { font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--ink); }
 .tag-score { font-family: var(--font-mono); font-weight: 700; font-size: 15px; color: var(--cinnabar); }
 .mk-heart { left: 62.6%; top: 50.2%; }
-.mk-heart .leader.lv { height: 36px; left: 0; top: -36px; }
-.mk-heart .leader.lh { width: 108px; left: -108px; top: -36px; }
+.mk-heart .leader { width: 114px; transform: rotate(-161.6deg); }
 .mk-heart .tag { left: -108px; top: -36px; transform: translate(-100%, -50%); }
 .mk-head { left: 60.2%; top: 56.5%; }
-.mk-head .leader { width: 60px; height: 1px; left: 0; top: 0; transform: translateY(-50%); }
-.mk-head .tag { left: 60px; top: 0; transform: translateY(-50%); }
+.mk-head .leader { width: 58px; left: 0; top: 0; transform: rotate(2.9deg); }
+.mk-head .tag { left: 58px; top: 3px; transform: translateY(-50%); }
 .mk-life { left: 55.2%; top: 65.4%; }
-.mk-life .leader { width: 105px; left: -105px; top: 0; transform: translateY(-50%); }
-.mk-life .tag { left: -105px; top: 0; transform: translate(-100%, -50%); }
+.mk-life .leader { width: 88px; left: 0; top: 0; transform: rotate(180deg); }
+.mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
 .r-head {
   display: flex; align-items: center; justify-content: space-between;
   padding-bottom: 16px; border-bottom: 1px solid var(--rule);
@@ -495,7 +492,7 @@ body {
       <div class="palm-hero">
         <div class="palm-box">
           <img class="palm-img" src="../miniprogram/assets/hand-plate.png" />
-          <div class="mark mk-heart"><i class="dot"></i><i class="leader lv"></i><i class="leader lh"></i><span class="tag"><b class="tag-name">情感线</b><b class="tag-score">85</b></span></div>
+          <div class="mark mk-heart"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">情感线</b><b class="tag-score">85</b></span></div>
           <div class="mark mk-head"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">思维线</b><b class="tag-score">72</b></span></div>
           <div class="mark mk-life"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">活力线</b><b class="tag-score">78</b></span></div>
         </div>

@@ -37,11 +37,10 @@
 }
 .leader {
   position: absolute;
+  height: 2rpx;
   background: var(--ink-3);
+  transform-origin: 0 50%;
 }
-/* 折线变体：垂直段 / 水平段（无旋转，零误差） */
-.leader.lv { width: 2rpx; }
-.leader.lh { height: 2rpx; }
 .tag {
   position: absolute;
   display: flex;
@@ -73,8 +72,8 @@
 /* 思维线：向右引出（y 56.5%，与情感线分居两侧） */
 .mk-head { left: 60.2%; top: 56.5%; }
 .mk-head .leader { width: 120rpx; height: 2rpx; left: 0; top: 0; transform: translateY(-50%); }
-.mk-head .tag { left: 120rpx; top: 0; transform: translateY(-50%); }
+.mk-head .tag { left: 116rpx; top: 6rpx; transform: translateY(-50%); }
 /* 活力线：向左下引出（y 65.4%，与情感线同侧但相隔 15% 高度） */
 .mk-life { left: 55.2%; top: 65.4%; }
 .mk-life .leader { width: 210rpx; left: -210rpx; top: 0; transform: translateY(-50%); }
-.mk-life .tag { left: -210rpx; top: 0; transform: translate(-100%, -50%); }
+.mk-life .tag { left: -175rpx; top: 0; transform: translate(-100%, -50%); }

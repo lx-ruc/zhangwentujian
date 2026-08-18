@@ -27,7 +27,7 @@
     <view class="palm-box">
       <image class="palm-img" src="/assets/hand-plate.png" mode="aspectFit" />
       <view class="mark mk-heart">
-        <view class="dot" /><view class="leader lv" /><view class="leader lh" /><view class="tag"><text class="tag-name">情感线</text><text class="tag-score">{{lines[0].score}}</text></view>
+        <view class="dot" /><view class="leader" /><view class="tag"><text class="tag-name">情感线</text><text class="tag-score">{{lines[0].score}}</text></view>
       </view>
       <view class="mark mk-head">
         <view class="dot" /><view class="leader" /><view class="tag"><text class="tag-name">思维线</text><text class="tag-score">{{lines[1].score}}</text></view>
