@@ -1,0 +1,7 @@
+{
+  "timeout": 60,
+  "memorySize": 256,
+  "envVariables": {
+    "ZHIPU_API_KEY": "在此填入智谱 API Key（此文件为模板；真实 config.json 不入库）"
+  }
+}

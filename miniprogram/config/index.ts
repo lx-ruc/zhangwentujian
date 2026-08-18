@@ -4,7 +4,7 @@ export const CONFIG = {
    * 云开发环境 ID（云开发控制台左上角可复制，形如 cloud1-0g…）
    * 留空 = 使用账号默认环境；多环境账号必须填，否则上传/云函数报 env 错误
    */
-  CLOUD_ENV: '',
+  CLOUD_ENV: 'cloud1-d9g41s8gza68b70b8',
   /** 每日免费次数（纯防刷，不收费） */
   DAILY_QUOTA: 3,
   /** 云函数名 */

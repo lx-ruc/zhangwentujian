@@ -6,7 +6,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "test": "jest",
-    "e2e": "node e2e/smoke.js"
+    "e2e": "node e2e/smoke.js",
+    "build:cloud": "tsc -p cloudfunctions/tsconfig.build.json",
+    "deploy:cloud": "npm run build:cloud && /Applications/wechatwebdevtools.app/Contents/MacOS/cli cloud functions deploy --env cloud1-d9g41s8gza68b70b8 --names analyze --project . --remote-npm-install"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
