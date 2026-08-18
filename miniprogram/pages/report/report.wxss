@@ -26,45 +26,58 @@
   width: 100%;
   height: 100%;
 }
-.score-pin {
+/* 图鉴式引线标注：dot 锚点 → leader 细线 → tag 标签（两侧留白不遮线） */
+.mark { position: absolute; }
+.dot {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 12rpx; height: 12rpx;
+  border-radius: 50%;
+  background: var(--cinnabar);
   transform: translate(-50%, -50%);
 }
-.pin-score {
-  min-width: 56rpx;
-  height: 56rpx;
-  padding: 0 6rpx;
-  border-radius: 50%;
-  background: transparent;
-  border: 4rpx solid var(--cinnabar);
-  color: var(--cinnabar);
+.leader {
+  position: absolute;
+  height: 2rpx;
+  background: var(--ink-3);
+  transform-origin: 0 50%;
+}
+.tag {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  white-space: nowrap;
+  background: var(--paper);
+  border: 1rpx solid var(--rule);
+  border-radius: 8rpx;
+  padding: 6rpx 16rpx;  /* 两侧留白 */
+}
+.tag-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24rpx;
+  color: var(--ink);
+}
+.tag-score {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 28rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* 纸色多重描边：空心数字在线条上保持可读 */
-  text-shadow:
-    -2rpx 0 var(--paper), 2rpx 0 var(--paper),
-    0 -2rpx var(--paper), 0 2rpx var(--paper);
+  font-size: 30rpx;
+  color: var(--cinnabar);
 }
-.pin-name {
-  margin-top: 6rpx;
-  font-size: 19rpx;
-  color: var(--ink-2);
-  background: var(--paper);
-  padding: 2rpx 10rpx;
-  border-radius: 6rpx;
-  border: 1rpx solid var(--rule);
-}
-/* 三线在插画上的实测位置（图 722×757 内相对坐标） */
-.pin-heart { left: 62%; top: 46%; }
-.pin-head { left: 60%; top: 57%; }
-.pin-life { left: 53%; top: 70%; }
+/* 三条线的锚点/引线/标签几何（相对 560×588rpx 手掌盒） */
+/* 情感线：锚(62%,44%) 引线右上 140rpx/-18° 标签(93%,37%) */
+.mk-heart { left: 62%; top: 44%; }
+.mk-heart .leader { width: 150rpx; transform: rotate(-18deg); }
+.mk-heart .tag { left: 209rpx; top: -68rpx; }
+/* 思维线：锚(58%,56%) 引线右 8° 标签(92%,60%) */
+.mk-head { left: 58%; top: 56%; }
+.mk-head .leader { width: 160rpx; transform: rotate(8deg); }
+.mk-head .tag { left: 228rpx; top: 32rpx; }
+/* 活力线：锚(46%,64%) 引线左下 标签左侧 */
+.mk-life { left: 46%; top: 64%; }
+.mk-life .leader { width: 150rpx; transform: rotate(162deg); }
+.mk-life .tag { left: -209rpx; top: 68rpx; }
 
 /* ===== 头部 ===== */
 .head {
