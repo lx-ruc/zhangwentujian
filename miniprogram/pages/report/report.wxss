@@ -84,8 +84,8 @@
 .right-hand .mk-heart .leader { width: 236rpx; transform: rotate(-23.8deg); }
 .right-hand .mk-heart .tag { left: 216rpx; top: -95rpx; transform: translate(0, -50%); }
 .right-hand .mk-head { left: 39.8%; top: 56.5%; }
-.right-hand .mk-head .leader { width: 145rpx; transform: rotate(177.7deg); }
-.right-hand .mk-head .tag { left: -144rpx; top: 6rpx; transform: translate(-100%, -50%); }
+.right-hand .mk-head .leader { width: 128rpx; transform: rotate(177.4deg); }
+.right-hand .mk-head .tag { left: -128rpx; top: 6rpx; transform: translate(-100%, -50%); }
 .right-hand .mk-life { left: 44.8%; top: 65.4%; }
 .right-hand .mk-life .leader { width: 208rpx; transform: rotate(0deg); }
 .right-hand .mk-life .tag { left: 208rpx; top: 0; transform: translateY(-50%); }
