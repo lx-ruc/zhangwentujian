@@ -36,15 +36,18 @@
   width: 100%;
   height: 100%;
 }
-/* 引导轮廓叠加在相机画面上（透明底） */
+/* 引导轮廓叠加在相机画面上（透明底，尽量撑满取景框） */
 .guide-overlay {
   position: absolute;
-  width: 440rpx;
-  height: 460rpx;
-  opacity: 0.85;
+  left: 50%;
+  top: 50%;
+  width: 600rpx;
+  height: 700rpx;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
   pointer-events: none;
 }
-.guide-overlay.mirror { transform: scaleX(-1); }
+.guide-overlay.mirror { transform: translate(-50%, -50%) scaleX(-1); }
 /* 权限被拒占位 */
 .cam-placeholder {
   position: absolute;
