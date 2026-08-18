@@ -23,6 +23,8 @@ interface AnalyzeResult {
   remaining?: number;
   /** 兜底标记：前端可据此提示"建议重拍" */
   fallback?: boolean;
+  /** 兜底原因（诊断用，无敏感信息） */
+  debugError?: string;
 }
 
 const db = cloud.database();
@@ -85,7 +87,7 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     const imageBase64 = await downloadAsBase64(event.fileID);
 
     // 3~4) 模型 + 校验（失败重试 1 次），两次不过 → 兜底（不白屏）
-    const { report, fallback } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
+    const { report, fallback, lastError } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
 
     // 5) 落库（只存文本，绝不存图片/base64）
     const record = {
@@ -105,7 +107,7 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     // 7) 图片即焚（无论成败，走到这里分析已结束）
     await safeDeleteFile(event.fileID);
 
-    return ok({ report, remaining: Math.max(0, CONFIG.DAILY_QUOTA - next.dailyCount), fallback });
+    return ok({ report, remaining: Math.max(0, CONFIG.DAILY_QUOTA - next.dailyCount), fallback, debugError: lastError });
   } catch (e) {
     console.error('[analyze]', e);
     // 未知异常也尝试清理图片（防泄漏）
@@ -119,7 +121,7 @@ async function analyzeWithRetry(
   apiKey: string,
   imageBase64: string,
   hand: string,
-): Promise<{ report: ReportShape; fallback: boolean }> {
+): Promise<{ report: ReportShape; fallback: boolean; lastError?: string }> {
   let lastError = '';
   for (let attempt = 0; attempt <= CONFIG.MAX_RETRIES; attempt++) {
     try {
@@ -134,7 +136,7 @@ async function analyzeWithRetry(
     }
   }
   console.error(`[analyze] 进入兜底: ${lastError}`);
-  return { report: FALLBACK_REPORT, fallback: true };
+  return { report: FALLBACK_REPORT, fallback: true, lastError: lastError.slice(0, 200) };
 }
 
 /** 从模型回复提取 JSON 文本（zhipu.extractJson 抛错场景在此兼容） */

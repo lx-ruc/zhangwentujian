@@ -4,7 +4,7 @@ export const CONFIG = {
   /** GLM-4.6V-Flash：免费、128K 上下文；docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash */
   MODEL: 'glm-4.6v-flash',
   /** 模型请求超时 ms */
-  MODEL_TIMEOUT: 30_000,
+  MODEL_TIMEOUT: 45_000,
   /** JSON 解析失败重试次数 */
   MAX_RETRIES: 1,
   /** 集合名 */

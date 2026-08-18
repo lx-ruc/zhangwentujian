@@ -69,7 +69,7 @@ Page({
     }
     const ctx = wx.createCameraContext();
     ctx.takePhoto({
-      quality: 'high',
+      quality: 'normal', // high 原图过大：base64 后模型链路易超时
       success: (res) => {
         if (!res.tempImagePath) {
           wx.showToast({ title: '拍摄失败，请重试', icon: 'none' });
