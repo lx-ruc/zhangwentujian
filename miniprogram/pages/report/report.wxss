@@ -81,11 +81,11 @@
 .mk-life .tag { left: -175rpx; top: 0; transform: translate(-100%, -50%); }
 /* ===== 右手版标注几何（镜像后线位 x→100-x，引线方向反转） ===== */
 .right-hand .mk-heart { left: 37.4%; top: 50.2%; }
-.right-hand .mk-heart .leader { width: 228rpx; transform: rotate(-18.4deg); }
-.right-hand .mk-heart .tag { left: 216rpx; top: -72rpx; transform: translate(0, -50%); }
+.right-hand .mk-heart .leader { width: 236rpx; transform: rotate(-23.8deg); }
+.right-hand .mk-heart .tag { left: 216rpx; top: -95rpx; transform: translate(0, -50%); }
 .right-hand .mk-head { left: 39.8%; top: 56.5%; }
-.right-hand .mk-head .leader { width: 117rpx; transform: rotate(177.1deg); }
-.right-hand .mk-head .tag { left: -116rpx; top: 6rpx; transform: translate(-100%, -50%); }
+.right-hand .mk-head .leader { width: 145rpx; transform: rotate(177.7deg); }
+.right-hand .mk-head .tag { left: -144rpx; top: 6rpx; transform: translate(-100%, -50%); }
 .right-hand .mk-life { left: 44.8%; top: 65.4%; }
-.right-hand .mk-life .leader { width: 175rpx; transform: rotate(0deg); }
-.right-hand .mk-life .tag { left: 175rpx; top: 0; transform: translateY(-50%); }
+.right-hand .mk-life .leader { width: 208rpx; transform: rotate(0deg); }
+.right-hand .mk-life .tag { left: 208rpx; top: 0; transform: translateY(-50%); }
