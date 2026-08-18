@@ -9,6 +9,11 @@ Page({
     disclaimer: DISCLAIMER,
     privacyHint: '',
     uploading: false,
+    /** 相机异常（权限被拒/组件错误）→ 显示占位并回退系统拍摄 */
+    cameraBroken: false,
+    /** 明确被用户拒绝授权 → 显示"去开启"按钮 */
+    cameraDenied: false,
+    cameraPos: 'back' as 'back' | 'front',
   },
 
   onLoad() {
@@ -33,9 +38,52 @@ Page({
     this.setData({ hand: e.currentTarget.dataset.hand as Hand });
   },
 
-  shoot() {
-    this.choose(['camera', 'album']);
+  // ===== 内嵌相机 =====
+  onCameraError(e: WechatMiniprogram.CustomEvent<{ errMsg?: string }>) {
+    const msg = String((e.detail as { errMsg?: string })?.errMsg || '');
+    console.error('[camera]', msg);
+    // 授权被拒：显示"去开启"占位；其他错误（模拟器等）：保留黑框，快门自动回退系统拍摄
+    this.setData({ cameraDenied: /auth|deny/i.test(msg), cameraBroken: true });
   },
+
+  openSetting() {
+    wx.openSetting({
+      success: (res) => {
+        // 用户在设置页开回权限 → 重建 camera 组件
+        if (res.authSetting['scope.camera']) {
+          this.setData({ cameraDenied: false, cameraBroken: false });
+        }
+      },
+    });
+  },
+
+  flipCamera() {
+    this.setData({ cameraPos: this.data.cameraPos === 'back' ? 'front' : 'back' });
+  },
+
+  /** 红色快门：相机可用直接拍；不可用（模拟器/异常）回退系统拍摄 */
+  shoot() {
+    if (this.data.cameraBroken) {
+      this.choose(['camera', 'album']);
+      return;
+    }
+    const ctx = wx.createCameraContext();
+    ctx.takePhoto({
+      quality: 'high',
+      success: (res) => {
+        if (!res.tempImagePath) {
+          wx.showToast({ title: '拍摄失败，请重试', icon: 'none' });
+          return;
+        }
+        this.submit(res.tempImagePath);
+      },
+      fail: (err) => {
+        console.warn('[takePhoto] 回退系统拍摄：', err.errMsg);
+        this.choose(['camera', 'album']);
+      },
+    });
+  },
+
   chooseAlbum() {
     this.choose(['album']);
   },

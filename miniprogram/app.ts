@@ -1,4 +1,5 @@
 // app entry: global lifecycle only; keep pages self-contained
+import { CONFIG } from './config/index';
 import type { ReportResult } from './types/index';
 
 interface GlobalData {
@@ -30,6 +31,7 @@ App<{
       console.error('基础库版本过低，请升级微信后使用');
       return;
     }
-    wx.cloud.init({ traceUser: true });
+    // 多环境账号必须显式指定 env，否则云存储上传/云函数调用会落到错误环境而失败
+    wx.cloud.init({ traceUser: true, env: CONFIG.CLOUD_ENV || undefined });
   },
 });

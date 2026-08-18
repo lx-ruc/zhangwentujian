@@ -6,12 +6,30 @@
     <text class="back ghost">‹</text>
   </view>
 
-  <!-- 取景框 -->
+  <!-- 取景框：内嵌相机，黑框即实时取景 -->
   <view class="viewfinder">
+    <camera
+      wx:if="{{!cameraBroken}}"
+      class="camera"
+      device-position="{{cameraPos}}"
+      flash="off"
+      resolution="high"
+      frame-size="medium"
+      binderror="onCameraError"
+    />
+
+    <!-- 相机不可用占位（权限被拒 / 模拟器） -->
+    <view wx:if="{{cameraDenied}}" class="cam-placeholder">
+      <text class="cam-tip">相机权限未开启</text>
+      <button class="cam-setting-btn" bindtap="openSetting">去开启相机权限</button>
+      <text class="cam-tip-sub">开启后返回本页即可实时取景</text>
+    </view>
+
+    <!-- 叠加层：引导轮廓（透明底）+ 四角 + 扫描线 -->
+    <image class="guide-overlay {{hand === 'left' ? 'mirror' : ''}}" src="/assets/hand-outline-tp.png" mode="aspectFit" />
     <view class="corner tl" /><view class="corner tr" />
     <view class="corner bl" /><view class="corner br" />
-    <view class="scan" />
-    <image class="hand-guide {{hand === 'left' ? 'mirror' : ''}}" src="/assets/hand-outline.png" mode="aspectFit" />
+    <view class="scan" wx:if="{{!cameraBroken}}" />
     <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
   </view>
 
@@ -31,7 +49,7 @@
   <view class="shutter-row">
     <text class="album" bindtap="chooseAlbum">相册</text>
     <view class="shutter" bindtap="shoot" />
-    <text class="flip" bindtap="shoot">拍照</text>
+    <text class="flip" bindtap="flipCamera">翻转</text>
   </view>
 
   <text wx:if="{{privacyHint}}" class="privacy-hint">{{privacyHint}}</text>

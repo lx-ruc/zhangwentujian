@@ -30,9 +30,11 @@ export function uploadPalmImage(filePath: string): Promise<string> {
         resolve(res.fileID);
       },
       fail: (err) => {
+        // errMsg 摘要透出：env 相关错误 = 云环境 ID 未配置/不匹配（见 config CLOUD_ENV）
+        const brief = (err.errMsg || '').slice(0, 60);
         const msg = /env|init/i.test(err.errMsg)
-          ? '云环境未就绪，请稍后重试'
-          : '上传失败，请检查网络后重试';
+          ? `云环境未就绪(${brief})：请检查 config 的 CLOUD_ENV`
+          : `上传失败(${brief})，请检查网络后重试`;
         reject(new UploadError(msg, err));
       },
     });
