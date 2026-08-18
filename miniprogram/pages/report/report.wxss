@@ -36,17 +36,21 @@
 .pin-score {
   min-width: 56rpx;
   height: 56rpx;
-  padding: 0 8rpx;
+  padding: 0 6rpx;
   border-radius: 50%;
-  background: var(--cinnabar);
-  color: var(--paper);
+  background: transparent;
+  border: 4rpx solid var(--cinnabar);
+  color: var(--cinnabar);
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 30rpx;
+  font-size: 28rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba(188, 63, 33, 0.35);
+  /* 纸色多重描边：空心数字在线条上保持可读 */
+  text-shadow:
+    -2rpx 0 var(--paper), 2rpx 0 var(--paper),
+    0 -2rpx var(--paper), 0 2rpx var(--paper);
 }
 .pin-name {
   margin-top: 6rpx;
