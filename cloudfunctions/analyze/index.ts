@@ -197,11 +197,19 @@ async function getUserQuota(openid: string): Promise<UserQuota> {
 /** upsert 用户配额；首次用 add，已有记录用 where().update() */
 async function upsertUserQuota(openid: string, next: UserQuota): Promise<void> {
   const existing = (await users.where({ _openid: openid }).limit(1).get()) as { data?: unknown[] };
-  const payload = { _openid: openid, dailyCount: next.dailyCount, lastUsedDate: next.lastUsedDate, updatedAt: db.serverDate() };
+  // 全字段写入（bonus/bonusDate/shareCounters 缺一不可——漏写会导致分享奖励"内存生效、落库丢失"）
+  const fields = {
+    dailyCount: next.dailyCount,
+    lastUsedDate: next.lastUsedDate,
+    bonus: next.bonus ?? 0,
+    bonusDate: next.bonusDate ?? '',
+    shareCounters: next.shareCounters ?? { forward: 0, timeline: 0 },
+    updatedAt: db.serverDate(),
+  };
   if (existing.data && existing.data.length > 0) {
-    await users.where({ _openid: openid }).update({ data: { dailyCount: next.dailyCount, lastUsedDate: next.lastUsedDate, updatedAt: db.serverDate() } });
+    await users.where({ _openid: openid }).update({ data: fields });
   } else {
-    await users.add({ data: { ...payload, createdAt: db.serverDate() } });
+    await users.add({ data: { _openid: openid, ...fields, createdAt: db.serverDate() } });
   }
 }
 
