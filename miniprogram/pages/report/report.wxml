@@ -1,7 +1,4 @@
 <view class="page-report">
-  <!-- 手掌水印底纹（与海报同视觉语言，垫在最底层） -->
-  <image class="palm-bg" src="/assets/hand-plate.png" mode="aspectFit" />
-
   <!-- 头部：标题 + 评分印章 -->
   <view class="head">
     <view class="head-text">
@@ -25,23 +22,29 @@
     </view>
   </view>
 
+  <!-- 手掌主视觉：三主线分数直接标注在线上 -->
+  <view class="palm-hero">
+    <view class="palm-box">
+      <image class="palm-img" src="/assets/hand-plate.png" mode="aspectFit" />
+      <view class="score-pin pin-heart">
+        <text class="pin-score">{{lines[0].score}}</text>
+        <text class="pin-name">情感线</text>
+      </view>
+      <view class="score-pin pin-head">
+        <text class="pin-score">{{lines[1].score}}</text>
+        <text class="pin-name">思维线</text>
+      </view>
+      <view class="score-pin pin-life">
+        <text class="pin-score">{{lines[2].score}}</text>
+        <text class="pin-name">活力线</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 总评 -->
   <view class="card summary">
     <text class="card-tag">总评 · SUMMARY</text>
     <text class="summary-text">{{summary}}</text>
-  </view>
-
-  <!-- 三大主线 -->
-  <view class="card lines">
-    <text class="card-tag">三大主线 · MAIN LINES</text>
-    <view class="line-row" wx:for="{{lines}}" wx:key="key">
-      <view class="line-head">
-        <text class="line-name">{{item.name}}</text>
-        <text class="line-desc">{{item.desc}}</text>
-        <text class="line-score">{{item.score}}</text>
-      </view>
-      <view class="line-track"><view class="line-fill" style="width: {{item.score}}%" /></view>
-    </view>
   </view>
 
   <!-- 四维速读 -->
