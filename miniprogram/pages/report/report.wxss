@@ -67,15 +67,15 @@
 }
 /* 三条线的锚点/引线/标签几何（相对 560×588rpx 手掌盒） */
 /* 情感线：锚(62%,44%) 引线右上 140rpx/-18° 标签(93%,37%) */
-.mk-heart { left: 62%; top: 48%; }
+.mk-heart { left: 62.6%; top: 50.2%; }
 .mk-heart .leader { width: 140rpx; transform: rotate(198deg); }
 .mk-heart .tag { left: -200rpx; top: -65rpx; }
 /* 思维线：锚(58%,56%) 引线右 8° 标签(92%,60%) */
-.mk-head { left: 60%; top: 55%; }
+.mk-head { left: 60.2%; top: 56.5%; }
 .mk-head .leader { width: 140rpx; transform: rotate(162deg); }
 .mk-head .tag { left: -200rpx; top: 65rpx; }
 /* 活力线：锚(46%,64%) 引线左下 标签左侧 */
-.mk-life { left: 52%; top: 67%; }
+.mk-life { left: 55.2%; top: 65.4%; }
 .mk-life .leader { width: 130rpx; transform: rotate(18deg); }
 .mk-life .tag { left: 185rpx; top: 60rpx; }
 
