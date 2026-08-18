@@ -36,6 +36,7 @@ Page({
   progressTimer: 0 as unknown as ReturnType<typeof setInterval>,
   watchdogTimer: 0 as unknown as ReturnType<typeof setTimeout>,
   settled: false,
+  failReason: '',
 
   onLoad() {
     const app = getApp();
@@ -99,6 +100,9 @@ Page({
       (r) => r,
       (err: unknown) => {
         console.warn('[analyzing] 云端失败：', err instanceof RequestError ? err.code : err);
+        // 保留具体原因（配额用尽/超时/网络），别让通用文案吞掉
+        this.failReason =
+          err instanceof RequestError && err.userMessage ? err.userMessage : '';
         return null;
       },
     );
@@ -117,9 +121,9 @@ Page({
 
     const app = getApp();
     if (!report) {
-      // 失败：不落假记录，回拍摄页并给出可读原因
-      wx.showToast({ title: '解读失败了，请重试一次', icon: 'none', duration: 2200 });
-      setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1200);
+      // 失败：不落假记录，回拍摄页并给出可读原因（配额/超时等具体信息）
+      wx.showToast({ title: this.failReason || '解读失败了，请重试一次', icon: 'none', duration: 2500 });
+      setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1400);
       this.clearPending();
       return;
     }
