@@ -19,8 +19,10 @@
 
   <!-- 底部操作区 -->
   <view class="foot">
-    <button class="cta" bindtap="goCapture">拍摄手掌 · 开始解读</button>
-    <text class="quota-chip">今日还可解读 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
+    <button wx:if="{{!exhausted}}" class="cta" bindtap="goCapture">拍摄手掌 · 开始解读</button>
+    <button wx:else class="cta share-cta" open-type="share">分享解锁更多次数</button>
+    <text class="quota-chip" wx:if="{{!exhausted}}">今日还可解读 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
+    <text class="quota-chip" wx:else>今日次数已用完 · 分享给朋友 +1 次 / 朋友圈 +3 次</text>
     <view class="row-links">
       <text class="link" bindtap="goCollection">图鉴收集</text>
       <text class="sep">·</text>

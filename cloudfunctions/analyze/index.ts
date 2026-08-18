@@ -7,13 +7,14 @@ import * as cloud from 'wx-server-sdk';
 import { CONFIG } from './config';
 import { callZhipu } from './zhipu';
 import { validateReport, type ReportShape } from './validate';
-import { hasQuota, consume, initialUserQuota, todayKey, type UserQuota } from './quota';
+import { hasQuota, consume, grantShareBonus, remainingOf, initialUserQuota, type UserQuota } from './quota';
 
 // DYNAMIC_CURRENT_ENV 运行时为合法 env 标识，wx-server-sdk 2.x typing 误标为 string-only
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 
 interface AnalyzeEvent {
-  action: 'analyze' | 'quota';
+  action: 'analyze' | 'quota' | 'shareBonus';
+  channel?: 'forward' | 'timeline';
   fileID?: string;
   hand?: 'left' | 'right';
 }
@@ -25,6 +26,8 @@ interface AnalyzeResult {
   fallback?: boolean;
   /** 兜底原因（诊断用，无敏感信息） */
   debugError?: string;
+  /** 分享奖励结果 */
+  granted?: number;
 }
 
 const db = cloud.database();
@@ -67,6 +70,15 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     if (event.action === 'quota') {
       const q = await getUserQuota(OPENID);
       return ok({ remaining: remainingOf(q) });
+    }
+
+    // ---- 分享奖励（云端权威防刷：渠道限次 + 每日上限） ----
+    if (event.action === 'shareBonus') {
+      const channel = event.channel === 'timeline' ? 'timeline' : 'forward';
+      const q = await getUserQuota(OPENID);
+      const grant = grantShareBonus(q, channel);
+      if (grant.ok) await upsertUserQuota(OPENID, grant.quota);
+      return ok({ granted: grant.ok ? (channel === 'timeline' ? 3 : 1) : 0, remaining: grant.remaining });
     }
 
     // ---- analyze ----
@@ -170,8 +182,16 @@ async function getUserQuota(openid: string): Promise<UserQuota> {
     .where({ _openid: openid })
     .limit(1)
     .get()) as { data?: Array<Partial<UserQuota>> };
-  const doc = res.data?.[0];
-  return doc ? { dailyCount: doc.dailyCount ?? 0, lastUsedDate: doc.lastUsedDate ?? '' } : initialUserQuota();
+  const doc = res.data?.[0] as Partial<UserQuota> | undefined;
+  return doc
+    ? {
+        dailyCount: doc.dailyCount ?? 0,
+        lastUsedDate: doc.lastUsedDate ?? '',
+        bonus: doc.bonus ?? 0,
+        bonusDate: doc.bonusDate ?? '',
+        shareCounters: doc.shareCounters,
+      }
+    : initialUserQuota();
 }
 
 /** upsert 用户配额；首次用 add，已有记录用 where().update() */
@@ -183,10 +203,6 @@ async function upsertUserQuota(openid: string, next: UserQuota): Promise<void> {
   } else {
     await users.add({ data: { ...payload, createdAt: db.serverDate() } });
   }
-}
-
-function remainingOf(q: UserQuota): number {
-  return q.lastUsedDate === todayKey() ? Math.max(0, CONFIG.DAILY_QUOTA - q.dailyCount) : CONFIG.DAILY_QUOTA;
 }
 
 function ok(data: AnalyzeResult) { return { code: 0, data }; }

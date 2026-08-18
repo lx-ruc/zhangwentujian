@@ -1,7 +1,7 @@
 import { CONFIG } from '../../config/index';
 import { shareDefault } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
-import { todayKey, type QuotaState } from '../../utils/quota';
+import { consumeQuota, normalizeQuotaState } from '../../utils/quota';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 /** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
@@ -86,11 +86,8 @@ Page({
       fileID,
       hand: app.globalData.pendingHand,
     });
-    // 云端权威配额回写本地展示层
-    if (typeof data.remaining === 'number') {
-      const used = Math.max(0, CONFIG.DAILY_QUOTA - data.remaining);
-      wx.setStorageSync('quota', { dailyCount: used, lastUsedDate: todayKey() } as QuotaState);
-    }
+    // 本地乐观消耗一次；云端权威值由首页 onShow 拉取修正
+    wx.setStorageSync('quota', consumeQuota(normalizeQuotaState(wx.getStorageSync('quota'))));
     return data.report;
   },
 

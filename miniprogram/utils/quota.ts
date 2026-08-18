@@ -1,6 +1,6 @@
 /**
- * 每日次数计算 —— 纯函数，无副作用（云函数侧有一份镜像实现）
- * 规则：每自然日（本地时区）重置，每日 DAILY_QUOTA 次。
+ * 每日次数计算 —— 纯函数（展示层；云端为权威判定方，规则见 cloudfunctions/analyze/quota.ts）
+ * 规则：每日基础 3 次 + 分享奖励（转发+1×2/天、朋友圈+3×1/天、每日上限 3）
  */
 
 /** 'YYYY-MM-DD'（本地时区） */
@@ -14,21 +14,39 @@ export function todayKey(now: Date = new Date()): string {
 export interface QuotaState {
   dailyCount: number;
   lastUsedDate: string;
+  /** 今日分享奖励次数 */
+  bonus: number;
+  bonusDate: string;
 }
 
 export const initialQuotaState = (): QuotaState => ({
   dailyCount: 0,
   lastUsedDate: '',
+  bonus: 0,
+  bonusDate: '',
 });
 
-/** 今日剩余次数（跨日自动视为重置） */
+/** 兼容旧缓存（缺 bonus 字段） */
+export function normalizeQuotaState(raw: unknown): QuotaState {
+  const s = (raw || {}) as Partial<QuotaState>;
+  return {
+    dailyCount: typeof s.dailyCount === 'number' ? s.dailyCount : 0,
+    lastUsedDate: typeof s.lastUsedDate === 'string' ? s.lastUsedDate : '',
+    bonus: typeof s.bonus === 'number' ? s.bonus : 0,
+    bonusDate: typeof s.bonusDate === 'string' ? s.bonusDate : '',
+  };
+}
+
+/** 今日剩余次数（含分享奖励，跨日重置） */
 export function remainingQuota(
   state: QuotaState,
   now: Date = new Date(),
   limit: number,
 ): number {
-  if (state.lastUsedDate !== todayKey(now)) return limit;
-  return Math.max(0, limit - state.dailyCount);
+  const today = todayKey(now);
+  const used = state.lastUsedDate === today ? state.dailyCount : 0;
+  const bonus = state.bonusDate === today ? state.bonus : 0;
+  return Math.max(0, limit + bonus - used);
 }
 
 /** 消耗一次后的新状态（不可变，调用方负责先判断 remaining > 0） */
@@ -38,6 +56,6 @@ export function consumeQuota(
 ): QuotaState {
   const today = todayKey(now);
   const base: QuotaState =
-    state.lastUsedDate === today ? state : { dailyCount: 0, lastUsedDate: today };
-  return { dailyCount: base.dailyCount + 1, lastUsedDate: today };
+    state.lastUsedDate === today ? state : { ...state, dailyCount: 0, lastUsedDate: today };
+  return { ...base, dailyCount: base.dailyCount + 1 };
 }
