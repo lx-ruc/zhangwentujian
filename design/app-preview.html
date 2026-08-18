@@ -647,6 +647,14 @@ document.getElementById('switcher').addEventListener('click', e => {
   if (e.target.dataset.p) go(e.target.dataset.p);
 });
 
+// URL hash 直达（如 app-preview.html#report）
+function goFromHash() {
+  const h = location.hash.replace('#', '');
+  if (PAGES.includes(h)) go(h);
+}
+goFromHash();
+window.addEventListener('hashchange', goFromHash);
+
 function startAnalyze() {
   go('analyzing');
   stopTimers();
