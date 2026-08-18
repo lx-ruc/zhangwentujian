@@ -26,6 +26,8 @@
   width: 100%;
   height: 100%;
 }
+/* 右手：插画镜像（拇指右，与拍摄页遮罩同一直觉视角） */
+.palm-img.mirror { transform: scaleX(-1); }
 /* 图鉴式引线标注：dot 锚点 → leader 细线 → tag 标签（两侧留白不遮线） */
 .mark { position: absolute; }
 .dot {
@@ -77,3 +79,13 @@
 .mk-life { left: 55.2%; top: 65.4%; }
 .mk-life .leader { width: 210rpx; left: -210rpx; top: 0; transform: translateY(-50%); }
 .mk-life .tag { left: -175rpx; top: 0; transform: translate(-100%, -50%); }
+/* ===== 右手版标注几何（镜像后线位 x→100-x，引线方向反转） ===== */
+.right-hand .mk-heart { left: 37.4%; top: 50.2%; }
+.right-hand .mk-heart .leader { width: 228rpx; transform: rotate(-18.4deg); }
+.right-hand .mk-heart .tag { left: 216rpx; top: -72rpx; transform: translate(0, -50%); }
+.right-hand .mk-head { left: 39.8%; top: 56.5%; }
+.right-hand .mk-head .leader { width: 117rpx; transform: rotate(177.1deg); }
+.right-hand .mk-head .tag { left: -116rpx; top: 6rpx; transform: translate(-100%, -50%); }
+.right-hand .mk-life { left: 44.8%; top: 65.4%; }
+.right-hand .mk-life .leader { width: 175rpx; transform: rotate(0deg); }
+.right-hand .mk-life .tag { left: 175rpx; top: 0; transform: translateY(-50%); }

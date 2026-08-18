@@ -39,6 +39,7 @@ Page({
     scenes: [] as SceneView[],
     advice: [] as string[],
     handText: '右手',
+    hand: 'right' as 'left' | 'right',
     disclaimer: DISCLAIMER,
     showPoster: false,
     posterReady: false,
@@ -78,6 +79,7 @@ Page({
       scenes: toScenes(report),
       advice: report.advice,
       handText: hand === 'left' ? '左手' : '右手',
+      hand: hand ?? 'right',
       lines: [
         { key: 'heart', name: '情感线', desc: '情感表达', score: lineScores.heart },
         { key: 'head', name: '思维线', desc: '思维风格', score: lineScores.head },
