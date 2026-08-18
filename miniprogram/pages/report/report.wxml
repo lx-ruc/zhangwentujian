@@ -1,4 +1,7 @@
 <view class="page-report">
+  <!-- 手掌水印底纹（与海报同视觉语言，垫在最底层） -->
+  <image class="palm-bg" src="/assets/hand-plate.png" mode="aspectFit" />
+
   <!-- 头部：标题 + 评分印章 -->
   <view class="head">
     <view class="head-text">

@@ -211,7 +211,11 @@ body {
 /* ============ ④ 报告页 ============ */
 .p-report {
   min-height: 100%; display: flex; flex-direction: column;
-  padding: 24px 24px 24px;
+  padding: 24px 24px 24px; position: relative;
+}
+.palm-bg {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -54%);
+  width: 150%; opacity: .05; pointer-events: none;
 }
 .r-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -451,6 +455,7 @@ body {
   <!-- ④ 报告 -->
   <div class="screen" id="s-report">
     <div class="p-report">
+      <img class="palm-bg" src="../miniprogram/assets/hand-plate.png" />
       <div class="r-head">
         <div>
           <span class="r-eyebrow">READING COMPLETE</span>

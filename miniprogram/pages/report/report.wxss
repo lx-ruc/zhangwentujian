@@ -4,6 +4,18 @@
   flex-direction: column;
   padding: 48rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
+  position: relative;
+}
+/* 手掌水印：居中大图极淡，垫底不挡内容 */
+.palm-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -54%);
+  width: 150%;
+  max-width: none;
+  opacity: 0.05;
+  pointer-events: none;
 }
 
 /* ===== 头部 ===== */
