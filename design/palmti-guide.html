@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巴掌TI · 12 型全图鉴</title>
+<style>
+:root {
+  --paper: #F9F5EC; --paper-2: #F0E9DA; --page-bg: #EBE3D1;
+  --ink: #26211A; --ink-2: #6F6759; --ink-3: #A79D8B;
+  --cinnabar: #BC3F21; --rule: #D8CFBB;
+  --serif: 'Songti SC', 'STSong', 'Noto Serif SC', serif;
+  --mono: 'SF Mono', Menlo, monospace;
+  --body: -apple-system, 'PingFang SC', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--page-bg); color: var(--ink); font-family: var(--body); padding: 40px 24px 64px; }
+.masthead { max-width: 1240px; margin: 0 auto 32px; border-bottom: 1px solid var(--rule); padding-bottom: 24px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; color: var(--ink-2); }
+h1 { font-family: var(--serif); font-weight: 900; font-size: 44px; margin-top: 10px; }
+h1 em { font-style: normal; color: var(--cinnabar); }
+.sub { color: var(--ink-2); margin-top: 8px; font-size: 14px; }
+.group { max-width: 1240px; margin: 0 auto 36px; }
+.group-title { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+.group-title h2 { font-family: var(--serif); font-weight: 900; font-size: 24px; }
+.group-title .en { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 2px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.card {
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 16px;
+  padding: 22px 22px 18px; position: relative;
+}
+.card::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, var(--cinnabar), transparent 70%);
+  border-radius: 0 0 16px 16px; opacity: .7;
+}
+.no { font-family: var(--mono); font-size: 11px; color: var(--ink-2); letter-spacing: 1px; }
+.head-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.code { font-family: var(--mono); font-size: 30px; font-weight: 700; color: var(--cinnabar); letter-spacing: 2px; }
+.seal {
+  margin-left: auto; width: 44px; height: 44px; flex: none;
+  border: 2.5px solid var(--cinnabar); border-radius: 7px;
+  display: grid; place-items: center; transform: rotate(-6deg);
+  font-family: var(--serif); font-weight: 900; font-size: 22px; color: var(--cinnabar);
+  box-shadow: inset 0 0 0 1px rgba(188,63,33,.25);
+}
+.name { font-family: var(--serif); font-weight: 900; font-size: 22px; margin-top: 8px; }
+.meta { font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+.tagline { font-family: var(--serif); font-size: 14px; margin-top: 10px; }
+.desc { font-size: 12.5px; line-height: 1.8; color: var(--ink-2); margin-top: 8px; }
+.compat {
+  margin-top: 12px; padding: 8px 12px; background: var(--paper-2); border-radius: 8px;
+  font-size: 12px; color: var(--ink-2); display: flex; gap: 8px; align-items: center;
+}
+.compat b { font-family: var(--mono); color: var(--cinnabar); font-size: 10px; letter-spacing: 1px; }
+.rare { font-family: var(--mono); color: var(--cinnabar); font-weight: 700; }
+.legend { max-width: 1240px; margin: 0 auto; padding: 18px 22px; background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; font-size: 13px; color: var(--ink-2); line-height: 2; }
+.legend b { color: var(--ink); }
+.disclaim { max-width: 1240px; margin: 20px auto 0; text-align: center; font-size: 11px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="eyebrow">PALM FIELD GUIDE · 巴掌TI</div>
+  <h1>巴掌TI <em>·</em> 十二型全图鉴</h1>
+  <p class="sub">两个字母 = 主导线（H 心系 / R 脑系 / V 身系）× 风格（S 沉稳 / A 进取 / N 灵动 / D 深深）· 稀有度为趣味估算</p>
+</header>
+
+<section class="group">
+  <div class="group-title"><h2>心系 · H</h2><span class="en">HEART DOMINANT — 情感线主导</span></div>
+  <div class="grid">
+    <div class="card">
+      <span class="no">No.01</span>
+      <div class="head-row"><span class="code">HS</span><span class="seal">潭</span></div>
+      <div class="name">深潭映月</div>
+      <div class="meta">心系·沉稳 · 趣味稀有度 <span class="rare">9%</span></div>
+      <div class="tagline">"表面平静，底下全是戏。"</div>
+      <div class="desc">情绪像深潭：入水慢、退潮也慢。不轻易动心，认定之后极难改道。朋友眼里你是"最稳的那个人"，只有你自己知道心底演过多少部戏。</div>
+      <div class="compat"><b>最合拍</b>春风拂面 · 山间清风</div>
+    </div>
+    <div class="card">
+      <span class="no">No.02</span>
+      <div class="head-row"><span class="code">HA</span><span class="seal">燎</span></div>
+      <div class="name">燎原星火</div>
+      <div class="meta">心系·进取 · 趣味稀有度 <span class="rare">6%</span></div>
+      <div class="tagline">"爱的时候，是真的烫。"</div>
+      <div class="desc">情感浓度永远开最大档：喜欢就冲、讨厌就躲，没有中间态。燃烧得快，好在点燃下一片草原也快——你的人生从不冷场。</div>
+      <div class="compat"><b>最合拍</b>磐石棋手 · 长途行者</div>
+    </div>
+    <div class="card">
+      <span class="no">No.03</span>
+      <div class="head-row"><span class="code">HN</span><span class="seal">风</span></div>
+      <div class="name">春风拂面</div>
+      <div class="meta">心系·灵动 · 趣味稀有度 <span class="rare">12%</span></div>
+      <div class="tagline">"谁都处得来，走心的没几个。"</div>
+      <div class="desc">天生的高情商社交者：三分钟暖场，五分钟破冰。但你心里有一张很清楚的名录——谁能进内圈，谁只能点赞，门儿清。</div>
+      <div class="compat"><b>最合拍</b>深潭映月 · 千面棱镜</div>
+    </div>
+    <div class="card">
+      <span class="no">No.04</span>
+      <div class="head-row"><span class="code">HD</span><span class="seal">河</span></div>
+      <div class="name">暗河涌动</div>
+      <div class="meta">心系·深沉 · 趣味稀有度 <span class="rare">2%</span></div>
+      <div class="tagline">"嘴上说没事，心里已演完三部曲。"</div>
+      <div class="desc">情感线深而不露：情绪的全流域都在地下运行。别人以为你佛，其实你只是不爱直播。偶尔把暗河引出地面，会轻松很多。</div>
+      <div class="compat"><b>最合拍</b>春风拂面 · 破壁先锋</div>
+    </div>
+  </div>
+</section>
+
+<section class="group">
+  <div class="group-title"><h2>脑系 · R</h2><span class="en">REASON DOMINANT — 思维线主导</span></div>
+  <div class="grid">
+    <div class="card">
+      <span class="no">No.05</span>
+      <div class="head-row"><span class="code">RS</span><span class="seal">磐</span></div>
+      <div class="name">磐石棋手</div>
+      <div class="meta">脑系·沉稳 · 趣味稀有度 <span class="rare">7%</span></div>
+      <div class="tagline">"走一步看十步，情绪不许插手。"</div>
+      <div class="desc">判断力是你最硬的资产：先推理、再落子、从不悔棋。情绪想干扰你的决策？排队排不到。适合当所有人慌了之后的最后防线。</div>
+      <div class="compat"><b>最合拍</b>燎原星火 · 深空观测者</div>
+    </div>
+    <div class="card">
+      <span class="no">No.06</span>
+      <div class="head-row"><span class="code">RA</span><span class="seal">破</span></div>
+      <div class="name">破壁先锋</div>
+      <div class="meta">脑系·进取 · 趣味稀有度 <span class="rare">4%</span></div>
+      <div class="tagline">"难题是最好的兴奋剂。"</div>
+      <div class="desc">思维线带着冲锋属性：别人看到墙，你看到墙后面的路。越复杂的问题越上头，简单重复反而让你昏昏欲睡——你的字典里没有"无解"。</div>
+      <div class="compat"><b>最合拍</b>暗河涌动 · 长途行者</div>
+    </div>
+    <div class="card">
+      <span class="no">No.07</span>
+      <div class="head-row"><span class="code">RN</span><span class="seal">棱</span></div>
+      <div class="name">千面棱镜</div>
+      <div class="meta">脑系·灵动 · 趣味稀有度 <span class="rare">3%</span></div>
+      <div class="tagline">"同一个问题，永远有第三个角度。"</div>
+      <div class="desc">大脑自带棱镜：一束光进来，折射出七个方向。脑洞是生产资料，跳跃是工作方式。跟你聊天要抓稳扶手——思路过山车，但风景一流。</div>
+      <div class="compat"><b>最合拍</b>春风拂面 · 奔流入海</div>
+    </div>
+    <div class="card">
+      <span class="no">No.08</span>
+      <div class="head-row"><span class="code">RD</span><span class="seal">观</span></div>
+      <div class="name">深空观测者</div>
+      <div class="meta">脑系·深沉 · 趣味稀有度 <span class="rare">1.5%</span></div>
+      <div class="tagline">"话少，但想的事比谁都远。"</div>
+      <div class="desc">思维线深得像观测深空：别人聊眼前，你在想五年后。安静不代表掉线——你在做长焦对焦。全图鉴最稀有的类型，物以稀为贵。</div>
+      <div class="compat"><b>最合拍</b>磐石棋手 · 蛰伏火山</div>
+    </div>
+  </div>
+</section>
+
+<section class="group">
+  <div class="group-title"><h2>身系 · V</h2><span class="en">VIGOR DOMINANT — 活力线主导</span></div>
+  <div class="grid">
+    <div class="card">
+      <span class="no">No.09</span>
+      <div class="head-row"><span class="code">VS</span><span class="seal">行</span></div>
+      <div class="name">长途行者</div>
+      <div class="meta">身系·沉稳 · 趣味稀有度 <span class="rare">8%</span></div>
+      <div class="tagline">"起跑不快，但从不中途退场。"</div>
+      <div class="desc">活力线的耐力型选手：配速稳、补给稳、心态稳。短跑选手在你前面起哄也没用——这是场马拉松，而你天生就是跑这种的。</div>
+      <div class="compat"><b>最合拍</b>燎原星火 · 破壁先锋</div>
+    </div>
+    <div class="card">
+      <span class="no">No.10</span>
+      <div class="head-row"><span class="code">VA</span><span class="seal">奔</span></div>
+      <div class="name">奔流入海</div>
+      <div class="meta">身系·进取 · 趣味稀有度 <span class="rare">5%</span></div>
+      <div class="tagline">"能量过剩，闲下来反而难受。"</div>
+      <div class="desc">活力线满格供应：一天恨不得 48 小时。行动永远先于纠结，方向对了就一路奔流。要小心的事只有一件——记得偶尔上岸歇脚。</div>
+      <div class="compat"><b>最合拍</b>千面棱镜 · 山间清风</div>
+    </div>
+    <div class="card">
+      <span class="no">No.11</span>
+      <div class="head-row"><span class="code">VN</span><span class="seal">清</span></div>
+      <div class="name">山间清风</div>
+      <div class="meta">身系·灵动 · 趣味稀有度 <span class="rare">10%</span></div>
+      <div class="tagline">"精力只花在好玩的事上。"</div>
+      <div class="desc">活力线的兴趣驱动型：对味的事可以连肝三天，不对味的一分钟都嫌长。效率意外地高——因为热爱就是你的外挂引擎。</div>
+      <div class="compat"><b>最合拍</b>奔流入海 · 春风拂面</div>
+    </div>
+    <div class="card">
+      <span class="no">No.12</span>
+      <div class="head-row"><span class="code">VD</span><span class="seal">伏</span></div>
+      <div class="name">蛰伏火山</div>
+      <div class="meta">身系·深沉 · 趣味稀有度 <span class="rare">2.5%</span></div>
+      <div class="tagline">"平时省电模式，关键时刻倾尽全力。"</div>
+      <div class="desc">活力线的蓄能型：日常看起来安静低调，其实在悄悄充电。等真正在意的事出现——好家伙，原来你是火山。爆发力全图鉴第一。</div>
+      <div class="compat"><b>最合拍</b>深空观测者 · 磐石棋手</div>
+    </div>
+  </div>
+</section>
+
+<div class="legend">
+  <b>分类规则</b>：拍照解读后，三条主线（情感/思维/活力）数值最高者为主导线（H/R/V）；风格由三线离散度与均值决定——极差大偏科为 <b>D 深沉</b>，均值高为 <b>A 进取</b>，均值低为 <b>S 沉稳</b>，其余为 <b>N 灵动</b>。分类在小程序本地确定性完成，模型不参与。
+</div>
+<p class="disclaim">本内容基于传统掌纹文化的趣味解读，仅供娱乐，不构成任何科学依据或决策建议。</p>
+
+</body>
+</html>
