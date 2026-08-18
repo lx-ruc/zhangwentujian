@@ -13,7 +13,7 @@
         <text class="type-tagline">"{{palmType.tagline}}"</text>
         <text class="type-compat">最合拍：{{palmType.compat[0]}} / {{palmType.compat[1]}}</text>
       </block>
-      <text class="meta">{{handText}} · {{modelVersion}}</text>
+      <text class="meta">{{handText}} · 巴掌TI 报告</text>
     </view>
     <view class="score-seal">
       <text class="score">{{funScore}}</text>

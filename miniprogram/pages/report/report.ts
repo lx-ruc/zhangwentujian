@@ -1,4 +1,4 @@
-import { CONFIG, DISCLAIMER } from '../../config/index';
+import { DISCLAIMER } from '../../config/index';
 import { toDimensions, clampScore } from '../../utils/format';
 import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
@@ -39,7 +39,6 @@ Page({
     scenes: [] as SceneView[],
     advice: [] as string[],
     handText: '右手',
-    modelVersion: CONFIG.MODEL_VERSION,
     disclaimer: DISCLAIMER,
     showPoster: false,
     posterReady: false,

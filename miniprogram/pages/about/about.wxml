@@ -1,7 +1,7 @@
 <view class="page-about">
   <view class="head">
     <text class="title">关于「掌纹测运」</text>
-    <text class="ver">v{{version}} · {{modelVersion}}</text>
+    <text class="ver">v{{version}}</text>
   </view>
 
   <view class="card">
