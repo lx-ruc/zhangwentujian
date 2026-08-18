@@ -478,7 +478,6 @@ body {
           <span class="r-eyebrow">PALM FIELD GUIDE</span>
           <span class="r-title">巴掌TI 报告</span>
           <div class="type-badge">
-            <span class="type-no">No.02 · HA</span>
             <span class="type-name">燎原星火</span>
             <span class="type-seal">燎</span>
           </div>
@@ -721,7 +720,6 @@ const PALM_TYPES = [
   if (!grid) return;
   grid.innerHTML = PALM_TYPES.map((t, i) => `
     <div class="col-cell ${t.on ? '' : 'off'}" data-i="${i}">
-      <span class="cell-no">${t.no}</span>
       <span class="cell-seal ${t.on ? '' : 'ghost'}">${t.on ? t.seal : '？'}</span>
       <span class="cell-name">${t.on ? t.name : '？？？'}</span>
       <span class="cell-rarity">${t.rarity}</span>

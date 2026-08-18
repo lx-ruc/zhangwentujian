@@ -69,12 +69,7 @@ export function drawPoster(
   ctx.fillStyle = C.ink3;
   ctx.font = `400 30px ${FONT_BODY}`;
   drawTracked(ctx, '我的掌纹人格是', W / 2, 200, 10);
-  if (data.type) {
-    const noStr = `${data.type.no} · ${data.type.code}`;
-    ctx.fillStyle = C.ink2;
-    ctx.font = `500 30px ${FONT_MONO}`;
-    ctx.fillText(noStr, W / 2 - ctx.measureText(noStr).width / 2, 252);
-  }
+
 
   // 类型名/称号（朱砂大字，自动缩字）
   const headline = data.type ? data.type.name : `「${data.archetype}」`;

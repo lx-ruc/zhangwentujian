@@ -34,7 +34,7 @@ Page({
           date: formatDateTime(r.createdAt),
           hand: r.hand === 'left' ? '左手' : '右手',
           digest: (r.result.summary || '').slice(0, 52),
-          tags: [`${t.no} ${t.name}`, ...(r.result.personality || []).slice(0, 2)],
+          tags: [t.name, ...(r.result.personality || []).slice(0, 2)],
           score: clampScore(r.result.funScore),
         };
       }),

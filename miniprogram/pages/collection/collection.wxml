@@ -21,7 +21,6 @@
       data-id="{{item.id}}"
       bindtap="openType"
     >
-      <text class="cell-no">{{item.no}}·{{item.code}}</text>
       <view class="cell-seal {{item.unlocked ? '' : 'ghost'}}">{{item.unlocked ? item.seal : '？'}}</view>
       <text class="cell-name">{{item.unlocked ? item.name : '？？？'}}</text>
       <text class="cell-rarity">{{item.rarity}}</text>
@@ -36,7 +35,6 @@
     <view class="detail-sheet" catchtap="noop" wx:if="{{detail}}">
       <view class="detail-head">
         <view class="detail-left">
-          <text class="d-no">{{detail.no}} · {{detail.code}} · 巴掌TI</text>
           <text class="d-name">{{detail.name}}</text>
           <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 趣味稀有度 {{detail.rarity}}</text>
         </view>

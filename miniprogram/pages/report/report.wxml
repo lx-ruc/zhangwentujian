@@ -6,7 +6,6 @@
       <text class="title">巴掌TI 报告</text>
       <block wx:if="{{palmType}}">
         <view class="type-badge">
-          <text class="type-no">{{palmType.no}} · {{palmType.code}}</text>
           <text class="type-name">{{palmType.name}}</text>
           <text class="type-seal">{{palmType.seal}}</text>
         </view>
