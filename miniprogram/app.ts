@@ -34,4 +34,10 @@ App<{
     // 多环境账号必须显式指定 env，否则云存储上传/云函数调用会落到错误环境而失败
     wx.cloud.init({ traceUser: true, env: CONFIG.CLOUD_ENV || undefined });
   },
+
+  /** 空路径/未注册页兜底：回首页，不白屏（后台路径配错、坏分享链接等场景） */
+  onPageNotFound(res) {
+    console.warn('[app] 页面不存在，回首页：', res.path || '(空路径)');
+    wx.reLaunch({ url: '/pages/index/index' });
+  },
 });
