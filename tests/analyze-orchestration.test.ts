@@ -9,24 +9,38 @@ jest.mock('wx-server-sdk', () => {
   const collectionData = new Map<string, Array<Record<string, unknown>>>();
   const deleted: string[] = [];
   const downloads: string[] = [];
+  const updates: string[] = [];
+
+  /** 链式查询节点：orderBy/limit 均返回新节点（不可变），get 返回当前行集 */
+  const makeChain = (name: string, rows: Array<Record<string, unknown>>) => ({
+    orderBy(field: string, dir: 'asc' | 'desc' = 'asc') {
+      const sorted = [...rows].sort((a, b) => {
+        const av = new Date(a[field] as string | number).getTime();
+        const bv = new Date(b[field] as string | number).getTime();
+        return dir === 'desc' ? bv - av : av - bv;
+      });
+      return makeChain(name, sorted);
+    },
+    limit(n: number) { return makeChain(name, rows.slice(0, n)); },
+    get: async () => ({ data: rows }),
+    update: async () => { updates.push(name); return { stats: { updated: 1 } }; },
+  });
 
   const makeCollection = (name: string) => ({
     _name: name,
     where(cond: Record<string, unknown>) {
-      const key = Object.keys(cond)[0] as string;
-      const val = cond[key];
-      const rows = (collectionData.get(name) || []).filter((r) => r[key] === val);
-      return {
-        limit() { return this; },
-        get: async () => ({ data: rows }),
-        update: async () => ({ stats: { updated: 1 } }),
-      };
+      const entries = Object.entries(cond);
+      const rows = (collectionData.get(name) || []).filter((r) =>
+        entries.every(([k, v]) => r[k] === v),
+      );
+      return makeChain(name, rows);
     },
     add: async ({ data }: { data: Record<string, unknown> }) => {
       const rows = collectionData.get(name) || [];
-      rows.push({ _id: `id-${rows.length + 1}`, ...data });
+      const newId = `id-${rows.length + 1}`;
+      rows.push({ _id: newId, ...data });
       collectionData.set(name, rows);
-      return { _id: `id-${rows.length + 1}` };
+      return { _id: newId };
     },
     doc(id: string) {
       return {
@@ -49,7 +63,7 @@ jest.mock('wx-server-sdk', () => {
     database: () => ({
       collection: makeCollection,
       command: { inc: (n: number) => ({ __inc__: n }) },
-      serverDate: () => ({ __serverDate__: new Date().toISOString() }),
+      serverDate: () => new Date(),
     }),
     downloadFile: async ({ fileID }: { fileID: string }) => {
       downloads.push(fileID);
@@ -60,8 +74,8 @@ jest.mock('wx-server-sdk', () => {
       return { fileList: fileList.map((f) => ({ fileID: f, code: 0 })) };
     },
     __test: {
-      collectionData, deleted, downloads,
-      reset: () => { collectionData.clear(); deleted.length = 0; downloads.length = 0; },
+      collectionData, deleted, downloads, updates,
+      reset: () => { collectionData.clear(); deleted.length = 0; downloads.length = 0; updates.length = 0; },
       seedUser: (openid: string, dailyCount: number, lastUsedDate: string) => {
         collectionData.set('users', [{ _openid: openid, dailyCount, lastUsedDate }]);
       },
@@ -94,7 +108,7 @@ jest.mock('../cloudfunctions/analyze/zhipu', () => {
 const sdk = require('wx-server-sdk') as unknown as {
   __test: {
     reset: () => void; seedUser: (o: string, c: number, d: string) => void;
-    deleted: string[]; downloads: string[];
+    deleted: string[]; downloads: string[]; updates: string[];
     collectionData: Map<string, Array<Record<string, unknown>>>;
   };
 };
@@ -150,12 +164,13 @@ describe('analyze 编排', () => {
     expect(zhipuMock.__zhipuImpl.calls).toBe(1);
     expect(sdk.__test.downloads).toContain('cloud://env.123/palm-test.jpg');
 
-    // 报告落库（只存文本，无图片字段）
+    // 报告落库（只存文本，无图片字段）；云端记录 id 回传（本地缓存对齐用）
     const analyses = sdk.__test.collectionData.get('analyses') || [];
     expect(analyses).toHaveLength(1);
     expect(analyses[0].result).toMatchObject({ funScore: 87 });
     expect(JSON.stringify(analyses[0])).not.toContain('fileID');
     expect(analyses[0]).not.toHaveProperty('imageBase64');
+    expect(res.data).toMatchObject({ id: 'id-1' });
 
     // 配额已消耗
     const users = sdk.__test.collectionData.get('users') || [];
@@ -190,7 +205,7 @@ describe('analyze 编排', () => {
     expect(zhipuMock.__zhipuImpl.calls).toBe(2);
   });
 
-  it('两次都失败：返回兜底报告（不白屏），仍落库删图', async () => {
+  it('两次都失败：返回兜底报告（不白屏），仍落库删图；兜底不扣配额', async () => {
     process.env.ZHIPU_API_KEY = 'test-key';
     zhipuMock.__zhipuImpl.responses = [
       { reject: true },
@@ -200,11 +215,30 @@ describe('analyze 编排', () => {
     const res = await call();
     expect(res.code).toBe(0);
     expect(zhipuMock.__zhipuImpl.calls).toBe(2);
-    // 兜底报告特征：funScore 66
-    expect(res.data).toMatchObject({ report: { funScore: 66 } });
+    // 兜底报告特征：funScore 66，且带 fallback 标记
+    expect(res.data).toMatchObject({ report: { funScore: 66 }, fallback: true });
     expect(sdk.__test.deleted).toContain('cloud://env.123/palm-test.jpg');
     const analyses = sdk.__test.collectionData.get('analyses') || [];
     expect(analyses).toHaveLength(1);
+    // 兜底不扣配额：users 集合零写入（无 add 无 update）、remaining 保持满额
+    expect(sdk.__test.collectionData.get('users') || []).toHaveLength(0);
+    expect(sdk.__test.updates).not.toContain('users');
+    expect(res.data).toMatchObject({ remaining: 3 });
+  });
+
+  it('兜底不扣配额：当日已用 1 次时兜底，remaining 仍为 2、users 原样', async () => {
+    process.env.ZHIPU_API_KEY = 'test-key';
+    sdk.__test.seedUser('openid-test', 1, today());
+    zhipuMock.__zhipuImpl.responses = [{ reject: true }, { reject: true }];
+
+    const res = await call();
+    expect(res.code).toBe(0);
+    expect(res.data).toMatchObject({ fallback: true, remaining: 2 });
+    // users 记录原样：dailyCount / lastUsedDate 未变，无 update 调用
+    const users = sdk.__test.collectionData.get('users') || [];
+    expect(users).toHaveLength(1);
+    expect(users[0]).toMatchObject({ dailyCount: 1, lastUsedDate: today() });
+    expect(sdk.__test.updates).not.toContain('users');
   });
 
   it('网络/HTTP 异常也算一次失败，两次后兜底', async () => {
@@ -238,5 +272,46 @@ describe('analyze 编排', () => {
     expect(res.code).toBe(0);
     expect(res.data?.remaining).toBe(2);
     expect(zhipuMock.__zhipuImpl.calls).toBe(0);
+  });
+
+  it('action=history：仅本人、排除兜底、倒序、createdAt 转毫秒', async () => {
+    const mk = (id: string, openid: string, fallback: boolean, createdAt: string, score: number) => ({
+      _id: id,
+      _openid: openid,
+      hand: 'right',
+      fallback,
+      createdAt,
+      result: { ...GOOD_REPORT, funScore: score },
+      modelVersion: 'glm-4.6v-flash',
+    });
+    sdk.__test.collectionData.set('analyses', [
+      mk('a1', 'openid-test', false, '2026-08-19T10:00:00Z', 80),
+      mk('a2', 'openid-test', true, '2026-08-20T10:00:00Z', 66), // 兜底：观测留云端，消费面排除
+      mk('a3', 'openid-other', false, '2026-08-21T10:00:00Z', 90), // 他人：排除
+      mk('a4', 'openid-test', false, '2026-08-21T09:00:00Z', 70),
+    ]);
+
+    const res = await (analyzeIndex.main as (e: Record<string, unknown>) => Promise<{ code: number; data?: { records?: Array<{ _id: string; createdAt: number }> } }>)({ action: 'history' });
+    expect(res.code).toBe(0);
+    expect((res.data?.records || []).map((r) => r._id)).toEqual(['a4', 'a1']);
+    expect(res.data?.records?.[0].createdAt).toBe(Date.parse('2026-08-21T09:00:00Z'));
+  });
+
+  it('action=history：超过上限只返回最新 20 条', async () => {
+    const rows = Array.from({ length: 25 }, (_, i) => ({
+      _id: `h${String(i).padStart(2, '0')}`,
+      _openid: 'openid-test',
+      hand: 'right' as const,
+      fallback: false,
+      createdAt: new Date(Date.parse('2026-08-01T00:00:00Z') + i * 3600_000).toISOString(),
+      result: { ...GOOD_REPORT },
+      modelVersion: 'glm-4.6v-flash',
+    }));
+    sdk.__test.collectionData.set('analyses', rows);
+
+    const res = await (analyzeIndex.main as (e: Record<string, unknown>) => Promise<{ code: number; data?: { records?: Array<{ _id: string }> } }>)({ action: 'history' });
+    expect(res.code).toBe(0);
+    expect(res.data?.records).toHaveLength(20);
+    expect(res.data?.records?.[0]._id).toBe('h24'); // 最新在前
   });
 });

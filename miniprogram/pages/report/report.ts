@@ -30,6 +30,7 @@ function toScenes(r: ReportResult): SceneView[] {
 
 Page({
   data: {
+    isFallback: false,
     funScore: 0,
     summary: '',
     archetype: '',
@@ -48,6 +49,9 @@ Page({
   onLoad() {
     // 数据源优先级：刚生成的（globalData）> 按 id 查历史（storage）> mock 兜底
     const app = getApp();
+    // 兜底标记一次性读取：本次为通用解读（云端未扣次数），顶部横幅提示重拍
+    const isFallback = app.globalData.pendingFallback;
+    app.globalData.pendingFallback = false;
     let report: ReportResult = app.globalData.pendingReport || MOCK_REPORT;
     let hand = app.globalData.pendingHand;
     if (app.globalData.reportId) {
@@ -71,6 +75,7 @@ Page({
       : classifyByScore(clampScore(report.funScore));
 
     this.setData({
+      isFallback,
       funScore: clampScore(report.funScore),
       summary: report.summary,
       archetype: report.archetype ?? '',
@@ -182,6 +187,9 @@ Page({
   },
 
   closePoster() { this.setData({ showPoster: false }); },
+
+  /** 兜底横幅的重拍入口：回到拍摄页（本次未扣次数，重试无心理负担） */
+  retake() { wx.redirectTo({ url: '/pages/capture/capture' }); },
 
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
   goCollection() { wx.navigateTo({ url: '/pages/collection/collection' }); },

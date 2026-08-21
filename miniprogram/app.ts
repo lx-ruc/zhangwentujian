@@ -13,6 +13,8 @@ interface GlobalData {
   reportId: string;
   /** 刚生成的报告（analyzing → report 传递；历史复看时为空，从 storage 读） */
   pendingReport: ReportResult | null;
+  /** 刚生成的报告是否为兜底（analyzing → report 传递；兜底不进历史/图鉴，报告页展示横幅） */
+  pendingFallback: boolean;
 }
 
 App<{
@@ -24,6 +26,7 @@ App<{
     pendingHand: 'right',
     reportId: '',
     pendingReport: null,
+    pendingFallback: false,
   },
 
   onLaunch() {

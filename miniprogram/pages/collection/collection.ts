@@ -4,6 +4,7 @@ import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { PALM_TYPE_LIST } from '../../data/palm-types';
 import type { PalmType } from '../../data/palm-types';
 import { shareCollection, triggerShareBonus } from '../../utils/share';
+import { fetchHistory, getCachedHistory } from '../../utils/history-store';
 import type { AnalysisRecord } from '../../types/index';
 
 interface TypeCard extends PalmType {
@@ -21,8 +22,14 @@ Page({
   },
 
   onShow() {
-    // 解锁来源 = 历史记录去重（Phase 2 后同逻辑读云端）
-    const list: AnalysisRecord[] = wx.getStorageSync('reports') || [];
+    // 解锁来源 = 云端历史缓存（与历史页同源；分类保持本地确定性映射，模型不参与）
+    this.renderUnlocks(getCachedHistory());
+    fetchHistory()
+      .then((list) => this.renderUnlocks(list))
+      .catch(() => { /* 云端失败：缓存已渲染 */ });
+  },
+
+  renderUnlocks(list: AnalysisRecord[]) {
     const unlocked: Record<string, true> = {};
     for (const r of list) {
       const t = r.result.lines

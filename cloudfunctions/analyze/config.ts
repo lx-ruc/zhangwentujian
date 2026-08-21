@@ -16,4 +16,6 @@ export const CONFIG = {
   /** 集合名 */
   COLLECTION_USERS: 'users',
   COLLECTION_ANALYSES: 'analyses',
+  /** history 查询返回上限（与本地缓存上限一致） */
+  HISTORY_LIMIT: 20,
 } as const;

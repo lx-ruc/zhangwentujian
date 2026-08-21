@@ -2,6 +2,7 @@ import { DISCLAIMER } from '../../config/index';
 import { formatDateTime, clampScore } from '../../utils/format';
 import { shareHistory, triggerShareBonus } from '../../utils/share';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
+import { fetchHistory, getCachedHistory } from '../../utils/history-store';
 import type { AnalysisRecord } from '../../types/index';
 
 Page({
@@ -18,8 +19,14 @@ Page({
   },
 
   onShow() {
-    // Phase 2 联调时改读云数据库 analyses 集合；当前读本地 storage
-    const list: AnalysisRecord[] = wx.getStorageSync('reports') || [];
+    // 缓存即时上屏，后台拉云端权威数据（整表替换缓存后重绘；失败静默——缓存已在屏上）
+    this.renderRecords(getCachedHistory());
+    fetchHistory()
+      .then((list) => this.renderRecords(list))
+      .catch(() => { /* 云端失败不打扰：断网也能看历史 */ });
+  },
+
+  renderRecords(list: AnalysisRecord[]) {
     this.setData({
       records: list.map((r) => {
         const t = r.result.lines

@@ -1,4 +1,13 @@
 <view class="page-report">
+  <!-- 兜底横幅：本次为通用解读，未扣次数 -->
+  <view wx:if="{{isFallback}}" class="fallback-banner">
+    <view class="fallback-copy">
+      <text class="fallback-title">照片没读清，本次未扣次数</text>
+      <text class="fallback-sub">以下为通用倾向描述，仅供参考</text>
+    </view>
+    <view class="fallback-btn" bindtap="retake">重拍一张</view>
+  </view>
+
   <!-- 头部：标题 + 评分印章 -->
   <view class="head">
     <view class="head-text">

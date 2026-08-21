@@ -13,7 +13,7 @@ import { hasQuota, consume, grantShareBonus, remainingOf, initialUserQuota, type
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 
 interface AnalyzeEvent {
-  action: 'analyze' | 'quota' | 'shareBonus';
+  action: 'analyze' | 'quota' | 'shareBonus' | 'history';
   channel?: 'forward' | 'timeline';
   fileID?: string;
   hand?: 'left' | 'right';
@@ -28,6 +28,19 @@ interface AnalyzeResult {
   debugError?: string;
   /** 分享奖励结果 */
   granted?: number;
+  /** 本次分析落库后的云端记录 id（客户端本地缓存对齐用） */
+  id?: string;
+  /** history 查询结果（字段瘦身，不含 _openid/fallback 等内部字段） */
+  records?: HistoryRecord[];
+}
+
+/** history 返回记录：与客户端 AnalysisRecord 对齐（createdAt 统一毫秒） */
+interface HistoryRecord {
+  _id: string;
+  hand: 'left' | 'right';
+  result: ReportShape;
+  modelVersion: string;
+  createdAt: number;
 }
 
 const db = cloud.database();
@@ -81,6 +94,12 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
       return ok({ granted: grant.ok ? (channel === 'timeline' ? 3 : 1) : 0, remaining: grant.remaining });
     }
 
+    // ---- 历史查询（仅本人、排除兜底；storage 只是缓存，云端是权威） ----
+    if (event.action === 'history') {
+      const records = await fetchHistoryRecords(OPENID);
+      return ok({ records });
+    }
+
     // ---- analyze ----
     if (!event.fileID || !event.hand) return err('PARAM_MISSING', '参数缺失');
 
@@ -101,7 +120,7 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     // 3~4) 模型 + 校验（失败重试 1 次），两次不过 → 兜底（不白屏）
     const { report, fallback, lastError } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
 
-    // 5) 落库（只存文本，绝不存图片/base64）
+    // 5) 落库（只存文本，绝不存图片/base64）；id 回传客户端对齐本地缓存
     const record = {
       _openid: OPENID,
       hand: event.hand,
@@ -110,16 +129,21 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
       modelVersion: CONFIG.MODEL,
       createdAt: db.serverDate(),
     };
-    await analyses.add({ data: record });
+    const added = (await analyses.add({ data: record })) as { _id?: string };
 
-    // 6) 消耗配额（不可变计算 + upsert）
-    const next = consume(quota);
-    await upsertUserQuota(OPENID, next);
+    // 6) 消耗配额（不可变计算 + upsert）——兜底不扣：本次尝试不计入，users 零写入
+    // remaining 统一 remainingOf 口径（bonus 感知），与 quota/shareBonus action 一致
+    let remaining = remainingOf(quota);
+    if (!fallback) {
+      const next = consume(quota);
+      await upsertUserQuota(OPENID, next);
+      remaining = remainingOf(next);
+    }
 
     // 7) 图片即焚（无论成败，走到这里分析已结束）
     await safeDeleteFile(event.fileID);
 
-    return ok({ report, remaining: Math.max(0, CONFIG.DAILY_QUOTA - next.dailyCount), fallback, debugError: lastError });
+    return ok({ report, remaining, fallback, id: added._id, debugError: lastError });
   } catch (e) {
     console.error('[analyze]', e);
     // 未知异常也尝试清理图片（防泄漏）
@@ -192,6 +216,35 @@ async function getUserQuota(openid: string): Promise<UserQuota> {
         shareCounters: doc.shareCounters,
       }
     : initialUserQuota();
+}
+
+/** history 查询：仅本人、排除兜底（云端留观测、消费面不见）、倒序、上限条数 */
+async function fetchHistoryRecords(openid: string): Promise<HistoryRecord[]> {
+  const res = (await analyses
+    .where({ _openid: openid, fallback: false })
+    .orderBy('createdAt', 'desc')
+    .limit(CONFIG.HISTORY_LIMIT)
+    .get()) as { data?: Array<Record<string, unknown>> };
+  return (res.data || [])
+    .map((doc) => ({
+      _id: String(doc._id ?? ''),
+      hand: doc.hand === 'left' ? ('left' as const) : ('right' as const),
+      result: doc.result as ReportShape,
+      modelVersion: String(doc.modelVersion ?? ''),
+      createdAt: toMillis(doc.createdAt),
+    }))
+    .filter((r) => r._id !== '');
+}
+
+/** createdAt 容错转毫秒：云端 Date、序列化 ISO 串、裸数字均接受，非法值归 0 */
+function toMillis(v: unknown): number {
+  if (v instanceof Date) return v.getTime();
+  if (typeof v === 'number') return v;
+  if (typeof v === 'string') {
+    const parsed = Date.parse(v);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  return 0;
 }
 
 /** upsert 用户配额；首次用 add，已有记录用 where().update() */

@@ -1,7 +1,7 @@
 import { CONFIG } from '../../config/index';
 import { shareDefault, triggerShareBonus } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
-import { consumeQuota, normalizeQuotaState } from '../../utils/quota';
+import { consumeQuota, normalizeQuotaState, type QuotaState } from '../../utils/quota';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 /** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
@@ -21,6 +21,13 @@ const SLOW_PCT = 95;
 /** 看门狗：超过此时长云端未回按失败处理（云函数超时上限 60s，提前留量） */
 const WATCHDOG_MS = 45_000;
 
+/** 云函数返回的分析结果信封（fallback 分流本地消费面；id 对齐云端记录） */
+interface AnalyzeOutcome {
+  report: ReportResult;
+  fallback: boolean;
+  id?: string;
+}
+
 Page({
   data: {
     progress: 0,
@@ -37,6 +44,8 @@ Page({
   watchdogTimer: 0 as unknown as ReturnType<typeof setTimeout>,
   settled: false,
   failReason: '',
+  /** 页面存活标记：卸载后不再触发结算，防止死页 setData */
+  alive: true as boolean,
 
   onLoad() {
     const app = getApp();
@@ -70,31 +79,46 @@ Page({
       if (!this.settled) this.complete(Promise.reject(new RequestError('MODEL_TIMEOUT', '解读超时了，请重试一次')));
     }, WATCHDOG_MS);
 
-    this.complete(
-      this.fetchReport().catch((err) => {
-        throw err;
-      }),
-    );
+    this.complete(this.fetchReport());
   },
 
-  async fetchReport(): Promise<ReportResult> {
+  async fetchReport(): Promise<AnalyzeOutcome> {
     const app = getApp();
     const fileID = app.globalData.pendingFileID;
-    if (!fileID) throw new RequestError('UNKNOWN', '缺少图片，请重新拍摄');
-    const data = await callFunction<{ report: ReportResult; remaining?: number }>(CONFIG.FN_ANALYZE, {
-      action: 'analyze',
-      fileID,
-      hand: app.globalData.pendingHand,
-    });
-    // 本地乐观消耗一次；云端权威值由首页 onShow 拉取修正
-    wx.setStorageSync('quota', consumeQuota(normalizeQuotaState(wx.getStorageSync('quota'))));
-    return data.report;
+    try {
+      if (!fileID) throw new RequestError('UNKNOWN', '缺少图片，请重新拍摄');
+      const data = await callFunction<{ report: ReportResult; remaining?: number; fallback?: boolean; id?: string }>(CONFIG.FN_ANALYZE, {
+        action: 'analyze',
+        fileID,
+        hand: app.globalData.pendingHand,
+      });
+      // 本地乐观消耗一次；云端权威值由首页 onShow 拉取修正；
+      // 兜底不扣配额（云端 users 零写入，spec: analysis-fallback）→ 本地回滚这次乐观消耗
+      wx.setStorageSync('quota', consumeQuota(normalizeQuotaState(wx.getStorageSync('quota'))));
+      if (data.fallback === true) this.rollbackOptimisticConsume();
+      return { report: data.report, fallback: data.fallback === true, id: data.id };
+    } catch (err) {
+      // 配额用尽/服务异常：不降级 mock（真实数据才有意义），上抛给 complete 统一处理
+      if (err instanceof RequestError) {
+        console.warn('[analyzing] 云端返回错误：', err.code);
+        throw err;
+      }
+      console.warn('[analyzing] 未知错误：', err);
+      throw new RequestError('UNKNOWN', '出了点小问题，请重试');
+    }
+  },
+
+  /** 兜底回滚：云端未扣，本地乐观消耗撤销（不可变，仅减当日计数；残留由首页权威拉取纠正） */
+  rollbackOptimisticConsume() {
+    const state = normalizeQuotaState(wx.getStorageSync('quota'));
+    const rolledBack: QuotaState = { ...state, dailyCount: Math.max(0, state.dailyCount - 1) };
+    wx.setStorageSync('quota', rolledBack);
   },
 
   /** 云端回调统一出口（成功/失败都走这里，进度拉满后结算） */
-  async complete(promise: Promise<ReportResult>) {
-    const report = await promise.then(
-      (r) => r,
+  async complete(promise: Promise<AnalyzeOutcome>) {
+    const outcome = await promise.then(
+      (o) => o,
       (err: unknown) => {
         console.warn('[analyzing] 云端失败：', err instanceof RequestError ? err.code : err);
         // 保留具体原因（配额用尽/超时/网络），别让通用文案吞掉
@@ -103,21 +127,21 @@ Page({
         return null;
       },
     );
-    if (this.settled || !this.data) return; // 已结算或页面已卸载
+    if (this.settled || !this.alive) return; // 已结算或页面已卸载
     this.settled = true;
     clearTimeout(this.watchdogTimer);
     clearInterval(this.progressTimer);
     this.setData({ progress: 100, slowHint: '' });
 
-    setTimeout(() => this.finish(report), 500);
+    setTimeout(() => this.finish(outcome), 500);
   },
 
-  finish(report: ReportResult | null) {
-    if (this.data.done) return;
+  finish(outcome: AnalyzeOutcome | null) {
+    if (this.data.done || !this.alive) return;
     this.setData({ done: true });
 
     const app = getApp();
-    if (!report) {
+    if (!outcome) {
       // 失败：不落假记录，回拍摄页并给出可读原因（配额/超时等具体信息）
       wx.showToast({ title: this.failReason || '解读失败了，请重试一次', icon: 'none', duration: 2500 });
       setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1400);
@@ -125,17 +149,23 @@ Page({
       return;
     }
 
-    const record: AnalysisRecord = {
-      _id: `local-${Date.now()}`,
-      hand: app.globalData.pendingHand,
-      result: report,
-      modelVersion: CONFIG.MODEL_VERSION,
-      createdAt: Date.now(),
-    };
-    this.saveRecord(record);
-
-    app.globalData.pendingReport = report;
-    app.globalData.reportId = record._id;
+    app.globalData.pendingReport = outcome.report;
+    app.globalData.pendingFallback = outcome.fallback;
+    if (outcome.fallback) {
+      // 兜底不进本地消费面：不落历史（图鉴解锁随之无来源）；清掉旧 reportId 防止报告页按旧记录复看
+      app.globalData.reportId = '';
+    } else {
+      const record: AnalysisRecord = {
+        // 云端记录 id 对齐缓存（旧云函数未回传时回退本地前缀）
+        _id: outcome.id || `local-${Date.now()}`,
+        hand: app.globalData.pendingHand,
+        result: outcome.report,
+        modelVersion: CONFIG.MODEL_VERSION,
+        createdAt: Date.now(),
+      };
+      this.saveRecord(record);
+      app.globalData.reportId = record._id;
+    }
     this.clearPending();
 
     wx.redirectTo({ url: '/pages/report/report' });
@@ -157,6 +187,7 @@ Page({
   },
 
   onUnload() {
+    this.alive = false;
     clearInterval(this.progressTimer);
     clearInterval(this.factTimer);
     clearTimeout(this.watchdogTimer);
