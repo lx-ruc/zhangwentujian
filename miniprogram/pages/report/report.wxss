@@ -59,6 +59,7 @@
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 48rpx;
+  letter-spacing: 2rpx;
 }
 .meta {
   display: block;
@@ -68,9 +69,10 @@
 }
 .score-seal {
   flex-shrink: 0;
-  width: 192rpx; height: 192rpx;
-  /* 印章加大并左移斜压文字区右缘——收掉与左列文字间的空档 */
-  margin-left: -40rpx;
+  width: 208rpx; height: 208rpx;
+  /* 相对定位左移（不受 flex 重分配抵消）：印章斜压文字区右缘，收掉中部空档（HTML 预览实测定稿） */
+  position: relative;
+  left: -60rpx;
   border: 5rpx solid var(--cinnabar);
   border-radius: 20rpx;
   transform: rotate(-6deg);
@@ -84,7 +86,7 @@
 .score {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 80rpx;
+  font-size: 96rpx;
   line-height: 1;
   color: var(--cinnabar);
 }
@@ -238,12 +240,11 @@
   font-weight: 600;
 }
 
-/* 图鉴类型徽章：行内两端分布（名左、印右），撑满左列宽度 */
+/* 图鉴类型徽章 */
 .type-badge {
   margin-top: 10rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 14rpx;
 }
 .type-no {
