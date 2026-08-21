@@ -6,6 +6,30 @@
   box-sizing: border-box;
 }
 
+/* 页内返回（custom 导航无系统返回键；栈空兜底回首页） */
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin: 8rpx 0 24rpx;
+  padding: 10rpx 22rpx 10rpx 16rpx;
+  align-self: flex-start;
+  border: 1rpx solid var(--rule);
+  border-radius: 999rpx;
+  background: var(--paper);
+}
+.nav-back-arrow {
+  width: 14rpx;
+  height: 14rpx;
+  border-left: 3rpx solid var(--ink);
+  border-bottom: 3rpx solid var(--ink);
+  transform: rotate(45deg);
+}
+.nav-back-text {
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
 .head {
   padding-bottom: 28rpx;
   border-bottom: 1rpx solid var(--rule);
