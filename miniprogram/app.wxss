@@ -22,9 +22,9 @@ page {
   line-height: 1.6;
   font-family: -apple-system, 'PingFang SC', sans-serif;
 
-  /* 真机安全区：全站 custom 导航，内容需避开刘海/灵动岛与状态栏 */
-  padding-top: constant(safe-area-inset-top); /* iOS < 11.2 */
-  padding-top: env(safe-area-inset-top);
+  /* 真机安全区：全站 custom 导航，顶部内容与右上角胶囊平行（状态栏 + 胶囊间距，主流机型 4-8px） */
+  padding-top: calc(constant(safe-area-inset-top) + 6px); /* iOS < 11.2 */
+  padding-top: calc(env(safe-area-inset-top) + 6px);
 }
 
 /* ===== 通用：免责声明 ===== */

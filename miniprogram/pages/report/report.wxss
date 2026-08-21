@@ -1,3 +1,6 @@
+/* 顶右有评分印章：整页下移至胶囊下方，避免被右上角胶囊遮挡 */
+page { padding-top: calc(env(safe-area-inset-top) + 48px); }
+
 /* ===== 兜底横幅（提醒级：墨底 + 朱砂细节，非错误级） ===== */
 .fallback-banner {
   display: flex;

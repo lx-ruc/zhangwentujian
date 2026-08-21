@@ -1,3 +1,5 @@
+/* 顶右有进度环：整页下移至胶囊下方，避免被右上角胶囊遮挡 */
+page { padding-top: calc(env(safe-area-inset-top) + 48px); }
 .page-collection {
   min-height: 100vh;
   display: flex;
