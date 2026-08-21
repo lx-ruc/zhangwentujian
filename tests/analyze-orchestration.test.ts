@@ -263,6 +263,22 @@ describe('analyze 编排', () => {
     expect(res.code).toBe(1);
   });
 
+  it('非手掌照片：模型判 isPalm:false → NOT_PALM 终态拒绝（不重试/不落库/不扣配额）', async () => {
+    process.env.ZHIPU_API_KEY = 'test-key';
+    zhipuMock.__zhipuImpl.responses = [{ text: '{"isPalm": false}' }];
+
+    const res = await call();
+    expect(res.code).toBe(1);
+    expect(res.message).toBe('NOT_PALM');
+    // 终态判定：单次调用即停，不烧重试
+    expect(zhipuMock.__zhipuImpl.calls).toBe(1);
+    // 无任何落库与配额写入
+    expect(sdk.__test.collectionData.get('analyses') || []).toHaveLength(0);
+    expect(sdk.__test.collectionData.get('users') || []).toHaveLength(0);
+    // 图片照删（隐私即焚）
+    expect(sdk.__test.deleted).toContain('cloud://env.123/palm-test.jpg');
+  });
+
   it('action=quota：返回今日剩余，不触发分析', async () => {
     process.env.ZHIPU_API_KEY = 'test-key';
     sdk.__test.seedUser('openid-test', 1, today());

@@ -20,6 +20,8 @@ export interface ValidationResult {
   errors: string[];
   /** 清洗后的合法报告（trim 字符串、clamp 分数） */
   report: ReportShape | null;
+  /** 模型明确判定非手掌照片（isPalm:false）——是终态信号，不重试不兜底 */
+  notPalm?: boolean;
 }
 
 export interface SceneNotes {
@@ -64,6 +66,9 @@ export function validateReport(raw: unknown): ValidationResult {
     return { ok: false, errors: ['输出不是 JSON 对象'], report: null };
   }
   const r = raw as Record<string, unknown>;
+
+  // 非手掌照片：模型终态判定，直接短路（不重试、不兜底、不落库）
+  if (r.isPalm === false) return { ok: false, errors: [], report: null, notPalm: true };
 
   // 文本字段
   for (const f of REQUIRED_TEXT_FIELDS) {

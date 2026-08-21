@@ -7,6 +7,7 @@ export type RequestErrorCode =
   | 'QUOTA_EXCEEDED'
   | 'MODEL_TIMEOUT'
   | 'MODEL_INVALID'
+  | 'NOT_PALM'
   | 'NETWORK'
   | 'UNKNOWN';
 
@@ -26,6 +27,7 @@ const FRIENDLY: Record<RequestErrorCode, string> = {
   QUOTA_EXCEEDED: '今日解读次数已用完，明天再来吧',
   MODEL_TIMEOUT: '解读超时了，请重试一次',
   MODEL_INVALID: '结果生成异常，请重试一次',
+  NOT_PALM: '这好像不是手掌照片，掌心对准取景框再拍一张吧',
   NETWORK: '网络不给力，请检查后重试',
   UNKNOWN: '出了点小问题，请重试',
 };
@@ -53,7 +55,7 @@ export async function callFunction<T>(
     throw new RequestError('UNKNOWN', FRIENDLY.UNKNOWN, result);
   }
   if (result.code !== 0) {
-    const PASSTHROUGH: readonly string[] = ['QUOTA_EXCEEDED', 'MODEL_TIMEOUT', 'MODEL_INVALID'];
+    const PASSTHROUGH: readonly string[] = ['QUOTA_EXCEEDED', 'MODEL_TIMEOUT', 'MODEL_INVALID', 'NOT_PALM'];
     const code = PASSTHROUGH.includes(String(result.message))
       ? (result.message as RequestErrorCode)
       : 'UNKNOWN';

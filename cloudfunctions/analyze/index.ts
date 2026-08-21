@@ -118,7 +118,13 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     const imageBase64 = await downloadAsBase64(event.fileID);
 
     // 3~4) 模型 + 校验（失败重试 1 次），两次不过 → 兜底（不白屏）
-    const { report, fallback, lastError } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
+    const { report, fallback, notPalm, lastError } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
+
+    // 非手掌照片：终态拒绝——不重试/不落库/不扣配额，提示重拍
+    if (notPalm) {
+      await safeDeleteFile(event.fileID);
+      return err('NOT_PALM', 'NOT_PALM');
+    }
 
     // 5) 落库（只存文本，绝不存图片/base64）；id 回传客户端对齐本地缓存
     const record = {
@@ -152,17 +158,21 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
   }
 };
 
-/** 调模型 → 校验；失败重试 MAX_RETRIES 次；仍失败返回兜底（标记 fallback） */
+/** 调模型 → 校验；模型判非手掌立即终止（不重试）；失败重试 MAX_RETRIES 次；仍失败返回兜底（标记 fallback） */
 async function analyzeWithRetry(
   apiKey: string,
   imageBase64: string,
   hand: string,
-): Promise<{ report: ReportShape; fallback: boolean; lastError?: string }> {
+): Promise<{ report: ReportShape; fallback: boolean; notPalm?: boolean; lastError?: string }> {
   let lastError = '';
   for (let attempt = 0; attempt <= CONFIG.MAX_RETRIES; attempt++) {
     try {
       const { text } = await callZhipu(apiKey, imageBase64, hand);
       const v = validateReport(JSON.parse(extractJsonText(text)));
+      if (v.notPalm) {
+        console.warn('[analyze] 模型判定非手掌照片，要求重拍');
+        return { report: FALLBACK_REPORT, fallback: true, notPalm: true, lastError: 'not a palm photo' };
+      }
       if (v.ok && v.report) return { report: v.report, fallback: false };
       lastError = v.errors.join('; ');
       console.warn(`[analyze] 第${attempt + 1}次校验失败: ${lastError}`);
@@ -267,4 +277,7 @@ async function upsertUserQuota(openid: string, next: UserQuota): Promise<void> {
 }
 
 function ok(data: AnalyzeResult) { return { code: 0, data }; }
-function err(code: string, message: string) { return { code: 1, message: code === 'QUOTA_EXCEEDED' || code === 'PARAM_MISSING' ? code : message }; }
+function err(code: string, message: string) {
+  const PASSTHROUGH = ['QUOTA_EXCEEDED', 'PARAM_MISSING', 'NOT_PALM'];
+  return { code: 1, message: PASSTHROUGH.includes(code) ? code : message };
+}
