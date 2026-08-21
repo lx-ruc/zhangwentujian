@@ -2,7 +2,7 @@ import { DISCLAIMER } from '../../config/index';
 import { shareDefault, triggerShareBonus } from '../../utils/share';
 import { uploadPalmImage, UploadError } from '../../utils/upload';
 import { getNavTopPx } from '../../utils/nav';
-import type { Hand } from '../../types/index';
+import { Hand } from '../../types/index';
 
 Page({
   data: {

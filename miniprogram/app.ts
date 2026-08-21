@@ -1,6 +1,6 @@
 // app entry: global lifecycle only; keep pages self-contained
 import { CONFIG } from './config/index';
-import type { ReportResult } from './types/index';
+import { ReportResult } from './types/index';
 
 interface GlobalData {
   /** 待分析的手掌图（本地路径，分析页预览用，分析后即焚） */

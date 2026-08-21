@@ -2,7 +2,7 @@
  * Mock 报告 —— 云函数不可用时的本地降级数据（Phase 2 联调后仅作离线兜底）
  * 合规措辞：倾向性表述；身心维度仅生活方式层
  */
-import type { ReportResult } from '../types/index';
+import { ReportResult } from '../types/index';
 
 export const MOCK_REPORT: ReportResult = {
   summary:

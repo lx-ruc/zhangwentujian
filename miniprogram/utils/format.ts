@@ -1,5 +1,5 @@
 /** 报告数据格式化 —— 纯函数，可单测 */
-import type { ReportResult } from '../types/index';
+import { ReportResult } from '../types/index';
 
 /** 分数收敛到 [0,100] 整数（模型输出不可信，展示层兜底） */
 export function clampScore(n: unknown, fallback = 60): number {

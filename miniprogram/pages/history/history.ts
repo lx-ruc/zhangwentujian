@@ -4,7 +4,7 @@ import { shareHistory, triggerShareBonus } from '../../utils/share';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { fetchHistory, getCachedHistory } from '../../utils/history-store';
 import { getNavBelowPx } from '../../utils/nav';
-import type { AnalysisRecord } from '../../types/index';
+import { AnalysisRecord } from '../../types/index';
 
 Page({
   data: {

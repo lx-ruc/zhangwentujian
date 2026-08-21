@@ -3,10 +3,10 @@ import { toDimensions, clampScore } from '../../utils/format';
 import { getNavBelowPx } from '../../utils/nav';
 import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
-import { drawPoster, type CanvasRenderingContextLike, type CanvasImageLike } from '../../utils/poster';
+import { drawPoster, CanvasRenderingContextLike, CanvasImageLike } from '../../utils/poster';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
-import type { PalmType } from '../../data/palm-types';
-import type { ReportResult, AnalysisRecord } from '../../types/index';
+import { PalmType } from '../../data/palm-types';
+import { ReportResult, AnalysisRecord } from '../../types/index';
 
 interface SceneView {
   key: 'work' | 'life' | 'mind';

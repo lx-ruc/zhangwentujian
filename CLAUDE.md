@@ -45,6 +45,7 @@ When writing any user-facing string, report template, or prompt text — apply t
 
 ## Conventions
 
+- **No `import type` / inline `{ type X }` modifiers in miniprogram TS** — the 自动真机调试 pipeline's Babel preset is older than TS 3.8/4.5 and fails to parse them (simulator compiles fine, so this only shows up on device). Use plain `import { X }` for types; tsc elides them anyway. `export type X = ...` alias declarations are fine.
 - Error handling at every layer; user-friendly messages client-side, detailed logging in cloud functions
 - Pure, immutable functions for logic in `utils/` and cloud function helpers (no in-place mutation)
 - Chinese for all user-facing copy; code identifiers and comments in English

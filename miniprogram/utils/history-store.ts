@@ -6,7 +6,7 @@
  */
 import { CONFIG } from '../config/index';
 import { callFunction } from './request';
-import type { AnalysisRecord } from '../types/index';
+import { AnalysisRecord } from '../types/index';
 
 /** 本地缓存上限（与云端 HISTORY_LIMIT 一致） */
 const HISTORY_CAP = 20;

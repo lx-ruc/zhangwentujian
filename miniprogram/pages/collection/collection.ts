@@ -2,11 +2,11 @@ import { DISCLAIMER } from '../../config/index';
 import { clampScore } from '../../utils/format';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { PALM_TYPE_LIST } from '../../data/palm-types';
-import type { PalmType } from '../../data/palm-types';
+import { PalmType } from '../../data/palm-types';
 import { shareCollection, triggerShareBonus } from '../../utils/share';
 import { fetchHistory, getCachedHistory } from '../../utils/history-store';
 import { getNavBelowPx } from '../../utils/nav';
-import type { AnalysisRecord } from '../../types/index';
+import { AnalysisRecord } from '../../types/index';
 
 interface TypeCard extends PalmType {
   unlocked: boolean;

@@ -1,5 +1,5 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
-import { remainingQuota, normalizeQuotaState, type QuotaState } from '../../utils/quota';
+import { remainingQuota, normalizeQuotaState, QuotaState } from '../../utils/quota';
 import { callFunction } from '../../utils/request';
 import { shareDefault } from '../../utils/share';
 import { getNavTopPx } from '../../utils/nav';
