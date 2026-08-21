@@ -42,6 +42,11 @@
   padding-bottom: 32rpx;
   border-bottom: 1rpx solid var(--rule);
 }
+/* 左列占满剩余宽度：各行文字延伸向印章，消除中间大空位 */
+.head-text {
+  flex: 1;
+  min-width: 0;
+}
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 20rpx;
@@ -62,7 +67,10 @@
   color: var(--ink-3);
 }
 .score-seal {
-  width: 168rpx; height: 168rpx;
+  flex-shrink: 0;
+  width: 192rpx; height: 192rpx;
+  /* 印章加大并左移斜压文字区右缘——收掉与左列文字间的空档 */
+  margin-left: -40rpx;
   border: 5rpx solid var(--cinnabar);
   border-radius: 20rpx;
   transform: rotate(-6deg);
@@ -76,7 +84,7 @@
 .score {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 72rpx;
+  font-size: 80rpx;
   line-height: 1;
   color: var(--cinnabar);
 }
@@ -230,11 +238,12 @@
   font-weight: 600;
 }
 
-/* 图鉴类型徽章 */
+/* 图鉴类型徽章：行内两端分布（名左、印右），撑满左列宽度 */
 .type-badge {
   margin-top: 10rpx;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14rpx;
 }
 .type-no {
