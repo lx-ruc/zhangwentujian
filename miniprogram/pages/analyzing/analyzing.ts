@@ -2,6 +2,7 @@ import { CONFIG } from '../../config/index';
 import { shareDefault, triggerShareBonus } from '../../utils/share';
 import { callFunction, RequestError } from '../../utils/request';
 import { consumeQuota, normalizeQuotaState, type QuotaState } from '../../utils/quota';
+import { getNavTopPx } from '../../utils/nav';
 import type { ReportResult, AnalysisRecord } from '../../types/index';
 
 /** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
@@ -30,6 +31,7 @@ interface AnalyzeOutcome {
 
 Page({
   data: {
+    navTop: getNavTopPx(),
     progress: 0,
     facts: FACTS,
     factIndex: 0,

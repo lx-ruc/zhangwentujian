@@ -1,8 +1,10 @@
 import { DISCLAIMER } from '../../config/index';
 import { shareDefault, triggerShareBonus } from '../../utils/share';
+import { getNavTopPx } from '../../utils/nav';
 
 Page({
   data: {
+    navTop: getNavTopPx(),
     version: '0.1.0',
     disclaimer: DISCLAIMER,
   },

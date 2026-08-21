@@ -1,5 +1,6 @@
 import { DISCLAIMER } from '../../config/index';
 import { toDimensions, clampScore } from '../../utils/format';
+import { getNavBelowPx } from '../../utils/nav';
 import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
 import { drawPoster, type CanvasRenderingContextLike, type CanvasImageLike } from '../../utils/poster';
@@ -30,6 +31,7 @@ function toScenes(r: ReportResult): SceneView[] {
 
 Page({
   data: {
+    navTop: getNavBelowPx(),
     isFallback: false,
     funScore: 0,
     summary: '',

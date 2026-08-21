@@ -1,5 +1,3 @@
-/* 顶右有隐私徽章：整页下移至胶囊下方，避免被右上角胶囊遮挡 */
-page { padding-top: calc(env(safe-area-inset-top) + 48px); }
 .page-history {
   min-height: 100vh;
   display: flex;

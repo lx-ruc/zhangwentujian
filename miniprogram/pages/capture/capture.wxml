@@ -1,4 +1,4 @@
-<view class="page-capture">
+<view class="page-capture" style="padding-top:{{navTop}}px">
   <!-- 顶部导航 -->
   <view class="nav">
     <text class="back" bindtap="goBack">‹ 返回</text>

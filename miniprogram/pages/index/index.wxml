@@ -1,4 +1,4 @@
-<view class="page-index">
+<view class="page-index" style="padding-top:{{navTop}}px">
   <!-- 品牌头 -->
   <view class="hero">
     <text class="eyebrow">Palm Insight · 趣味掌纹解读</text>

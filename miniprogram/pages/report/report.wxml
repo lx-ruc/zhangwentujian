@@ -1,4 +1,4 @@
-<view class="page-report">
+<view class="page-report" style="padding-top:{{navTop}}px">
   <!-- 兜底横幅：本次为通用解读，未扣次数 -->
   <view wx:if="{{isFallback}}" class="fallback-banner">
     <view class="fallback-copy">

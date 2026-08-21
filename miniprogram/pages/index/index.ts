@@ -2,9 +2,11 @@ import { CONFIG, DISCLAIMER } from '../../config/index';
 import { remainingQuota, normalizeQuotaState, type QuotaState } from '../../utils/quota';
 import { callFunction } from '../../utils/request';
 import { shareDefault } from '../../utils/share';
+import { getNavTopPx } from '../../utils/nav';
 
 Page({
   data: {
+    navTop: getNavTopPx(),
     remaining: Number(CONFIG.DAILY_QUOTA),
     disclaimer: DISCLAIMER,
     /** 配额用完时 CTA 切换为分享解锁 */

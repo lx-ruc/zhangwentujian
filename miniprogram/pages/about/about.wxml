@@ -1,4 +1,4 @@
-<view class="page-about">
+<view class="page-about" style="padding-top:{{navTop}}px">
   <view class="nav-back" bindtap="goBack">
     <view class="nav-back-arrow" />
     <text class="nav-back-text">返回</text>

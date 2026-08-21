@@ -5,6 +5,7 @@ import { PALM_TYPE_LIST } from '../../data/palm-types';
 import type { PalmType } from '../../data/palm-types';
 import { shareCollection, triggerShareBonus } from '../../utils/share';
 import { fetchHistory, getCachedHistory } from '../../utils/history-store';
+import { getNavBelowPx } from '../../utils/nav';
 import type { AnalysisRecord } from '../../types/index';
 
 interface TypeCard extends PalmType {
@@ -13,6 +14,7 @@ interface TypeCard extends PalmType {
 
 Page({
   data: {
+    navTop: getNavBelowPx(),
     types: [] as TypeCard[],
     unlockedCount: 0,
     total: PALM_TYPE_LIST.length,

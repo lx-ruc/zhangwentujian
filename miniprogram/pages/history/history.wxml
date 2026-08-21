@@ -1,4 +1,4 @@
-<view class="page-history">
+<view class="page-history" style="padding-top:{{navTop}}px">
   <view class="head">
     <text class="title">解读记录</text>
     <text class="privacy-chip">照片即焚 · 仅存文字</text>
