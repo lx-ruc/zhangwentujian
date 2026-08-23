@@ -242,22 +242,18 @@ body {
 /* 行1：文字块自适应宽 + 印章紧随其后（中间 16px，消除大空隙）；长文案下沉全宽 */
 .head-row1 { display: flex; align-items: center; }
 .head-left { flex: none; }
-.head-row1 .score-seal { margin: 0 auto; }
-.head-sub { margin-top: 8px; }
-.r-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
-.r-title { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 900; font-size: 24px; letter-spacing: 0.5px; }
-.r-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-3); }
-.score-seal {
-  width: 104px; height: 104px; flex: none;
-  /* 紧随文字块（head-row1 布局），不再左移 */
-  border: 2.5px solid var(--cinnabar); border-radius: 10px;
-  transform: rotate(-6deg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  box-shadow: inset 0 0 0 1.5px rgba(188, 63, 33, 0.2);
-  background: rgba(188, 63, 33, 0.04);
-}
-.score { font-family: var(--font-display); font-weight: 900; font-size: 46px; line-height: 1; color: var(--cinnabar); }
-.score-label { margin-top: 3px; font-size: 10px; color: var(--cinnabar); letter-spacing: 1px; }
+.head-row1 /* 新头部：分数嵌 eyebrow 右端（纯文字） */
+.eyebrow-row { display: flex; align-items: baseline; justify-content: space-between; }
+.score-inline { display: flex; align-items: baseline; gap: 4px; }
+.score-num { font-family: var(--font-mono); font-weight: 700; font-size: 26px; color: var(--cinnabar); line-height: 1; }
+.score-cap { font-size: 10px; color: var(--ink-2); font-style: normal; }
+.type-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.pill { padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; font-size: 11px; color: var(--ink-2); background: var(--paper); }
+.pill.rare { border-color: var(--cinnabar); color: var(--cinnabar); }
+/* 左右手切换器（预览专用） */
+.hand-switch { display: flex; gap: 8px; margin-top: 10px; }
+.hs-btn { flex: 1; padding: 8px 0; font-size: 13px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); color: var(--ink-2); cursor: pointer; font-family: var(--font-body); }
+.hs-btn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .card {
   margin-top: 16px; background: var(--paper);
   border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px;
@@ -489,27 +485,31 @@ body {
   <div class="screen" id="s-report">
     <div class="p-report">
       <div class="r-head">
-        <div class="head-row1">
-          <div class="head-left">
-            <span class="r-eyebrow">PALM FIELD GUIDE</span>
-            <span class="r-title">你的巴掌TI是</span>
-            <div class="type-badge">
-              <span class="type-name">燎原星火</span>
-              <span class="type-seal">燎</span>
-            </div>
-          </div>
-          <div class="score-seal"><span class="score">87</span><span class="score-label">掌纹评分</span></div>
+        <div class="eyebrow-row">
+          <span class="r-eyebrow">PALM FIELD GUIDE</span>
+          <span class="score-inline"><b class="score-num">87</b><i class="score-cap">掌纹评分</i></span>
         </div>
-        <div class="head-sub">
-          <span class="type-meta">心系·进取 · 掌纹稀有度 6%</span>
-          <span class="type-tagline">"爱的时候，是真的烫。"</span>
-          <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
-          <span class="r-meta">右手 · 巴掌TI 报告</span>
+        <span class="r-title">你的巴掌TI是</span>
+        <div class="type-badge">
+          <span class="type-name">燎原星火</span>
+          <span class="type-seal">燎</span>
         </div>
+        <div class="type-pills">
+          <span class="pill">心系·进取</span>
+          <span class="pill rare">稀有度 6%</span>
+          <span class="pill" id="hand-pill">右手</span>
+        </div>
+        <span class="type-tagline">"爱的时候，是真的烫。"</span>
+        <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
+        <span class="r-meta"><span id="hand-meta">右手</span> · 巴掌TI 报告</span>
+      </div>
+      <div class="hand-switch">
+        <button class="hs-btn on" data-hand="right">右手报告</button>
+        <button class="hs-btn" data-hand="left">左手报告</button>
       </div>
       <div class="palm-hero">
-        <div class="palm-box right-hand">
-          <img class="palm-img mirror" src="../miniprogram/assets/hand-plate.png" />
+        <div class="palm-box right-hand" id="palm-box">
+          <img class="palm-img mirror" id="palm-img" src="../miniprogram/assets/hand-plate.png" />
           <div class="mark mk-heart"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">情感线</b><b class="tag-score">85</b></span></div>
           <div class="mark mk-head"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">思维线</b><b class="tag-score">72</b></span></div>
           <div class="mark mk-life"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">活力线</b><b class="tag-score">78</b></span></div>
@@ -666,6 +666,22 @@ function stopTimers() { clearInterval(factTimer); clearInterval(progTimer); }
 
 document.getElementById('switcher').addEventListener('click', e => {
   if (e.target.dataset.p) go(e.target.dataset.p);
+});
+
+// 报告页左右手切换（预览专用）
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.hs-btn');
+  if (!btn) return;
+  document.querySelectorAll('.hs-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const isRight = btn.dataset.hand === 'right';
+  const box = document.getElementById('palm-box');
+  const img = document.getElementById('palm-img');
+  if (box) box.classList.toggle('right-hand', isRight);
+  if (img) img.classList.toggle('mirror', isRight);
+  const label = isRight ? '右手' : '左手';
+  document.getElementById('hand-pill').textContent = label;
+  document.getElementById('hand-meta').textContent = label;
 });
 
 // URL hash 直达（如 app-preview.html#report）
