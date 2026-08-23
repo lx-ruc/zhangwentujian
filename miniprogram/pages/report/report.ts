@@ -6,6 +6,7 @@ import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
 import { drawPoster, CanvasRenderingContextLike, CanvasImageLike } from '../../utils/poster';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
+import { headFontSizes } from '../../utils/head-fit';
 import { PalmType } from '../../data/palm-types';
 import { ReportResult, AnalysisRecord } from '../../types/index';
 
@@ -38,6 +39,9 @@ Page({
     summary: '',
     archetype: '',
     palmType: null as PalmType | null,
+    t1NameSize: '68rpx',
+    t2Size: '26rpx',
+    t3Size: '26rpx',
     lines: [] as Array<{ key: string; name: string; desc: string; score: number }>,
     dimensions: [] as ReturnType<typeof toDimensions>,
     scenes: [] as SceneView[],
@@ -76,6 +80,8 @@ Page({
     const palmType = report.lines
       ? classifyPalmType(lineScores)
       : classifyByScore(clampScore(report.funScore));
+    // 头部四行铺满：按每行实际文案长度反推字号（占满内容宽、不换行）
+    const fit = headFontSizes(palmType);
 
     this.setData({
       isFallback,
@@ -83,6 +89,9 @@ Page({
       summary: report.summary,
       archetype: report.archetype ?? '',
       palmType,
+      t1NameSize: `${fit.t1Name}rpx`,
+      t2Size: `${fit.t2}rpx`,
+      t3Size: `${fit.t3}rpx`,
       dimensions: toDimensions(report),
       scenes: toScenes(report),
       advice: report.advice,
