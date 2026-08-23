@@ -11,7 +11,7 @@
   <!-- 头部：四行式巴掌TI（仅此四行） -->
   <view class="head">
     <view class="t1">你的巴掌TI是：<text class="t1-name">{{palmType.name}}</text></view>
-    <view class="t2">掌纹中蕴含的性格底色：<text class="t2-text">"{{palmType.tagline}}"</text></view>
+    <view class="t2">掌纹中蕴含的性格底稿：<text class="t2-text">"{{palmType.tagline}}"</text></view>
     <view class="t3">和你最合拍的巴掌TI是：<text class="t3-text">{{palmType.compat[0]}} / {{palmType.compat[1]}}</text></view>
     <view class="type-pills">
       <text class="pill">掌纹属性·{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
