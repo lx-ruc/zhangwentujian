@@ -88,7 +88,7 @@
 }
 .score-seal {
   position: absolute;
-  left: 402rpx; top: 110rpx; /* 调位器拖定（相对页面容器，随内容滚动） */
+  left: 58.9%; top: 113rpx; /* 调位器拖定：横向百分比跨屏宽稳定；纵向锚定内容顶固定 rpx（随内容滚动，不随内容总高漂移） */
   z-index: 5;
   flex-shrink: 0;
   width: 208rpx; height: 208rpx;
