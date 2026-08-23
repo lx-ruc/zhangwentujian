@@ -397,14 +397,19 @@
 /* ===== 头部四行式（仅四行） ===== */
 .head { padding-bottom: 28rpx; border-bottom: 1rpx solid var(--rule); }
 .t1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 40rpx;
   line-height: 1.4;
+}
+.t1-label {
+  font-size: 44rpx;
 }
 .t1-name {
   font-weight: 900;
-  font-size: 56rpx;
+  font-size: 58rpx;
   color: var(--cinnabar);
 }
 .t2, .t3 {

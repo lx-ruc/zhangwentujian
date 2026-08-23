@@ -237,8 +237,9 @@ body {
 .mk-life .leader { width: 88px; left: 0; top: 0; transform: rotate(180deg); }
 .mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
 .r-head { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
-.t1 { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.4; }
-.t1-name { font-weight: 900; font-size: 28px; color: var(--cinnabar); }
+.t1 { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-weight: 700; line-height: 1.4; }
+.t1-label { font-size: 22px; }
+.t1-name { font-weight: 900; font-size: 29px; color: var(--cinnabar); }
 .t2, .t3 { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
 .t2-text { font-family: var(--font-display); color: var(--ink); }
 .t3-text { font-family: var(--font-display); font-weight: 700; color: var(--ink); }
@@ -487,7 +488,7 @@ body {
   <div class="screen" id="s-report">
     <div class="p-report">
       <div class="r-head">
-        <div class="t1">你的巴掌TI是：<b class="t1-name">燎原星火</b></div>
+        <div class="t1"><b class="t1-label">你的巴掌TI是：</b><b class="t1-name">燎原星火</b></div>
         <div class="t2">掌纹中蕴含的性格底稿：<b class="t2-text">"爱的时候，是真的烫。"</b></div>
         <div class="t3">和你最合拍的巴掌TI是：<b class="t3-text">磐石棋手 / 长途行者</b></div>
         <div class="type-pills">
