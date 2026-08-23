@@ -236,19 +236,14 @@ body {
 .mk-life { left: 55.2%; top: 65.4%; }
 .mk-life .leader { width: 88px; left: 0; top: 0; transform: rotate(180deg); }
 .mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
-.r-head {
-  padding-bottom: 14px; border-bottom: 1px solid var(--rule);
-}
-/* 行1：文字块自适应宽 + 印章紧随其后（中间 16px，消除大空隙）；长文案下沉全宽 */
-.head-row1 { display: flex; align-items: center; }
-.head-left { flex: none; }
-.head-row1 /* 新头部：分数嵌 eyebrow 右端（纯文字） */
-.eyebrow-row { display: flex; align-items: baseline; justify-content: space-between; }
-.score-inline { display: flex; align-items: baseline; gap: 4px; }
-.score-num { font-family: var(--font-mono); font-weight: 700; font-size: 26px; color: var(--cinnabar); line-height: 1; }
-.score-cap { font-size: 10px; color: var(--ink-2); font-style: normal; }
-.type-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
-.pill { padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; font-size: 11px; color: var(--ink-2); background: var(--paper); }
+.r-head { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.t1 { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.4; }
+.t1-name { font-weight: 900; font-size: 28px; color: var(--cinnabar); }
+.t2, .t3 { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+.t2-text { font-family: var(--font-display); color: var(--ink); }
+.t3-text { font-family: var(--font-display); font-weight: 700; color: var(--ink); }
+.type-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.pill { padding: 4px 11px; border: 1px solid var(--rule); border-radius: 999px; font-size: 11px; color: var(--ink-2); background: var(--paper); }
 .pill.rare { border-color: var(--cinnabar); color: var(--cinnabar); }
 /* 左右手切换器（预览专用） */
 .hand-switch { display: flex; gap: 8px; margin-top: 10px; }
@@ -485,23 +480,13 @@ body {
   <div class="screen" id="s-report">
     <div class="p-report">
       <div class="r-head">
-        <div class="eyebrow-row">
-          <span class="r-eyebrow">PALM FIELD GUIDE</span>
-          <span class="score-inline"><b class="score-num">87</b><i class="score-cap">掌纹评分</i></span>
-        </div>
-        <span class="r-title">你的巴掌TI是</span>
-        <div class="type-badge">
-          <span class="type-name">燎原星火</span>
-          <span class="type-seal">燎</span>
-        </div>
+        <div class="t1">你的巴掌TI是：<b class="t1-name">燎原星火</b></div>
+        <div class="t2">掌纹中蕴含的性格底色：<b class="t2-text">"爱的时候，是真的烫。"</b></div>
+        <div class="t3">和你最合拍的巴掌TI是：<b class="t3-text">磐石棋手 / 长途行者</b></div>
         <div class="type-pills">
-          <span class="pill">心系·进取</span>
-          <span class="pill rare">稀有度 6%</span>
-          <span class="pill" id="hand-pill">右手</span>
+          <span class="pill">掌纹属性·心系·进取</span>
+          <span class="pill rare">掌纹稀有度·6%</span>
         </div>
-        <span class="type-tagline">"爱的时候，是真的烫。"</span>
-        <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
-        <span class="r-meta"><span id="hand-meta">右手</span> · 巴掌TI 报告</span>
       </div>
       <div class="hand-switch">
         <button class="hs-btn on" data-hand="right">右手报告</button>
