@@ -5,6 +5,16 @@ import { CONFIG } from '../config/index';
 import { callFunction } from './request';
 
 /** 分享奖励触发（fire-and-forget：任何页面分享都应调用，云端记账防刷） */
+/** 平台判断：iOS 无"分享到朋友圈"菜单入口（平台限制），相关文案需隐藏 */
+export function isIOS(): boolean {
+  try {
+    const info = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
+    return info.platform === 'ios';
+  } catch {
+    return false;
+  }
+}
+
 export async function triggerShareBonus(channel: 'forward' | 'timeline'): Promise<void> {
   try {
     const data = await callFunction<{ granted: number; remaining: number }>(CONFIG.FN_ANALYZE, {
@@ -15,10 +25,14 @@ export async function triggerShareBonus(channel: 'forward' | 'timeline'): Promis
       wx.showToast({ title: `分享成功 +${data.granted} 次`, icon: 'none' });
     } else {
       // 渠道满了但另一渠道可能还能领：给出精确指引
-      const tip =
-        channel === 'forward'
-          ? '转发奖励已领完；···菜单分享朋友圈可 +3'
-          : '朋友圈奖励已领完，明天再来';
+      let tip: string;
+      if (channel === 'forward') {
+        tip = isIOS()
+          ? '今日 2 次转发奖励已领完，明天再来'
+          : '今日 2 次转发奖励已领完；··· 分享朋友圈可 +3';
+      } else {
+        tip = '今日朋友圈奖励已领完，明天再来';
+      }
       wx.showToast({ title: tip, icon: 'none', duration: 2500 });
     }
   } catch {

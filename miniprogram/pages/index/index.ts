@@ -1,7 +1,7 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
 import { remainingQuota, normalizeQuotaState, QuotaState } from '../../utils/quota';
 import { callFunction } from '../../utils/request';
-import { shareDefault } from '../../utils/share';
+import { shareDefault, isIOS } from '../../utils/share';
 import { getNavTopPx } from '../../utils/nav';
 
 Page({
@@ -11,6 +11,7 @@ Page({
     disclaimer: DISCLAIMER,
     /** 配额用完时 CTA 切换为分享解锁 */
     exhausted: false,
+    exhaustedTip: '',
   },
 
   onShow() {
@@ -21,7 +22,13 @@ Page({
   },
 
   refreshRemaining(n: number) {
-    this.setData({ remaining: n, exhausted: n <= 0 });
+    this.setData({
+      remaining: n,
+      exhausted: n <= 0,
+      exhaustedTip: isIOS()
+        ? '今日次数已用完 · 转发好友每天可 +2 次'
+        : '今日次数已用完 · 转发好友 +1 次/天2次 · 朋友圈 +3',
+    });
   },
 
   async syncCloudQuota() {
