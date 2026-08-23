@@ -33,6 +33,12 @@
     </view>
   </view>
 
+  <!-- 评分印章：绝对定位（调位器拖定坐标 402/110rpx，随内容滚动） -->
+  <view class="score-seal">
+    <text class="score">{{funScore}}</text>
+    <text class="score-label">掌纹评分</text>
+  </view>
+
   <!-- 手掌主视觉：图鉴式引线标注（锚点→引线→标签） -->
   <view class="palm-hero">
     <view class="palm-box {{hand === 'right' ? 'right-hand' : ''}}">
