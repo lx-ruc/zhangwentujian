@@ -50,3 +50,8 @@ When writing any user-facing string, report template, or prompt text — apply t
 - Pure, immutable functions for logic in `utils/` and cloud function helpers (no in-place mutation)
 - Chinese for all user-facing copy; code identifiers and comments in English
 - Files < 800 lines, functions < 50 lines
+
+## Standard Closeout Flow
+
+After any code change in this repo, follow `.claude/skills/push-to-phone/SKILL.md`:
+verify (typecheck + jest, with `set -o pipefail`) → deploy cloud fn if `cloudfunctions/**` changed (`npm run deploy:cloud`) → `cli auto-preview` to the user's phone (no QR scan, reuse existing IDE) → commit & push. Trigger words: 推送 / 推送到手机 / 真机预览.
