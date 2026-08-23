@@ -8,38 +8,14 @@
     <view class="fallback-btn" bindtap="retake">重拍一张</view>
   </view>
 
-  <!-- 头部：标题 + 评分印章 -->
+  <!-- 头部：四行式巴掌TI（仅此四行） -->
   <view class="head">
-    <!-- 行1：文字块 + 评分印章左右并排（印章紧随其后）；长文案下沉全宽 -->
-    <view class="head-row1">
-      <view class="head-text">
-        <view class="eyebrow-row">
-          <text class="eyebrow">PALM FIELD GUIDE</text>
-          <view class="score-inline">
-            <text class="score-num">{{funScore}}</text>
-            <text class="score-cap">掌纹评分</text>
-          </view>
-        </view>
-        <text class="title">你的巴掌TI是</text>
-        <block wx:if="{{palmType}}">
-          <view class="type-badge">
-            <text class="type-name">{{palmType.name}}</text>
-            <text class="type-seal">{{palmType.seal}}</text>
-          </view>
-        </block>
-      </view>
-    </view>
-    <view class="head-sub">
-      <block wx:if="{{palmType}}">
-        <view class="type-pills">
-          <text class="pill">{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
-          <text class="pill rare">稀有度 {{palmType.rarity}}</text>
-          <text class="pill">{{handText}}</text>
-        </view>
-        <text class="type-tagline">"{{palmType.tagline}}"</text>
-        <text class="type-compat">最合拍：{{palmType.compat[0]}} / {{palmType.compat[1]}}</text>
-      </block>
-      <text class="meta">{{handText}} · 巴掌TI 报告</text>
+    <view class="t1">你的巴掌TI是：<text class="t1-name">{{palmType.name}}</text></view>
+    <view class="t2">掌纹中蕴含的性格底色：<text class="t2-text">"{{palmType.tagline}}"</text></view>
+    <view class="t3">和你最合拍的巴掌TI是：<text class="t3-text">{{palmType.compat[0]}} / {{palmType.compat[1]}}</text></view>
+    <view class="type-pills">
+      <text class="pill">掌纹属性·{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
+      <text class="pill rare">掌纹稀有度·{{palmType.rarity}}</text>
     </view>
   </view>
 

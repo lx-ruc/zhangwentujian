@@ -52,39 +52,11 @@
   border-bottom: 1rpx solid var(--rule);
 }
 /* 行1：文字块自适应 + 印章紧随（22rpx 间隙）；长文案下沉全宽行 */
-.head-row1 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
 .head-row1 .head-text { flex: none; }
 
 .head-text {
   flex: none;
   min-width: 0;
-}
-.head-sub {
-  margin-top: 16rpx;
-}
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 20rpx;
-  letter-spacing: 3rpx;
-  color: var(--ink-2);
-}
-.title {
-  display: block;
-  margin-top: 8rpx;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 48rpx;
-  letter-spacing: 2rpx;
-}
-.meta {
-  display: block;
-  margin-top: 8rpx;
-  font-size: 22rpx;
-  color: var(--ink-3);
 }
 /* ===== 手掌主视觉：三线分数标注在线上 ===== */
 .palm-hero {
@@ -231,55 +203,6 @@
 }
 
 /* 图鉴类型徽章 */
-.type-badge {
-  margin-top: 10rpx;
-  display: flex;
-  align-items: center;
-  gap: 14rpx;
-}
-.type-no {
-  font-family: var(--font-mono);
-  font-size: 22rpx;
-  color: var(--ink-2);
-  letter-spacing: 1rpx;
-}
-.type-name {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 44rpx;
-  color: var(--cinnabar);
-  line-height: 1.2;
-}
-.type-seal {
-  width: 52rpx; height: 52rpx;
-  display: flex; align-items: center; justify-content: center;
-  border: 2.5rpx solid var(--cinnabar);
-  border-radius: 8rpx;
-  color: var(--cinnabar);
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 28rpx;
-  transform: rotate(-6deg);
-}
-.type-meta {
-  display: block;
-  margin-top: 8rpx;
-  font-size: 22rpx;
-  color: var(--ink-2);
-}
-.type-tagline {
-  display: block;
-  margin-top: 8rpx;
-  font-family: var(--font-display);
-  font-size: 26rpx;
-  color: var(--ink);
-}
-.type-compat {
-  display: block;
-  margin-top: 6rpx;
-  font-size: 21rpx;
-  color: var(--ink-3);
-}
 
 /* 场景速读 */
 .scene { margin-top: 26rpx; }
@@ -436,27 +359,6 @@
 .sep { color: var(--rule); }
 
 /* ===== 头部占满布局（评分印章已移除，分数嵌 eyebrow 行右端） ===== */
-.eyebrow-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.score-inline {
-  display: flex;
-  align-items: baseline;
-  gap: 8rpx;
-}
-.score-num {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 52rpx;
-  color: var(--cinnabar);
-  line-height: 1;
-}
-.score-cap {
-  font-size: 20rpx;
-  color: var(--ink-2);
-}
 /* 属性徽章组：占满一行 */
 .type-pills {
   display: flex;
@@ -466,6 +368,52 @@
 }
 .pill {
   padding: 6rpx 20rpx;
+  border: 1rpx solid var(--rule);
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  background: var(--paper);
+}
+.pill.rare {
+  border-color: var(--cinnabar);
+  color: var(--cinnabar);
+}
+
+/* ===== 头部四行式（仅四行） ===== */
+.head { padding-bottom: 28rpx; border-bottom: 1rpx solid var(--rule); }
+.t1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 40rpx;
+  line-height: 1.4;
+}
+.t1-name {
+  font-weight: 900;
+  font-size: 56rpx;
+  color: var(--cinnabar);
+}
+.t2, .t3 {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+.t2-text {
+  font-family: var(--font-display);
+  color: var(--ink);
+}
+.t3-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+}
+.type-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+.pill {
+  padding: 8rpx 22rpx;
   border: 1rpx solid var(--rule);
   border-radius: 999rpx;
   font-size: 22rpx;
