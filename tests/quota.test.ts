@@ -103,6 +103,17 @@ describe('云函数端 quota 镜像', () => {
     expect(r2.reason).toBe('DAILY_CAP');
   });
 
+  test('分享奖励跨日重置（含渠道计数）——旧计数不得占用新一天限次', () => {
+    const { grantShareBonus } = require('../cloudfunctions/analyze/quota');
+    // 8/18 转发已满 2 次：跨日到 8/19 后应可重新领取
+    const stale = { ...initialUserQuota(), bonus: 2, bonusDate: '2026-08-18', shareCounters: { forward: 2, timeline: 0 } };
+    const nextDay = new Date('2026-08-19T10:00:00');
+    const r = grantShareBonus(stale, 'forward', nextDay);
+    expect(r.ok).toBe(true);
+    expect(r.quota.shareCounters?.forward).toBe(1);
+    expect(r.remaining).toBe(4); // 基础3 + 新奖励1
+  });
+
   test('分享奖励跨日重置', () => {
     const { grantShareBonus, remainingOf } = require('../cloudfunctions/analyze/quota');
     const today = grantShareBonus(initialUserQuota(), 'timeline', now);

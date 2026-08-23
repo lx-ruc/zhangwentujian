@@ -80,7 +80,11 @@ export function grantShareBonus(
   now: Date = new Date(),
 ): GrantResult {
   const today = todayKey(now);
-  const base: UserQuota = q.bonusDate === today ? q : { ...q, bonus: 0, bonusDate: today };
+  // 跨日重置：bonus 与渠道计数一并归零（漏清 shareCounters 会导致旧计数永久占用每日限次）
+  const base: UserQuota =
+    q.bonusDate === today
+      ? q
+      : { ...q, bonus: 0, bonusDate: today, shareCounters: { forward: 0, timeline: 0 } };
   const rule = CONFIG.SHARE_BONUS[channel];
 
   if (base.bonus + rule.amount > CONFIG.SHARE_BONUS.DAILY_CAP) {
