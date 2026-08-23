@@ -13,6 +13,8 @@ export const CONFIG = {
   MODEL_TIMEOUT: 45_000,
   /** JSON 解析失败重试次数 */
   MAX_RETRIES: 1,
+  /** 开发者白名单：不限次且不消耗（本地/真机/任意端测试用；真实用户不受影响） */
+  DEV_OPENIDS: ['oodEvxi6gR7Dq6VURRnW6b7RhQjc'],
   /** 集合名 */
   COLLECTION_USERS: 'users',
   COLLECTION_ANALYSES: 'analyses',

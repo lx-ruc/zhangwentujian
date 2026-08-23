@@ -28,6 +28,8 @@ interface AnalyzeResult {
   fallback?: boolean;
   /** 兜底原因（诊断用，无敏感信息） */
   debugError?: string;
+  /** 开发者白名单命中（首页展示满额） */
+  devUnlimited?: boolean;
   /** 分享奖励结果 */
   granted?: number;
   /** 本次分析落库后的云端记录 id（客户端本地缓存对齐用） */
@@ -84,7 +86,7 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
   try {
     if (event.action === 'quota') {
       const q = await getUserQuota(OPENID);
-      return ok({ remaining: remainingOf(q) });
+      return ok({ remaining: remainingOf(q), devUnlimited: (CONFIG.DEV_OPENIDS as readonly string[]).includes(OPENID) });
     }
 
     // ---- 分享奖励（云端权威防刷：渠道限次 + 每日上限） ----
@@ -105,8 +107,8 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     // ---- analyze ----
     if (!event.fileID || !event.hand) return err('PARAM_MISSING', '参数缺失');
 
-    // 1) 配额（云端权威；开发版免限——envVersion=develop 不可伪造，上传后自动恢复限次）
-    const devUnlimited = event.dev === true;
+    // 1) 配额（云端权威；开发者白名单 openid 或 dev 标记 → 不限次不消耗。真实用户照常限次）
+    const devUnlimited = event.dev === true || (CONFIG.DEV_OPENIDS as readonly string[]).includes(OPENID);
     const quota = await getUserQuota(OPENID);
     if (!devUnlimited && !hasQuota(quota)) {
       // 配额不足也要删掉已上传的图，不留垃圾/隐私残留

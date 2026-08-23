@@ -40,7 +40,11 @@ Page({
   async syncCloudQuota() {
     if (isDevEnv()) return; // 开发版不拉云端配额
     try {
-      const data = await callFunction<{ remaining: number }>(CONFIG.FN_ANALYZE, { action: 'quota' });
+      const data = await callFunction<{ remaining: number; devUnlimited?: boolean }>(CONFIG.FN_ANALYZE, { action: 'quota' });
+      if (data.devUnlimited) {
+        this.refreshRemaining(Number(CONFIG.DAILY_QUOTA));
+        return;
+      }
       if (typeof data.remaining === 'number') {
         this.refreshRemaining(data.remaining);
         // 回写本地展示缓存（used = capacity - remaining，bonus 保持本地）
