@@ -86,35 +86,6 @@
   font-size: 22rpx;
   color: var(--ink-3);
 }
-.score-seal {
-  position: absolute;
-  left: 58.9%; top: 113rpx; /* 调位器拖定：横向百分比跨屏宽稳定；纵向锚定内容顶固定 rpx（随内容滚动，不随内容总高漂移） */
-  z-index: 5;
-  flex-shrink: 0;
-  width: 208rpx; height: 208rpx;
-  border: 5rpx solid var(--cinnabar);
-  border-radius: 20rpx;
-  transform: rotate(-6deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 0 3rpx rgba(188, 63, 33, 0.2);
-  background: rgba(188, 63, 33, 0.04);
-}
-.score {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 96rpx;
-  line-height: 1;
-  color: var(--cinnabar);
-}
-.score-label {
-  margin-top: 6rpx;
-  font-size: 20rpx;
-  color: var(--cinnabar);
-  letter-spacing: 2rpx;
-}
 /* ===== 手掌主视觉：三线分数标注在线上 ===== */
 .palm-hero {
   position: relative;
@@ -463,3 +434,45 @@
 }
 .link { padding: 8rpx 12rpx; }
 .sep { color: var(--rule); }
+
+/* ===== 头部占满布局（评分印章已移除，分数嵌 eyebrow 行右端） ===== */
+.eyebrow-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.score-inline {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+.score-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 52rpx;
+  color: var(--cinnabar);
+  line-height: 1;
+}
+.score-cap {
+  font-size: 20rpx;
+  color: var(--ink-2);
+}
+/* 属性徽章组：占满一行 */
+.type-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+.pill {
+  padding: 6rpx 20rpx;
+  border: 1rpx solid var(--rule);
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  background: var(--paper);
+}
+.pill.rare {
+  border-color: var(--cinnabar);
+  color: var(--cinnabar);
+}
