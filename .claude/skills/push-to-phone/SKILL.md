@@ -79,6 +79,7 @@ node /tmp/bonus-test2.js  # 参考其写法：automator.launch + evaluate(wx.clo
 
 ## 已知坑备忘
 
+- **批量文本替换必须 assert**：python `s.replace(old,new)` 锚点失配会静默跳过（曾把节点"移除成功、插回失败"直接弄丢 UI）——每个 replace 后 `assert new in s`，改完 grep 确认关键节点仍在
 - **容器/基础样式块易被批量重构误删**（.page-report 曾整块丢失致内容贴边）——视觉异常先 grep 根类名是否还存在，别急着调数值
 - **配额/奖励字段必须全量写库**：`upsertUserQuota` 漏字段会造成"内存生效、落库丢失"（按钮红→白闪回）
 - **跨日重置要清全部计数字段**：漏清 shareCounters 导致旧计数永久占用每日限次（隐藏 5 天的 bug）
