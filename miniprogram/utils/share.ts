@@ -13,6 +13,13 @@ export async function triggerShareBonus(channel: 'forward' | 'timeline'): Promis
     });
     if (data.granted > 0) {
       wx.showToast({ title: `分享成功 +${data.granted} 次`, icon: 'none' });
+    } else {
+      // 渠道满了但另一渠道可能还能领：给出精确指引
+      const tip =
+        channel === 'forward'
+          ? '转发奖励已领完；···菜单分享朋友圈可 +3'
+          : '朋友圈奖励已领完，明天再来';
+      wx.showToast({ title: tip, icon: 'none', duration: 2500 });
     }
   } catch {
     // 奖励失败不阻断分享，静默（下次 onShow 会拉取真实配额）
