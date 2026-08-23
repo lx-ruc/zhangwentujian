@@ -58,8 +58,7 @@
   align-items: center;
 }
 .head-row1 .head-text { flex: none; }
-/* 印章左右 auto：均分文字块右侧剩余空间 → 水平居中于空白处（垂直由 align-items 居中） */
-.head-row1 .score-seal { margin-left: auto; margin-right: auto; }
+
 .head-text {
   flex: none;
   min-width: 0;
@@ -88,6 +87,9 @@
   color: var(--ink-3);
 }
 .score-seal {
+  position: absolute;
+  left: 402rpx; top: 110rpx; /* 调位器拖定（相对页面容器，随内容滚动） */
+  z-index: 5;
   flex-shrink: 0;
   width: 208rpx; height: 208rpx;
   border: 5rpx solid var(--cinnabar);

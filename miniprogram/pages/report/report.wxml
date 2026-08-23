@@ -22,10 +22,6 @@
           </view>
         </block>
       </view>
-      <view class="score-seal">
-        <text class="score">{{funScore}}</text>
-        <text class="score-label">掌纹评分</text>
-      </view>
     </view>
     <view class="head-sub">
       <block wx:if="{{palmType}}">
