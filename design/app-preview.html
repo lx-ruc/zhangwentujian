@@ -241,7 +241,7 @@ body {
 .t1 { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-weight: 700; line-height: 1.4; }
 .t1-label { flex-shrink: 0; font-size: 22px; }
 .t1-name { flex-shrink: 0; font-weight: 900; color: var(--cinnabar); /* 字号内联：headFontSizes 反推 */ }
-.t2, .t3 { margin-top: 8px; line-height: 1.4; /* 字号内联反推铺满 */ }
+.t2, .t3 { margin-top: 8px; line-height: 1.4; /* 两行共用字号内联反推铺满，短行由字间距补满 */ }
 .t2-label, .t3-label { font-family: var(--font-display); color: var(--ink-2); }
 .t2-text { font-family: var(--font-display); font-weight: 600; color: var(--ink); }
 .t3-text { font-family: var(--font-display); font-weight: 700; color: var(--ink); }
@@ -491,8 +491,8 @@ body {
     <div class="p-report">
       <div class="r-head">
         <div class="t1"><b class="t1-label">你的巴掌TI是：</b><b class="t1-name" style="font-size:41.25px">燎原星火</b></div>
-        <div class="t2" style="font-size:15.15px"><span class="t2-label">掌纹中蕴含的性格底稿：</span><b class="t2-text">爱的时候，是真的烫。</b></div>
-        <div class="t3" style="font-size:15.95px"><span class="t3-label">和你最合拍的巴掌TI是：</span><b class="t3-text">磐石棋手／长途行者</b></div>
+        <div class="t2" style="font-size:15.95px;letter-spacing:5.3px"><span class="t2-label">性格底稿：</span><b class="t2-text">爱的时候，是真的烫。</b></div>
+        <div class="t3" style="font-size:15.95px;letter-spacing:0px"><span class="t3-label">和你最合拍的巴掌TI是：</span><b class="t3-text">磐石棋手／长途行者</b></div>
         <div class="type-pills">
           <span class="pill">掌纹属性·心系·进取</span>
           <span class="pill rare">掌纹稀有度·6%</span>
