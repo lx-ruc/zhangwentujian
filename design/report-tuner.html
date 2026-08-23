@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告页调位器 · 拖动评分印章</title>
+<style>
+:root {
+  --paper: #F9F5EC; --paper-2: #F0E9DA; --page-bg: #EBE3D1;
+  --ink: #26211A; --ink-2: #6F6759; --ink-3: #A79D8B;
+  --cinnabar: #BC3F21; --rule: #D8CFBB;
+  --serif: 'Songti SC', 'STSong', serif;
+  --mono: 'SF Mono', Menlo, monospace;
+  --body: -apple-system, 'PingFang SC', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--page-bg); font-family: var(--body); color: var(--ink); display: flex; gap: 28px; padding: 30px 24px 60px; align-items: flex-start; flex-wrap: wrap; }
+.panel { flex: none; width: 300px; }
+.panel h1 { font-family: var(--serif); font-size: 22px; margin-bottom: 10px; }
+.panel p { font-size: 13px; color: var(--ink-2); line-height: 1.8; }
+.coords {
+  margin-top: 16px; padding: 14px 16px; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 10px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.9; color: var(--ink);
+  word-break: break-all;
+}
+.coords b { color: var(--cinnabar); }
+button {
+  margin-top: 12px; width: 100%; padding: 12px; font-size: 14px;
+  background: var(--cinnabar); color: var(--paper); border: none; border-radius: 8px;
+  cursor: pointer; font-family: var(--body);
+}
+button:active { opacity: .85; }
+.note { margin-top: 10px; font-size: 12px; color: var(--ink-3); }
+
+/* ===== 手机（报告页 1:1，容器即坐标系） ===== */
+.phone-wrap { flex: none; }
+.phone {
+  width: 375px; height: 730px; overflow: hidden; position: relative;
+  background: var(--paper); border: 10px solid #1d1a15; border-radius: 44px;
+}
+.statusbar { height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 600; }
+/* 页面容器（与小程序 .page-report 同款：56rpx=28px 左右留白） */
+.page {
+  position: relative; height: calc(100% - 34px); overflow-y: auto; overflow-x: hidden;
+  padding: 12px 28px 40px;
+}
+.head { padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.head-row1 { display: flex; align-items: center; }
+.head-left { flex: none; }
+.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
+.title { display: block; margin-top: 4px; font-family: var(--serif); font-weight: 900; font-size: 24px; }
+.type-badge { margin-top: 5px; display: flex; align-items: center; gap: 7px; }
+.type-name { font-family: var(--serif); font-weight: 900; font-size: 22px; color: var(--cinnabar); }
+.type-seal {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border: 1.2px solid var(--cinnabar); border-radius: 4px; color: var(--cinnabar);
+  font-family: var(--serif); font-weight: 900; font-size: 14px; transform: rotate(-6deg);
+}
+.head-sub { margin-top: 8px; }
+.type-meta { display: block; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+.type-tagline { display: block; margin-top: 4px; font-family: var(--serif); font-size: 13px; letter-spacing: .4px; }
+.type-compat { display: block; margin-top: 3px; font-size: 10.5px; color: var(--ink-3); }
+.r-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-3); }
+
+/* ===== 可拖动的评分印章（absolute 挂在 .page） ===== */
+.score-seal {
+  position: absolute; z-index: 10;
+  width: 104px; height: 104px;
+  border: 2.5px solid var(--cinnabar); border-radius: 10px;
+  transform: rotate(-6deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 1.5px rgba(188,63,33,.2), 0 6px 18px rgba(38,33,26,.25);
+  background: rgba(188,63,33,.04);
+  cursor: grab; user-select: none; touch-action: none;
+}
+.score-seal:active { cursor: grabbing; }
+.score { font-family: var(--serif); font-weight: 900; font-size: 46px; line-height: 1; color: var(--cinnabar); }
+.score-label { margin-top: 3px; font-size: 10px; color: var(--cinnabar); letter-spacing: 1px; }
+.hint-chip {
+  position: absolute; z-index: 9; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 11px; color: var(--ink-3); pointer-events: none;
+}
+
+/* 手掌区（还原） */
+.palm-hero { margin-top: 12px; display: flex; justify-content: center; }
+.palm-box { position: relative; width: 280px; height: 294px; }
+.palm-img { width: 100%; height: 100%; transform: scaleX(-1); }
+.mark { position: absolute; }
+.dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--cinnabar); transform: translate(-50%, -50%); }
+.leader { position: absolute; height: 1px; background: var(--ink-3); transform-origin: 0 50%; }
+.tag {
+  position: absolute; display: flex; align-items: baseline; gap: 4px; white-space: nowrap;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 3px 8px;
+}
+.tag-name { font-family: var(--serif); font-weight: 700; font-size: 12px; }
+.tag-score { font-family: var(--mono); font-weight: 700; font-size: 15px; color: var(--cinnabar); }
+.mk-heart { left: 37.4%; top: 50.2%; }
+.mk-heart .leader { width: 114px; transform: rotate(-23.8deg); }
+.mk-heart .tag { left: 108px; top: -48px; transform: translate(0, -50%); }
+.mk-head { left: 39.8%; top: 56.5%; }
+.mk-head .leader { width: 64px; transform: rotate(177.4deg); }
+.mk-head .tag { left: -64px; top: 3px; transform: translate(-100%, -50%); }
+.mk-life { left: 44.8%; top: 65.4%; }
+.mk-life .leader { width: 104px; transform: rotate(0deg); }
+.mk-life .tag { left: 104px; top: 0; transform: translateY(-50%); }
+
+.card { margin-top: 16px; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+.card-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--ink-2); }
+.summary-text { display: block; margin-top: 10px; font-size: 14px; line-height: 1.9; }
+</style>
+</head>
+<body>
+
+<aside class="panel">
+  <h1>报告页调位器</h1>
+  <p>拖动右侧的<b style="color:var(--cinnabar)">评分印章</b>到你满意的位置，实时坐标如下。定好后点「复制坐标」发给 Claude，直接生成小程序代码。</p>
+  <div class="coords" id="coords">等待拖动…</div>
+  <button id="copy">复制坐标</button>
+  <p class="note">坐标 = 印章左上角相对页面容器的百分比（已换算 rpx）。垂直方向随内容滚动，建议拖到头部区域内。</p>
+</aside>
+
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="statusbar"><span>9:41</span><span>··· ᯤ ▮</span></div>
+    <div class="page" id="page">
+      <div class="head">
+        <div class="head-row1">
+          <div class="head-left">
+            <span class="eyebrow">PALM FIELD GUIDE</span>
+            <span class="title">你的巴掌TI是</span>
+            <div class="type-badge">
+              <span class="type-name">燎原星火</span>
+              <span class="type-seal">燎</span>
+            </div>
+          </div>
+        </div>
+        <div class="head-sub">
+          <span class="type-meta">心系·进取 · 掌纹稀有度 6%</span>
+          <span class="type-tagline">"爱的时候，是真的烫。"</span>
+          <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
+          <span class="r-meta">右手 · 巴掌TI 报告</span>
+        </div>
+      </div>
+
+      <div class="palm-hero">
+        <div class="palm-box">
+          <img class="palm-img" src="../miniprogram/assets/hand-plate.png" />
+          <div class="mark mk-heart"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">情感线</b><b class="tag-score">85</b></span></div>
+          <div class="mark mk-head"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">思维线</b><b class="tag-score">72</b></span></div>
+          <div class="mark mk-life"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">活力线</b><b class="tag-score">78</b></span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">总评 · SUMMARY</span>
+        <span class="summary-text">整体纹路清晰深长，三条主线走向分明。你的掌心透着一股稳中带劲的节奏感：想得清楚、做得踏实，情绪来得慢去得也慢，是朋友圈里公认的"靠谱担当"。以上为趣味解读，仅供参考。</span>
+      </div>
+
+      <!-- 可拖动印章 -->
+      <div class="score-seal" id="seal">
+        <span class="score">87</span>
+        <span class="score-label">掌纹评分</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const seal = document.getElementById('seal');
+const page = document.getElementById('page');
+const coordsEl = document.getElementById('coords');
+let latest = null;
+
+// 初始位置：文字块右侧空白区中心（head-row1 垂直中心）
+function initPos() {
+  const row1 = document.querySelector('.head-row1');
+  const left = document.querySelector('.head-left');
+  const pageR = page.getBoundingClientRect();
+  const rowR = row1.getBoundingClientRect();
+  const leftR = left.getBoundingClientRect();
+  const freeCenterX = (leftR.right + (pageR.left + pageR.width)) / 2;
+  const rowCenterY = rowR.top + rowR.height / 2 - pageR.top + page.scrollTop;
+  place(freeCenterX - pageR.left, rowCenterY);
+}
+
+function place(centerX, centerY) {
+  const w = seal.offsetWidth, h = seal.offsetHeight;
+  const x = centerX - w / 2, y = centerY - h / 2;
+  seal.style.left = x + 'px';
+  seal.style.top = y + 'px';
+  report(x, y);
+}
+
+function report(x, y) {
+  const W = page.clientWidth, H = page.scrollHeight;
+  const px = (x / W * 100), py = (y / H * 100);
+  latest = { x, y, px, py, W, H };
+  coordsEl.innerHTML =
+    `左上角：x=<b>${x.toFixed(0)}px</b>（${(px).toFixed(1)}%）  y=<b>${y.toFixed(0)}px</b>（${(py).toFixed(1)}%）<br>` +
+    `WXSS：<b>left: ${Math.round(x * 2)}rpx; top: ${Math.round(y * 2)}rpx;</b><br>` +
+    `（或百分比：left: ${px.toFixed(1)}%; top: ${py.toFixed(1)}%）`;
+}
+
+let dragging = false, offX = 0, offY = 0;
+seal.addEventListener('pointerdown', e => {
+  dragging = true;
+  seal.setPointerCapture(e.pointerId);
+  const r = seal.getBoundingClientRect();
+  offX = e.clientX - r.left; offY = e.clientY - r.top;
+  e.preventDefault();
+});
+seal.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const pageR = page.getBoundingClientRect();
+  const x = e.clientX - pageR.left - offX;
+  const y = e.clientY - pageR.top + page.scrollTop - offY;
+  seal.style.left = x + 'px'; seal.style.top = y + 'px';
+  report(x, y);
+});
+seal.addEventListener('pointerup', () => { dragging = false; });
+
+document.getElementById('copy').addEventListener('click', () => {
+  if (!latest) return;
+  const text = `评分印章位置：left: ${Math.round(latest.x * 2)}rpx; top: ${Math.round(latest.y * 2)}rpx（百分比 left ${latest.px.toFixed(1)}% / top ${latest.py.toFixed(1)}%）`;
+  navigator.clipboard.writeText(text).then(() => {
+    document.getElementById('copy').textContent = '已复制 ✓';
+    setTimeout(() => (document.getElementById('copy').textContent = '复制坐标'), 1500);
+  });
+});
+
+window.addEventListener('load', initPos);
+</script>
+</body>
+</html>
