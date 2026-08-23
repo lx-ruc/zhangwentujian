@@ -9,6 +9,8 @@ export const CONFIG = {
   },
   /** GLM-4.6V-Flash：免费、128K 上下文；docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash */
   MODEL: 'glm-4.6v-flash',
+  /** 免费模型过载(429/1305)耗尽重试后自动切换的付费兜底（单次约 1-2 分钱；账户余额不足(1113)时跳过走文案兜底） */
+  MODEL_FALLBACK: 'glm-4v-plus',
   /** 模型请求超时 ms */
   MODEL_TIMEOUT: 45_000,
   /** JSON 解析失败重试次数 */

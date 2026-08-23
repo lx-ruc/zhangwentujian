@@ -17,9 +17,9 @@ interface ZhipuRequestBody {
   response_format?: { type: string };
 }
 
-export function buildRequestBody(imageBase64: string, hand: string): ZhipuRequestBody {
+export function buildRequestBody(imageBase64: string, hand: string, model: string = CONFIG.MODEL): ZhipuRequestBody {
   return {
-    model: CONFIG.MODEL,
+    model,
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },
       {
@@ -84,28 +84,43 @@ function postJson(url: string, headers: Record<string, string>, body: string, ti
   });
 }
 
+/** 单模型限流退避：429 指数退避重试，返回首个非限流响应 */
+async function callModel(
+  apiKey: string,
+  imageBase64: string,
+  hand: string,
+  model: string,
+): Promise<HttpResult> {
+  let res: HttpResult = { status: 0, body: '' };
+  for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, RATE_LIMIT_BASE_DELAY * 2 ** (attempt - 1)));
+    }
+    res = await postJson(
+      ZHIPU_URL,
+      { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      JSON.stringify(buildRequestBody(imageBase64, hand, model)),
+      CONFIG.MODEL_TIMEOUT,
+    );
+    if (res.status !== RATE_LIMIT_STATUS) break; // 非限流（成功/其他错误）交给上层判定
+  }
+  return res;
+}
+
 export async function callZhipu(
   apiKey: string,
   imageBase64: string,
   hand: string,
 ): Promise<{ text: string; report: unknown }> {
-  let text = '';
-  for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
-    if (attempt > 0) {
-      await new Promise((r) => setTimeout(r, RATE_LIMIT_BASE_DELAY * 2 ** (attempt - 1)));
-    }
-    const res = await postJson(
-      ZHIPU_URL,
-      { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-      JSON.stringify(buildRequestBody(imageBase64, hand)),
-      CONFIG.MODEL_TIMEOUT,
-    );
-    if (res.status === RATE_LIMIT_STATUS && attempt < RATE_LIMIT_RETRIES) continue;
-    if (res.status !== 200) throw new Error(`zhipu http ${res.status}: ${res.body.slice(0, 200)}`);
-    const data = JSON.parse(res.body) as { choices?: Array<{ message?: { content?: string } }> };
-    text = data.choices?.[0]?.message?.content ?? '';
-    break;
+  let res = await callModel(apiKey, imageBase64, hand, CONFIG.MODEL);
+  if (res.status === RATE_LIMIT_STATUS && CONFIG.MODEL_FALLBACK) {
+    // 免费模型持续过载 → 切付费兜底（余额不足(1113)时这里会返回 400 类错误，走文案兜底）
+    console.warn('[zhipu] 主模型限流耗尽，切换兜底:', CONFIG.MODEL_FALLBACK);
+    res = await callModel(apiKey, imageBase64, hand, CONFIG.MODEL_FALLBACK);
   }
+  if (res.status !== 200) throw new Error(`zhipu http ${res.status}: ${res.body.slice(0, 200)}`);
+  const data = JSON.parse(res.body) as { choices?: Array<{ message?: { content?: string } }> };
+  const text = data.choices?.[0]?.message?.content ?? '';
   return { text, report: extractJson(text) };
 }
 
