@@ -8,6 +8,7 @@
     "pages/collection/collection",
     "pages/about/about"
   ],
+  "entryPagePath": "pages/index/index",
   "window": {
     "navigationBarBackgroundColor": "#F9F5EC",
     "navigationBarTextStyle": "black",
