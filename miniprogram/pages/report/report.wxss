@@ -377,31 +377,28 @@
   color: var(--cinnabar);
 }
 
-/* 行2/3：label 左 · 点线铺满中段 · 值右（整行两端锚定） */
+/* 行2/3：label 左 · 值右（两端锚定，字号加大，无点线） */
 .t2, .t3 {
   margin-top: 16rpx;
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
 }
 .t2-label, .t3-label {
   flex-shrink: 0;
-  font-size: 20rpx;
-  color: var(--ink-3);
-}
-.t2-fill, .t3-fill {
-  flex: 1 1 0;
-  min-width: 0;
-  align-self: center;
-  margin: 0 12rpx;
-  border-bottom: 2rpx dotted var(--ink-3);
+  font-size: 22rpx;
+  color: var(--ink-2);
 }
 .t2-text, .t3-text {
   flex-shrink: 0;
   font-family: var(--font-display);
-  font-size: 23rpx;
+  font-size: 26rpx;
   color: var(--ink);
 }
-.t3-text { font-weight: 700; }
+.t3-text {
+  font-size: 28rpx;
+  font-weight: 700;
+}
 
 /* 行4：胶囊组横向铺满整行（flex 拉伸 + 固定高度居中文字） */
 .type-pills {

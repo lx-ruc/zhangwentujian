@@ -120,7 +120,11 @@ const zhipuMock = require('../cloudfunctions/analyze/zhipu') as {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const analyzeIndex = require('../cloudfunctions/analyze/index');
 
-const today = () => new Date().toISOString().slice(0, 10);
+// 与 cloudfunctions/analyze/quota.ts 的 todayKey 一致：本地时区 YYYY-MM-DD
+const today = () => {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+};
 
 /** 一份完全合法的模型报告（不触发违禁词） */
 const GOOD_REPORT: ReportShape = {
