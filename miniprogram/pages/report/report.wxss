@@ -378,6 +378,21 @@
   border-color: var(--cinnabar);
   color: var(--cinnabar);
 }
+/* 掌纹印章：类型名代表字（燎原星火→燎），行尾方章 */
+.type-seal {
+  margin-left: 6rpx;
+  width: 56rpx; height: 56rpx;
+  display: flex; align-items: center; justify-content: center;
+  border: 3rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 30rpx;
+  transform: rotate(-6deg);
+  box-shadow: inset 0 0 0 2rpx rgba(188, 63, 33, 0.2);
+  background: rgba(188, 63, 33, 0.04);
+}
 
 /* ===== 头部四行式（仅四行） ===== */
 .head { padding-bottom: 28rpx; border-bottom: 1rpx solid var(--rule); }
@@ -423,4 +438,19 @@
 .pill.rare {
   border-color: var(--cinnabar);
   color: var(--cinnabar);
+}
+/* 掌纹印章：类型名代表字（燎原星火→燎），行尾方章 */
+.type-seal {
+  margin-left: 6rpx;
+  width: 56rpx; height: 56rpx;
+  display: flex; align-items: center; justify-content: center;
+  border: 3rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 30rpx;
+  transform: rotate(-6deg);
+  box-shadow: inset 0 0 0 2rpx rgba(188, 63, 33, 0.2);
+  background: rgba(188, 63, 33, 0.04);
 }

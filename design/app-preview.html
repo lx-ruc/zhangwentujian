@@ -245,6 +245,13 @@ body {
 .type-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
 .pill { padding: 4px 11px; border: 1px solid var(--rule); border-radius: 999px; font-size: 11px; color: var(--ink-2); background: var(--paper); }
 .pill.rare { border-color: var(--cinnabar); color: var(--cinnabar); }
+.type-seal {
+  margin-left: 3px; width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--cinnabar); border-radius: 4px;
+  color: var(--cinnabar); font-family: var(--font-display); font-weight: 900; font-size: 15px;
+  transform: rotate(-6deg); box-shadow: inset 0 0 0 1px rgba(188,63,33,.2); background: rgba(188,63,33,.04);
+}
 /* 左右手切换器（预览专用） */
 .hand-switch { display: flex; gap: 8px; margin-top: 10px; }
 .hs-btn { flex: 1; padding: 8px 0; font-size: 13px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); color: var(--ink-2); cursor: pointer; font-family: var(--font-body); }
@@ -486,6 +493,7 @@ body {
         <div class="type-pills">
           <span class="pill">掌纹属性·心系·进取</span>
           <span class="pill rare">掌纹稀有度·6%</span>
+          <span class="type-seal">燎</span>
         </div>
       </div>
       <div class="hand-switch">

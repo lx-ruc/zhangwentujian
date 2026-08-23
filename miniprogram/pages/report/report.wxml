@@ -16,6 +16,7 @@
     <view class="type-pills">
       <text class="pill">掌纹属性·{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
       <text class="pill rare">掌纹稀有度·{{palmType.rarity}}</text>
+      <view class="type-seal">{{palmType.seal}}</view>
     </view>
   </view>
 
