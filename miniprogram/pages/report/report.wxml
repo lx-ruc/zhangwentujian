@@ -10,23 +10,30 @@
 
   <!-- 头部：标题 + 评分印章 -->
   <view class="head">
-    <view class="head-text">
-      <text class="eyebrow">PALM FIELD GUIDE</text>
-      <text class="title">你的巴掌TI是</text>
+    <!-- 行1：文字块 + 评分印章左右并排（印章紧随其后）；长文案下沉全宽 -->
+    <view class="head-row1">
+      <view class="head-text">
+        <text class="eyebrow">PALM FIELD GUIDE</text>
+        <text class="title">你的巴掌TI是</text>
+        <block wx:if="{{palmType}}">
+          <view class="type-badge">
+            <text class="type-name">{{palmType.name}}</text>
+            <text class="type-seal">{{palmType.seal}}</text>
+          </view>
+        </block>
+      </view>
+      <view class="score-seal">
+        <text class="score">{{funScore}}</text>
+        <text class="score-label">掌纹评分</text>
+      </view>
+    </view>
+    <view class="head-sub">
       <block wx:if="{{palmType}}">
-        <view class="type-badge">
-          <text class="type-name">{{palmType.name}}</text>
-          <text class="type-seal">{{palmType.seal}}</text>
-        </view>
         <text class="type-meta">{{palmType.dominantLabel}}·{{palmType.styleLabel}} · 掌纹稀有度 {{palmType.rarity}}</text>
         <text class="type-tagline">"{{palmType.tagline}}"</text>
         <text class="type-compat">最合拍：{{palmType.compat[0]}} / {{palmType.compat[1]}}</text>
       </block>
       <text class="meta">{{handText}} · 巴掌TI 报告</text>
-    </view>
-    <view class="score-seal">
-      <text class="score">{{funScore}}</text>
-      <text class="score-label">掌纹评分</text>
     </view>
   </view>
 
