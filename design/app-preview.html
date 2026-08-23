@@ -237,15 +237,18 @@ body {
 .mk-life .leader { width: 88px; left: 0; top: 0; transform: rotate(180deg); }
 .mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
 .r-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-bottom: 16px; border-bottom: 1px solid var(--rule);
+  padding-bottom: 14px; border-bottom: 1px solid var(--rule);
 }
+/* 行1：文字块自适应宽 + 印章紧随其后（中间 16px，消除大空隙）；长文案下沉全宽 */
+.head-row1 { display: flex; align-items: center; gap: 16px; }
+.head-left { flex: none; }
+.head-sub { margin-top: 8px; }
 .r-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
 .r-title { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 900; font-size: 24px; letter-spacing: 0.5px; }
 .r-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-3); }
 .score-seal {
   width: 104px; height: 104px; flex: none;
-  position: relative; left: -30px; /* 斜压文字区右缘，收掉中部空档（与小程序 report.wxss 同步） */
+  /* 紧随文字块（head-row1 布局），不再左移 */
   border: 2.5px solid var(--cinnabar); border-radius: 10px;
   transform: rotate(-6deg);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -485,19 +488,23 @@ body {
   <div class="screen" id="s-report">
     <div class="p-report">
       <div class="r-head">
-        <div>
-          <span class="r-eyebrow">PALM FIELD GUIDE</span>
-          <span class="r-title">你的巴掌TI是</span>
-          <div class="type-badge">
-            <span class="type-name">燎原星火</span>
-            <span class="type-seal">燎</span>
+        <div class="head-row1">
+          <div class="head-left">
+            <span class="r-eyebrow">PALM FIELD GUIDE</span>
+            <span class="r-title">你的巴掌TI是</span>
+            <div class="type-badge">
+              <span class="type-name">燎原星火</span>
+              <span class="type-seal">燎</span>
+            </div>
           </div>
+          <div class="score-seal"><span class="score">87</span><span class="score-label">掌纹评分</span></div>
+        </div>
+        <div class="head-sub">
           <span class="type-meta">心系·进取 · 掌纹稀有度 6%</span>
           <span class="type-tagline">"爱的时候，是真的烫。"</span>
           <span class="type-compat">最合拍：磐石棋手 / 长途行者</span>
           <span class="r-meta">右手 · 巴掌TI 报告</span>
         </div>
-        <div class="score-seal"><span class="score">87</span><span class="score-label">掌纹评分</span></div>
       </div>
       <div class="palm-hero">
         <div class="palm-box right-hand">

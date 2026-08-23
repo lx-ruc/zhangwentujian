@@ -36,16 +36,21 @@
 
 /* ===== 头部 ===== */
 .head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 32rpx;
+  padding-bottom: 28rpx;
   border-bottom: 1rpx solid var(--rule);
 }
-/* 左列占满剩余宽度：各行文字延伸向印章，消除中间大空位 */
+/* 行1：文字块自适应 + 印章紧随（22rpx 间隙）；长文案下沉全宽行 */
+.head-row1 {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
 .head-text {
-  flex: 1;
+  flex: none;
   min-width: 0;
+}
+.head-sub {
+  margin-top: 16rpx;
 }
 .eyebrow {
   font-family: var(--font-mono);
@@ -70,9 +75,6 @@
 .score-seal {
   flex-shrink: 0;
   width: 208rpx; height: 208rpx;
-  /* 相对定位左移（不受 flex 重分配抵消）：印章斜压文字区右缘，收掉中部空档（HTML 预览实测定稿） */
-  position: relative;
-  left: -60rpx;
   border: 5rpx solid var(--cinnabar);
   border-radius: 20rpx;
   transform: rotate(-6deg);
