@@ -1,5 +1,6 @@
-import { DISCLAIMER } from '../../config/index';
+import { CONFIG, DISCLAIMER } from '../../config/index';
 import { toDimensions, clampScore } from '../../utils/format';
+import { callFunction } from '../../utils/request';
 import { getNavBelowPx } from '../../utils/nav';
 import { MOCK_REPORT } from '../../utils/mock-report';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
@@ -167,8 +168,10 @@ Page({
         success: (out) => {
           wx.saveImageToPhotosAlbum({
             filePath: out.tempFilePath,
-            success: () =>
-              wx.showToast({ title: '已保存到相册', icon: 'success' }),
+            success: () => {
+              // 海报→朋友圈等效分享（iOS 无"分享到朋友圈"接口，存海报手动发是主路径）：挂 timeline 奖励
+              this.grantTimelineViaPoster();
+            },
             fail: (err) => {
               if (String(err.errMsg).includes('auth')) {
                 wx.showModal({
@@ -189,6 +192,23 @@ Page({
   },
 
   closePoster() { this.setData({ showPoster: false }); },
+
+  /** 保存海报 → 朋友圈渠道 +3（与菜单"分享到朋友圈"共用 timeline 每日限次，防刷一致） */
+  async grantTimelineViaPoster() {
+    try {
+      const data = await callFunction<{ granted: number; remaining: number }>(CONFIG.FN_ANALYZE, {
+        action: 'shareBonus',
+        channel: 'timeline',
+      });
+      if (data.granted > 0) {
+        wx.showToast({ title: '海报已保存 · 朋友圈奖励 +3，去晒吧', icon: 'none', duration: 2500 });
+      } else {
+        wx.showToast({ title: '海报已保存到相册（今日朋友圈奖励已领完）', icon: 'none', duration: 2200 });
+      }
+    } catch {
+      wx.showToast({ title: '已保存到相册', icon: 'success' });
+    }
+  },
 
   /** 兜底横幅的重拍入口：回到拍摄页（本次未扣次数，重试无心理负担） */
   retake() { wx.redirectTo({ url: '/pages/capture/capture' }); },
