@@ -1,3 +1,15 @@
+/* ===== 页面容器（重构时曾被误删，恢复：56rpx 左右留白 + 禁横滚；padding-top 由 navTop 内联提供） ===== */
+.page-report {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 56rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  position: relative;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* ===== 兜底横幅（提醒级：墨底 + 朱砂细节，非错误级） ===== */
 .fallback-banner {
   display: flex;
