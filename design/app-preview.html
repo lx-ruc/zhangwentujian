@@ -238,16 +238,18 @@ body {
 .mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
 .r-head { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
 .t1 { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-weight: 700; line-height: 1.4; }
-.t1-label { font-size: 22px; }
-.t1-name { font-weight: 900; font-size: 29px; color: var(--cinnabar); }
-.t2, .t3 { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
-.t2-text { font-family: var(--font-display); color: var(--ink); }
-.t3-text { font-family: var(--font-display); font-weight: 700; color: var(--ink); }
-.type-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
-.pill { padding: 4px 11px; border: 1px solid var(--rule); border-radius: 999px; font-size: 11px; color: var(--ink-2); background: var(--paper); }
-.pill.rare { border-color: var(--cinnabar); color: var(--cinnabar); }
+.t1-label { font-size: 24px; letter-spacing: 1px; }
+.t1-name { font-weight: 900; font-size: 34px; letter-spacing: 1px; color: var(--cinnabar); }
+.t2, .t3 { margin-top: 8px; display: flex; align-items: baseline; }
+.t2-label, .t3-label { flex-shrink: 0; font-size: 10px; color: var(--ink-3); }
+.t2-fill, .t3-fill { flex: 1 1 0; min-width: 0; align-self: center; margin: 0 6px; border-bottom: 1px dotted var(--ink-3); }
+.t2-text, .t3-text { flex-shrink: 0; font-family: var(--font-display); font-size: 11.5px; color: var(--ink); }
+.t3-text { font-weight: 700; }
+.type-pills { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+.pill { flex: 1.15; display: flex; align-items: center; justify-content: center; height: 28px; padding: 0 12px; box-sizing: border-box; line-height: 1; border: 1px solid var(--rule); border-radius: 999px; font-size: 12px; color: var(--ink-2); background: var(--paper); }
+.pill.rare { flex: 1; border-color: var(--cinnabar); color: var(--cinnabar); }
 .type-seal {
-  margin-left: 3px; width: 28px; height: 28px;
+  flex-shrink: 0; width: 28px; height: 28px;
   display: inline-flex; align-items: center; justify-content: center;
   border: 1.5px solid var(--cinnabar); border-radius: 4px;
   color: var(--cinnabar); font-family: var(--font-display); font-weight: 900; font-size: 15px;
@@ -489,8 +491,8 @@ body {
     <div class="p-report">
       <div class="r-head">
         <div class="t1"><b class="t1-label">你的巴掌TI是：</b><b class="t1-name">燎原星火</b></div>
-        <div class="t2">掌纹中蕴含的性格底稿：<b class="t2-text">"爱的时候，是真的烫。"</b></div>
-        <div class="t3">和你最合拍的巴掌TI是：<b class="t3-text">磐石棋手 / 长途行者</b></div>
+        <div class="t2"><span class="t2-label">掌纹中蕴含的性格底稿：</span><i class="t2-fill"></i><b class="t2-text">"爱的时候，是真的烫。"</b></div>
+        <div class="t3"><span class="t3-label">和你最合拍的巴掌TI是：</span><i class="t3-fill"></i><b class="t3-text">磐石棋手 / 长途行者</b></div>
         <div class="type-pills">
           <span class="pill">掌纹属性·心系·进取</span>
           <span class="pill rare">掌纹稀有度·6%</span>

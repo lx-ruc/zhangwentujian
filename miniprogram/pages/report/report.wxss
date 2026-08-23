@@ -39,25 +39,18 @@
 }
 .fallback-btn {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 14rpx 28rpx;
   font-size: 24rpx;
+  line-height: 1;
   color: #fff;
   background: var(--cinnabar);
   border-radius: 999rpx;
 }
 
-/* ===== 头部 ===== */
-.head {
-  padding-bottom: 28rpx;
-  border-bottom: 1rpx solid var(--rule);
-}
-/* 行1：文字块自适应 + 印章紧随（22rpx 间隙）；长文案下沉全宽行 */
-.head-row1 .head-text { flex: none; }
-
-.head-text {
-  flex: none;
-  min-width: 0;
-}
+/* ===== 头部（四行式样式见文末「头部四行式」） ===== */
 /* ===== 手掌主视觉：三线分数标注在线上 ===== */
 .palm-hero {
   position: relative;
@@ -358,44 +351,13 @@
 .link { padding: 8rpx 12rpx; }
 .sep { color: var(--rule); }
 
-/* ===== 头部占满布局（评分印章已移除，分数嵌 eyebrow 行右端） ===== */
-/* 属性徽章组：占满一行 */
-.type-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 14rpx;
-}
-.pill {
-  padding: 6rpx 20rpx;
-  border: 1rpx solid var(--rule);
-  border-radius: 999rpx;
-  font-size: 22rpx;
-  color: var(--ink-2);
-  background: var(--paper);
-}
-.pill.rare {
-  border-color: var(--cinnabar);
-  color: var(--cinnabar);
-}
-/* 掌纹印章：类型名代表字（燎原星火→燎），行尾方章 */
-.type-seal {
-  margin-left: 6rpx;
-  width: 56rpx; height: 56rpx;
-  display: flex; align-items: center; justify-content: center;
-  border: 3rpx solid var(--cinnabar);
-  border-radius: 8rpx;
-  color: var(--cinnabar);
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 30rpx;
-  transform: rotate(-6deg);
-  box-shadow: inset 0 0 0 2rpx rgba(188, 63, 33, 0.2);
-  background: rgba(188, 63, 33, 0.04);
+/* ===== 头部四行式（四行横向铺满：两端锚定 + 点线填充 + 胶囊铺满） ===== */
+.head {
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid var(--rule);
 }
 
-/* ===== 头部四行式（仅四行） ===== */
-.head { padding-bottom: 28rpx; border-bottom: 1rpx solid var(--rule); }
+/* 行1：label 左 · 类型名右（基线对齐，字号加大贴近两端） */
 .t1 {
   display: flex;
   align-items: baseline;
@@ -405,48 +367,72 @@
   line-height: 1.4;
 }
 .t1-label {
-  font-size: 44rpx;
+  font-size: 48rpx;
+  letter-spacing: 2rpx;
 }
 .t1-name {
   font-weight: 900;
-  font-size: 58rpx;
+  font-size: 68rpx;
+  letter-spacing: 2rpx;
   color: var(--cinnabar);
 }
+
+/* 行2/3：label 左 · 点线铺满中段 · 值右（整行两端锚定） */
 .t2, .t3 {
-  margin-top: 12rpx;
-  font-size: 26rpx;
-  color: var(--ink-2);
+  margin-top: 16rpx;
+  display: flex;
+  align-items: baseline;
 }
-.t2-text {
+.t2-label, .t3-label {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  color: var(--ink-3);
+}
+.t2-fill, .t3-fill {
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: center;
+  margin: 0 12rpx;
+  border-bottom: 2rpx dotted var(--ink-3);
+}
+.t2-text, .t3-text {
+  flex-shrink: 0;
   font-family: var(--font-display);
+  font-size: 23rpx;
   color: var(--ink);
 }
-.t3-text {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--ink);
-}
+.t3-text { font-weight: 700; }
+
+/* 行4：胶囊组横向铺满整行（flex 拉伸 + 固定高度居中文字） */
 .type-pills {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 12rpx;
-  margin-top: 18rpx;
+  margin-top: 20rpx;
 }
 .pill {
-  padding: 8rpx 22rpx;
+  flex: 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  line-height: 1;
   border: 1rpx solid var(--rule);
   border-radius: 999rpx;
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--ink-2);
   background: var(--paper);
 }
 .pill.rare {
+  flex: 1;
   border-color: var(--cinnabar);
   color: var(--cinnabar);
 }
 /* 掌纹印章：类型名代表字（燎原星火→燎），行尾方章 */
 .type-seal {
-  margin-left: 6rpx;
+  flex-shrink: 0;
   width: 56rpx; height: 56rpx;
   display: flex; align-items: center; justify-content: center;
   border: 3rpx solid var(--cinnabar);
