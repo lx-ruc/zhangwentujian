@@ -158,15 +158,15 @@
 /* 三条线几何：水平引线（与首页 PLATE Ⅰ 同语言），标签边缘精确贴线端，y 错开不叠 */
 /* 情感线：向左引出（y 50.2%） */
 .mk-heart { left: 62.6%; top: 50.2%; }
-.mk-heart .leader { width: 230rpx; left: -230rpx; top: 0; transform: translateY(-50%); }
-.mk-heart .tag { left: -230rpx; top: 0; transform: translate(-100%, -50%); }
+.mk-heart .leader { width: 228rpx; transform: rotate(198.4deg); }
+.mk-heart .tag { left: -216rpx; top: -72rpx; transform: translate(-100%, -50%); }
 /* 思维线：向右引出（y 56.5%，与情感线分居两侧） */
 .mk-head { left: 60.2%; top: 56.5%; }
-.mk-head .leader { width: 120rpx; height: 2rpx; left: 0; top: 0; transform: translateY(-50%); }
+.mk-head .leader { width: 117rpx; transform: rotate(2.9deg); }
 .mk-head .tag { left: 116rpx; top: 6rpx; transform: translateY(-50%); }
 /* 活力线：向左下引出（y 65.4%，与情感线同侧但相隔 15% 高度） */
 .mk-life { left: 55.2%; top: 65.4%; }
-.mk-life .leader { width: 210rpx; left: -210rpx; top: 0; transform: translateY(-50%); }
+.mk-life .leader { width: 175rpx; transform: rotate(180deg); }
 .mk-life .tag { left: -175rpx; top: 0; transform: translate(-100%, -50%); }
 /* ===== 右手版标注几何（镜像后线位 x→100-x，引线方向反转） ===== */
 .right-hand .mk-heart { left: 37.4%; top: 50.2%; }

@@ -39,7 +39,7 @@
 
   <!-- 左右手 -->
   <view class="hand-pick">
-    <text class="pick on" data-hand="right" bindtap="pickHand">右手 · 常用手</text>
+    <text class="pick {{hand === 'right' ? 'on' : ''}}" data-hand="right" bindtap="pickHand">右手 · 常用手</text>
     <text class="pick {{hand === 'left' ? 'on' : ''}}" data-hand="left" bindtap="pickHand">左手</text>
   </view>
 
