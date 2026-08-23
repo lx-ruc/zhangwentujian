@@ -14,6 +14,8 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 
 interface AnalyzeEvent {
   action: 'analyze' | 'quota' | 'shareBonus' | 'history';
+  /** 开发版标记（小程序 envVersion=develop 传入）：不限次且不消耗；上传后 trial/release 无此标记自动恢复限次 */
+  dev?: boolean;
   channel?: 'forward' | 'timeline';
   fileID?: string;
   hand?: 'left' | 'right';
@@ -103,9 +105,10 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     // ---- analyze ----
     if (!event.fileID || !event.hand) return err('PARAM_MISSING', '参数缺失');
 
-    // 1) 配额（云端权威）
+    // 1) 配额（云端权威；开发版免限——envVersion=develop 不可伪造，上传后自动恢复限次）
+    const devUnlimited = event.dev === true;
     const quota = await getUserQuota(OPENID);
-    if (!hasQuota(quota)) {
+    if (!devUnlimited && !hasQuota(quota)) {
       // 配额不足也要删掉已上传的图，不留垃圾/隐私残留
       await safeDeleteFile(event.fileID);
       return err('QUOTA_EXCEEDED', '今日次数已用完');
@@ -140,7 +143,7 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
     // 6) 消耗配额（不可变计算 + upsert）——兜底不扣：本次尝试不计入，users 零写入
     // remaining 统一 remainingOf 口径（bonus 感知），与 quota/shareBonus action 一致
     let remaining = remainingOf(quota);
-    if (!fallback) {
+    if (!fallback && !devUnlimited) {
       const next = consume(quota);
       await upsertUserQuota(OPENID, next);
       remaining = remainingOf(next);
