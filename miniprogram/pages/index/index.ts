@@ -2,6 +2,7 @@ import { CONFIG, DISCLAIMER } from '../../config/index';
 import { remainingQuota, normalizeQuotaState, QuotaState } from '../../utils/quota';
 import { callFunction } from '../../utils/request';
 import { shareDefault, isIOS } from '../../utils/share';
+import { isDevEnv } from '../../utils/env';
 import { getNavTopPx } from '../../utils/nav';
 
 Page({
@@ -15,6 +16,11 @@ Page({
   },
 
   onShow() {
+    // 开发版不限次：直接满额展示（本地缓存与云端权威值都不看）
+    if (isDevEnv()) {
+      this.refreshRemaining(Number(CONFIG.DAILY_QUOTA));
+      return;
+    }
     // 展示层：本地缓存先行，再异步拉云端权威配额（含分享奖励）
     const state = normalizeQuotaState(wx.getStorageSync('quota'));
     this.refreshRemaining(remainingQuota(state, new Date(), CONFIG.DAILY_QUOTA));
@@ -32,6 +38,7 @@ Page({
   },
 
   async syncCloudQuota() {
+    if (isDevEnv()) return; // 开发版不拉云端配额
     try {
       const data = await callFunction<{ remaining: number }>(CONFIG.FN_ANALYZE, { action: 'quota' });
       if (typeof data.remaining === 'number') {
