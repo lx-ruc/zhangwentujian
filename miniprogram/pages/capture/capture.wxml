@@ -43,12 +43,6 @@
     <text class="pick {{hand === 'left' ? 'on' : ''}}" data-hand="left" bindtap="pickHand">左手</text>
   </view>
 
-  <!-- 拍摄提示 -->
-  <view class="tips">
-    <view class="tip good"><text class="tag">TIP · 宜</text>光线明亮均匀，掌心无阴影</view>
-    <view class="tip bad"><text class="tag">TIP · 忌</text>移开戒指、手表等饰品</view>
-  </view>
-
   <!-- 快门：仅拍摄 -->
   <view class="shutter-row">
     <view class="shutter" bindtap="shoot" />
