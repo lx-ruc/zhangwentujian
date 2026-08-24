@@ -136,32 +136,6 @@
   font-weight: 600;
 }
 
-/* ===== 提示 ===== */
-.tips { margin-top: 28rpx; display: flex; flex-direction: column; gap: 14rpx; }
-.tip {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  font-size: 25rpx;
-  color: var(--ink-2);
-}
-.tip .tag {
-  font-family: var(--font-mono);
-  font-size: 19rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 6rpx;
-  letter-spacing: 1rpx;
-}
-.tip.good .tag { color: var(--cinnabar); border: 1rpx solid var(--cinnabar); }
-.tip.bad .tag { color: var(--ink-3); border: 1rpx solid var(--ink-3); }
-
-.privacy-hint {
-  margin-top: 24rpx;
-  text-align: center;
-  font-size: 22rpx;
-  color: var(--cinnabar);
-}
-
 /* ===== 快门（仅拍摄，居中） ===== */
 .shutter-row {
   margin-top: 36rpx;
