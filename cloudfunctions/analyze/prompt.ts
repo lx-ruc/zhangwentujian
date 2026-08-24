@@ -48,7 +48,7 @@ export const SYSTEM_PROMPT = `你是一位轻松、专业的掌纹文化解读�
   "career": "事业倾向，40-80字",
   "love": "感情倾向，40-80字",
   "wealth": "财富态度倾向，40-80字",
-  "scenes": {
+  "scenes": {（必填字段！缺少 scenes 视为格式错误，必须完整输出三场景）
     "work": { "traits": ["具体特质2条，每条20-45字"], "cautions": ["留意事项2条，每条20-45字"] },
     "life": { "traits": ["具体特质2条"], "cautions": ["留意事项2条"] },
     "mind": { "traits": ["精力/压力特质2条"], "cautions": ["留意事项2条"] }
