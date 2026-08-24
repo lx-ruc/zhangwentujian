@@ -6,7 +6,7 @@
 import * as cloud from 'wx-server-sdk';
 import { CONFIG } from './config';
 import { callZhipu } from './zhipu';
-import { validateReport, type ReportShape } from './validate';
+import { validateReport, GENERIC_SCENES, type ReportShape } from './validate';
 import { hasQuota, consume, grantShareBonus, remainingOf, initialUserQuota, type UserQuota } from './quota';
 
 // DYNAMIC_CURRENT_ENV 运行时为合法 env 标识，wx-server-sdk 2.x typing 误标为 string-only
@@ -124,6 +124,8 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
 
     // 3~4) 模型 + 校验（失败重试 1 次），两次不过 → 兜底（不白屏）
     const { report, fallback, notPalm, lastError } = await analyzeWithRetry(apiKey, imageBase64, event.hand);
+    // 模型偶发缺 scenes（实测约半数）：注入通用场景，保住「场景速读」卡片（其余字段仍个性化）
+    if (report && !report.scenes) report.scenes = GENERIC_SCENES;
 
     // 非手掌照片：终态拒绝——不重试/不落库/不扣配额，提示重拍
     if (notPalm) {
