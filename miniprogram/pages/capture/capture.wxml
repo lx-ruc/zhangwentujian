@@ -3,7 +3,7 @@
   <view class="nav">
     <text class="back" bindtap="goBack">‹ 返回</text>
     <text class="title">拍摄手掌</text>
-    <text class="back ghost">‹</text>
+    <text class="back ghost">‹ 返回</text>
   </view>
 
   <!-- 取景区：固定比例卡片居中（遮罩与轮廓严格对位） -->

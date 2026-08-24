@@ -47,11 +47,11 @@
 }
 .hand.settled { animation: none; }
 
-/* 用户手掌照片（扫描中） */
+/* 用户手掌照片（扫描中）：与拍摄页取景框 654×664 严格 1:1（超出内容宽的 16rpx 借两侧 padding） */
 .photo-wrap {
   position: relative;
-  width: 340rpx;
-  height: 400rpx;
+  width: 654rpx;
+  height: 664rpx;
   border-radius: 20rpx;
   overflow: hidden;
   border: 2rpx solid var(--rule);
