@@ -30,13 +30,13 @@ Key decisions that span multiple files:
 - **Share system**: all copy in `utils/share.ts` (hooks: type name + rarity). Canvas poster in `utils/poster.ts` (paper/ink/cinnabar style; disclaimer required on poster).
 - **Local data loop (until Phase 2)**: reports persist to storage `reports` (max 20), quota in storage `quota`; `utils/mock-report.ts` is the fallback when cloud fn is undeployed.
 - **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
-- **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: 掌纹性格测试.
+- **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: 掌纹测运.
 
 ## Compliance Rules (critical — project-killing if violated)
 
 WeChat bans 算命/占卜/看相 content as 封建迷信. All user-facing copy and generated content must follow:
 
-1. **Banned vocabulary** in names, titles, UI copy: 手相、算命、占卜、大师、运势、命运、风水、吉凶 (and equivalents in share cards/posters). Product name is 「掌纹性格测试」 — renamed 2026-08-28 after 「掌纹测运」 was rejected at content review 2026-08-24 (reasons: 算命内容 + 深度合成/个人主体). 「运」 is now banned EVERYWHERE, including the name and UI copy; generated content must additionally filter 运气、好运、转运、旺 (enforced in validate.ts). UI copy must never claim AI 生成/AI 读取/AI 分析 — reviewer screens首屏+关于页. NOTE: registered mini-program name must be changed separately in mp.weixin.qq.com console.
+1. **Banned vocabulary** in names, titles, UI copy: 手相、算命、占卜、大师、运势、命运、风水、吉凶 (and equivalents in share cards/posters). Product name stays 「掌纹测运」 — user decision 2026-08-28: keep registered name, only page CONTENT was compliance-cleaned after content-review rejection 2026-08-24 (reasons: 算命内容 + 深度合成/个人主体). 「运」 is therefore allowed ONLY in the product name itself; all other UI copy and generated content must additionally filter 运气、好运、转运、旺 (enforced in validate.ts). UI copy must never claim AI 生成/AI 读取/AI 分析 — reviewer screens 首屏+关于页. Fallback if name is ever rejected at review: 掌纹性格测试.
 2. **Banned content** in reports (enforced via prompt + validate.ts filter): lifespan/death predictions, health diagnoses, absolute claims (必定/命中注定), disaster/凶险 statements
 3. **Required disclaimer** on index, report page, and share poster: content is 趣味解读, 仅供娱乐
 4. Reports use hedged phrasing only: 倾向于/可能/仅供参考
