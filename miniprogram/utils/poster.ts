@@ -143,7 +143,7 @@ export function drawPoster(
   // 引流
   ctx.fillStyle = C.ink2;
   ctx.font = `500 26px ${FONT_MONO}`;
-  drawTracked(ctx, '微信搜索「掌纹测运」', W / 2, 1152, 6);
+  drawTracked(ctx, '微信搜索「掌纹性格测试」', W / 2, 1152, 6);
   ctx.textAlign = 'left';
 }
 

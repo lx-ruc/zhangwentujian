@@ -30,11 +30,12 @@ npm run deploy:cloud
 ### ③ 推真机（免扫码）
 
 ```bash
-/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto-preview --project /Users/lixin/shouxiang/zhangwentujian
+/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto-preview --project /Users/lixin/shouxiang
 ```
 
+- **`--project` 必须是仓库根目录** `/Users/lixin/shouxiang`（`zhangwentujian` 只是 projectname，不是目录；旧命令曾因无效路径解析出空入口，导致真机冷启动 `Page "" is not found` + `onPageNotFound(空路径)`）
 - **auto-preview 推到用户已配对的手机**，自动拉起小程序，无需扫码
-- 走现有 IDE（http://127.0.0.1:33800），**不要 automator.launch 新实例**（会要求重新登录）
+- 走现有 IDE（HTTP 端口动态分配，如 53894），**不要 automator.launch 新实例**（会要求重新登录）；首次调用若报 core.wxvpkg 栈错误，多为 IDE server 冷启动，重跑一次即成功
 - `preview` 子命令是生成二维码给用户扫——用户已明确偏好 auto-preview，除非用户主动要二维码
 
 ### ④ 提交推送
@@ -84,4 +85,4 @@ node /tmp/bonus-test2.js  # 参考其写法：automator.launch + evaluate(wx.clo
 - **配额/奖励字段必须全量写库**：`upsertUserQuota` 漏字段会造成"内存生效、落库丢失"（按钮红→白闪回）
 - **跨日重置要清全部计数字段**：漏清 shareCounters 导致旧计数永久占用每日限次（隐藏 5 天的 bug）
 - **`import type` 不可用**：自动真机调试管线要求，全量普通 import（dd60948）
-- 编译条件/页面路径空值 → `Page "" is not found`：已由显式 `entryPagePath` + `onPageNotFound` 兜底双保险
+- `Page "" is not found` + `onPageNotFound(空路径)`：根因是 auto-preview 传了无效 `--project` 路径（zhangwentujian 目录不存在），CLI 入口解析失败但 IDE 仍推送 → 冷启动被注入空路径。已改用正确路径 + 显式 `entryPagePath` + `onPageNotFound` 三重防护（2026-08-24）

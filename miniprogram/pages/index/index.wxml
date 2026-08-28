@@ -1,9 +1,9 @@
 <view class="page-index" style="padding-top:{{navTop}}px">
   <!-- 品牌头 -->
   <view class="hero">
-    <text class="eyebrow">Palm Insight · 趣味掌纹解读</text>
+    <text class="eyebrow">Palm Test · 趣味人格测试</text>
     <view class="display">你的性格底稿\n写在<text class="em">掌心</text></view>
-    <text class="lede">拍摄一张手掌照片，AI 读取三条主线的形态，为你生成一份性格倾向报告。</text>
+    <text class="lede">拍一张手掌照片，抽取你的专属掌纹人格签——12 型人格图鉴等你收集。趣味测试，仅供娱乐。</text>
   </view>
 
   <!-- 手掌图鉴 plate -->
@@ -19,9 +19,9 @@
 
   <!-- 底部操作区 -->
   <view class="foot">
-    <button wx:if="{{!exhausted}}" class="cta" bindtap="goCapture">拍摄手掌 · 开始解读</button>
+    <button wx:if="{{!exhausted}}" class="cta" bindtap="goCapture">拍摄手掌 · 开始测试</button>
     <button wx:else class="cta share-cta" open-type="share">分享解锁更多次数</button>
-    <text class="quota-chip" wx:if="{{!exhausted}}">今日还可解读 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
+    <text class="quota-chip" wx:if="{{!exhausted}}">今日还可测试 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
     <text class="quota-chip" wx:else>{{exhaustedTip}}</text>
     <view class="row-links">
       <text class="link" bindtap="goCollection">图鉴收集</text>
