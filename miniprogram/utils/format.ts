@@ -29,8 +29,8 @@ export function toDimensions(r: ReportResult): DimensionView[] {
   const fallback = '这一维暂未读到清晰纹路，仅供参考。';
   return [
     { key: 'personality', title: '性格', en: 'NATURE', text: r.personality?.join(' · ') || fallback },
-    { key: 'career', title: '事业', en: 'CAREER', text: r.career || fallback },
-    { key: 'love', title: '感情', en: 'AFFECTION', text: r.love || fallback },
-    { key: 'wealth', title: '财富', en: 'FORTUNE', text: r.wealth || fallback },
+    { key: 'career', title: '做事风格', en: 'WORK STYLE', text: r.career || fallback },
+    { key: 'love', title: '相处风格', en: 'BONDING', text: r.love || fallback },
+    { key: 'wealth', title: '金钱观', en: 'MONEY VIEW', text: r.wealth || fallback },
   ];
 }
