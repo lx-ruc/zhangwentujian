@@ -54,18 +54,25 @@ mp.weixin.qq.com → 支付与交易 → 虚拟支付 → 开通 → 填个人�
 开通后到 虚拟支付 → 基本配置 拿 OfferID / 现网AppKey；AppSecret 在 开发管理 → 开发设置。
 
 ```bash
-cp cloudfunctions/pay/config.template.json cloudfunctions/pay/config.json
-cp cloudfunctions/paynotify/config.template.json cloudfunctions/paynotify/config.json
-# 两个文件都填：OFFER_ID / PAY_APP_KEY / WX_APP_SECRET
-npm run deploy:cloud    # 重新部署读取 env
+# tcb 部署本身不携带环境变量 —— 密钥要在云开发控制台配置：
+# 云开发控制台（tcb.cloud.tencent.com）→ 云函数 → pay → 函数配置 → 环境变量，逐个添加：
+#   OFFER_ID / PAY_APP_KEY / WX_APP_SECRET（paynotify 同样配一份）
+# config.template.json 仅作为字段备忘，本地无需再生成 config.json
+npm run deploy:cloud    # 纯代码重新部署（不影响已配好的环境变量）
 ```
 
-`config.json` 已 gitignore；缺任一变量时 pay 云函数返回 `PAY_NOT_CONFIGURED`，前端提示「支付暂未配置完成」。
+缺任一变量时 pay 云函数返回 `PAY_NOT_CONFIGURED`，前端提示「支付暂未配置完成」。
 
-> **部署故障排查（2026-09-03 实测）**：`cli cloud functions deploy` 连续报
-> `getCloudAPISignedHeader failed ret:41002 system error`（`list` 正常、`auto-preview` 正常、重启 IDE 无效）。
-> 此为 IDE 侧云 API 签名票据问题，需在开发者工具 GUI 里操作一次：打开项目 → 顶部【工具 → 云开发】
-> 看是否有新版云开发/协议弹窗需要同意，或右上角头像 → 退出登录 → 扫码重登，然后重跑 `npm run deploy:cloud`。
+> **部署方式说明（2026-09-03 起）**：`npm run deploy:cloud` 已改用 **CloudBase CLI（tcb）**，
+> 不再走微信开发者工具 CLI（后者 `cloud functions deploy` 持续报 `getCloudAPISignedHeader ret:41002`，
+> list/preview 正常、重登无效，疑似 IDE 版本 bug）。首次使用需登录一次：
+> `tcb login --flow device`，浏览器授权后凭据持久保存在本机。
+> 踩坑记录（都已固化进脚本/代码）：
+> ① tcb 新建函数必须进入函数目录用 `--dir .`（外层路径打包会带目录前缀，创建校验找不到 index.js）；
+> ② 运行时必须 `--runtime Nodejs16.13`（默认 Nodejs20 会让老版 wx-server-sdk 启动崩溃）；
+> ③ **模块顶层调用 `cloud.database()` 会让 SCF 冷启动直接崩溃**（"code exit unexpected"），
+>    必须在函数体内调用 —— pay/paynotify 的 deliver.ts 已按此修复，新代码勿回退；
+> ④ 云端装依赖（--install-dependency true）在函数已存在时才可靠，所以脚本对三个函数统一走「已存在 + force 更新」。
 
 ### 4. 部署 paynotify 的 HTTP 云接入
 云开发控制台 → 云函数 → paynotify → **云接入/HTTP 访问**开启：
@@ -114,7 +121,7 @@ npm run deploy:cloud    # 重新部署读取 env
 | 3 | MP 后台虚拟支付已开通 | ⏳ 用户操作（三.1） |
 | 4 | 已拿到 AppID / OfferID / 现网AppKey | ⏳ 用户操作（三.3，AppID 已知 wx3b8baf398bf449d2） |
 | 5 | iOS 支付：已配置小程序简称 | ⏳ 用户操作（三.6，可选） |
-| 6 | 消息推送接收已部署 | ✅ 代码就绪（paynotify 集成响应）；⏳ 云接入开启动作（三.4） |
+| 6 | 消息推送接收已部署 | ✅ 代码已部署上线（2026-09-03，tcb 实测可调用、集成响应正常）；⏳ 云接入开启动作（三.4） |
 | 7 | 后台已配发货推送 URL + 一笔测试支付 | ⏳ 用户操作 + 真单验证（四.2） |
 | 8 | 验签逻辑与官方示例核对一致 | ✅ tests/pay-sign.test.ts 官方 assert 向量通过 |
 | 9 | 发货推送幂等（wx_order_id 去重） | ✅ deliver.ts 双键幂等 + 回滚，单测覆盖 |

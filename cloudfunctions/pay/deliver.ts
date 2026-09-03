@@ -23,9 +23,12 @@ export interface DeliverInput {
 
 export type DeliverOutcome = 'delivered' | 'duplicate' | 'ignored' | 'error';
 
-const db = cloud.database();
-
+/**
+ * 注意：cloud.database() 必须在函数体内调用（模块顶层调用会让 SCF 启动即崩，
+ * 报 "code exit unexpected"），且每次调用时再取，避免跨请求复用连接。
+ */
 export async function deliverQuota(input: DeliverInput): Promise<DeliverOutcome> {
+  const db = cloud.database();
   const product = CONFIG.PRODUCTS[input.productId];
   if (!product) {
     console.error('[deliver] 未知道具，忽略该推送:', input.productId);
@@ -74,6 +77,7 @@ export async function deliverQuota(input: DeliverInput): Promise<DeliverOutcome>
 
 /** 退款回收：users.purchased 扣减（下限 0）。读-改-写，¥1 小额场景可接受并发窗口 */
 export async function revokeQuota(input: DeliverInput): Promise<'revoked' | 'error'> {
+  const db = cloud.database();
   const product = CONFIG.PRODUCTS[input.productId];
   const amount = product ? product.quota * input.quantity : 0;
   try {
@@ -97,6 +101,7 @@ export async function revokeQuota(input: DeliverInput): Promise<'revoked' | 'err
 
 /** users.purchased 永久加量；首次出现的用户直接建全量配额档案 */
 async function incUserPurchased(openid: string, amount: number): Promise<void> {
+  const db = cloud.database();
   const users = db.collection(CONFIG.COLLECTION_USERS);
   const existing = (await users.where({ _openid: openid }).limit(1).get()) as { data?: unknown[] };
   if (existing.data && existing.data.length > 0) {
@@ -125,6 +130,7 @@ async function markOrder(
   status: 'delivered' | 'refunded',
   wxOrderId: string,
 ): Promise<void> {
+  const db = cloud.database();
   await db.collection(CONFIG.COLLECTION_ORDERS).where({ outTradeNo }).update({
     data: { status, wxOrderId, updatedAt: db.serverDate() },
   });
