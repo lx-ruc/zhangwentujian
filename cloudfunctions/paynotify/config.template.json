@@ -1,0 +1,9 @@
+{
+  "timeout": 30,
+  "memorySize": 256,
+  "envVariables": {
+    "OFFER_ID": "MP后台-虚拟支付-基本配置-OfferID",
+    "PAY_APP_KEY": "MP后台-虚拟支付-基本配置-现网AppKey",
+    "WX_APP_SECRET": "MP后台-开发管理-开发设置-AppSecret"
+  }
+}

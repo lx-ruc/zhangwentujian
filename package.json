@@ -2,14 +2,14 @@
   "name": "zhangwentujian",
   "version": "0.1.0",
   "private": true,
-  "description": "掌纹测运 — AI 掌纹趣味测试微信小程序",
+  "description": "\u638c\u7eb9\u6d4b\u8fd0 \u2014 AI \u638c\u7eb9\u8da3\u5473\u6d4b\u8bd5\u5fae\u4fe1\u5c0f\u7a0b\u5e8f",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "test": "jest",
     "e2e": "node e2e/smoke.js",
     "e2e:full": "node e2e/full-flow.js",
-    "build:cloud": "tsc -p cloudfunctions/tsconfig.build.json",
-    "deploy:cloud": "npm run build:cloud && /Applications/wechatwebdevtools.app/Contents/MacOS/cli cloud functions deploy --env cloud1-d9g41s8gza68b70b8 --names analyze --project \"$PWD\" --remote-npm-install && rm -f cloudfunctions/analyze/*.js"
+    "build:cloud": "tsc -p cloudfunctions/tsconfig.build.json && tsc -p cloudfunctions/tsconfig.pay.build.json && tsc -p cloudfunctions/tsconfig.paynotify.build.json",
+    "deploy:cloud": "npm run build:cloud && /Applications/wechatwebdevtools.app/Contents/MacOS/cli cloud functions deploy --env cloud1-d9g41s8gza68b70b8 --names analyze --project \"$PWD\" --remote-npm-install && /Applications/wechatwebdevtools.app/Contents/MacOS/cli cloud functions deploy --env cloud1-d9g41s8gza68b70b8 --names pay --project \"$PWD\" --remote-npm-install && /Applications/wechatwebdevtools.app/Contents/MacOS/cli cloud functions deploy --env cloud1-d9g41s8gza68b70b8 --names paynotify --project \"$PWD\" --remote-npm-install && rm -f cloudfunctions/analyze/*.js cloudfunctions/pay/*.js cloudfunctions/paynotify/*.js"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

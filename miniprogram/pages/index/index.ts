@@ -4,6 +4,7 @@ import { callFunction } from '../../utils/request';
 import { shareDefault, isIOS } from '../../utils/share';
 import { isDevEnv } from '../../utils/env';
 import { getNavTopPx } from '../../utils/nav';
+import { buyQuotaPack, canUseVirtualPayment, PayError } from '../../utils/pay';
 
 Page({
   data: {
@@ -13,6 +14,8 @@ Page({
     /** 配额用完时 CTA 切换为分享解锁 */
     exhausted: false,
     exhaustedTip: '',
+    /** 支付购买入口（总闸门 + 客户端能力双重判定，配额用尽时才展示） */
+    payEnabled: CONFIG.PAY_ENABLED && canUseVirtualPayment(),
   },
 
   onShow() {
@@ -47,16 +50,17 @@ Page({
       }
       if (typeof data.remaining === 'number') {
         this.refreshRemaining(data.remaining);
-        // 回写本地展示缓存（used = capacity - remaining，bonus 保持本地）
+        // 回写本地展示缓存（used = capacity - remaining；bonus/purchased 保持本地，购买量只在支付到账后更新）
         const state = normalizeQuotaState(wx.getStorageSync('quota'));
         const today = new Date();
         const ymd = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         const bonus = state.bonusDate === ymd ? state.bonus : 0;
         wx.setStorageSync('quota', {
-          dailyCount: Math.max(0, CONFIG.DAILY_QUOTA + bonus - data.remaining),
+          dailyCount: Math.max(0, CONFIG.DAILY_QUOTA + bonus + state.purchased - data.remaining),
           lastUsedDate: ymd,
           bonus,
           bonusDate: ymd,
+          purchased: state.purchased,
         } as QuotaState);
       }
     } catch {
@@ -109,6 +113,31 @@ Page({
   onShareTimeline() {
     this.grantTimelineBonus();
     return { title: shareDefault().title };
+  },
+
+  /** 虚拟支付购买加量包（入口仅在 payEnabled 且配额用尽时展示；发货以云端推送为准） */
+  async onTapBuy() {
+    const okToPay = await new Promise<boolean>((resolve) => {
+      wx.showModal({
+        title: CONFIG.PAY_SKU.title,
+        content: `${CONFIG.PAY_SKU.desc}，付款 ¥1。虚拟商品，付款后即时到账。`,
+        confirmText: '支付 ¥1',
+        success: (r) => resolve(!!r.confirm),
+        fail: () => resolve(false),
+      });
+    });
+    if (!okToPay) return;
+    wx.showLoading({ title: '正在拉起支付', mask: true });
+    try {
+      await buyQuotaPack();
+      wx.hideLoading();
+      wx.showToast({ title: '已到账 5 次', icon: 'success' });
+      this.syncCloudQuota();
+    } catch (e) {
+      wx.hideLoading();
+      const msg = e instanceof PayError ? e.userMessage : '支付未完成，请稍后再试';
+      wx.showToast({ title: msg, icon: 'none', duration: 2500 });
+    }
   },
 
   goCapture() {

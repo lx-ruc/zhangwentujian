@@ -230,6 +230,7 @@ async function getUserQuota(openid: string): Promise<UserQuota> {
         lastUsedDate: doc.lastUsedDate ?? '',
         bonus: doc.bonus ?? 0,
         bonusDate: doc.bonusDate ?? '',
+        purchased: doc.purchased ?? 0,
         shareCounters: doc.shareCounters,
       }
     : initialUserQuota();
@@ -273,6 +274,8 @@ async function upsertUserQuota(openid: string, next: UserQuota): Promise<void> {
     lastUsedDate: next.lastUsedDate,
     bonus: next.bonus ?? 0,
     bonusDate: next.bonusDate ?? '',
+    // 购买加量在此全量覆盖——发货函数用 inc() 加，analyze 用读到的值回写，两者不并发（用户不可能边支付边分析）
+    purchased: next.purchased ?? 0,
     shareCounters: next.shareCounters ?? { forward: 0, timeline: 0 },
     updatedAt: db.serverDate(),
   };

@@ -84,6 +84,16 @@
   font-weight: 700;
   font-size: 30rpx;
 }
+/* 购买入口（仅支付开关开启且配额用尽时渲染；朱砂色下划线轻提示） */
+.buy-chip {
+  display: block;
+  margin-top: 12rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--cinnabar);
+  text-decoration: underline;
+  text-underline-offset: 6rpx;
+}
 /* 配额用完：分享解锁 CTA（墨色描边版） */
 .share-cta {
   background: var(--paper);

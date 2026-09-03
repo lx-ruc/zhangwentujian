@@ -15,7 +15,7 @@ Product: WeChat Mini Program for AI palm-line "fun personality analysis" (趣味
 - **AI**: Zhipu GLM-4.6V-Flash (free vision model). API key lives ONLY in cloud function env vars, never in miniprogram code
 - **Tests**: jest for units (`tests/`), miniprogram-automator for E2E (`e2e/`)
 
-Commands: `npm run typecheck` (both ends), `npm test` (jest units), `npm run deploy:cloud` (compile TS → upload analyze), `npm run e2e` / `e2e:full` (automator smoke / real-chain). Real-model unit E2E: `ZHIPU_API_KEY=xxx npx jest tests/e2e-real-model.test.ts` (auto-skips without key).
+Commands: `npm run typecheck` (both ends), `npm test` (jest units), `npm run deploy:cloud` (compile TS → upload analyze, pay, paynotify), `npm run e2e` / `e2e:full` (automator smoke / real-chain). Real-model unit E2E: `ZHIPU_API_KEY=xxx npx jest tests/e2e-real-model.test.ts` (auto-skips without key).
 
 ## Architecture
 
@@ -29,6 +29,7 @@ Key decisions that span multiple files:
 - **Palm-type collection (core viral asset)**: 12 archetypes in `miniprogram/data/palm-types.ts` (No.01-12, rarity, tagline, compat). Classification is a LOCAL deterministic pure function (`utils/classify.ts`: dominant line × style) — the model NEVER classifies; it only produces line scores + descriptions. Type set is closed and test-locked.
 - **Share system**: all copy in `utils/share.ts` (hooks: type name + rarity). Canvas poster in `utils/poster.ts` (paper/ink/cinnabar style; disclaimer required on poster).
 - **Local data loop (until Phase 2)**: reports persist to storage `reports` (max 20), quota in storage `quota`; `utils/mock-report.ts` is the fallback when cloud fn is undeployed.
+- **Virtual payment (implemented 2026-08-24, gated OFF)**: master switch `PAY_ENABLED` in `miniprogram/config/index.ts` (default false — paid quota on compliance-sensitive content must not ship until review strategy settles; see VIRTUAL-PAYMENT-SETUP.md §5). SKU `add_quota_5` ¥1 → +5 permanent quota (`users.purchased`, never date-reset). Cloud fns: `pay` (order/query; server is price+productId authority, signs with OFFER_ID/PAY_APP_KEY/WX_APP_SECRET env vars from gitignored config.json) and `paynotify` (delivery/refund XML push via HTTP 云接入 with 集成响应, acks plain-text '0'). Idempotency: `pay_deliver_log` `_id`=wx_order_id + outTradeNo reverse-check, lock rolled back on partial failure. pay/paynotify config+deliver are intentional duplicates (separate packages can't cross-import) — sync both, enforced by `tests/pay-config-consistency.test.ts`; official signature vectors locked in `tests/pay-sign.test.ts`. Console setup steps + 13-item 官方检查清单对照: VIRTUAL-PAYMENT-SETUP.md.
 - **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
 - **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: 掌纹测运.
 

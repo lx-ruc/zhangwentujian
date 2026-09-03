@@ -23,6 +23,7 @@
     <button wx:else class="cta share-cta" open-type="share">分享解锁更多次数</button>
     <text class="quota-chip" wx:if="{{!exhausted}}">今日还可测试 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
     <text class="quota-chip" wx:else>{{exhaustedTip}}</text>
+    <text class="buy-chip" wx:if="{{payEnabled && exhausted}}" bindtap="onTapBuy">次数不够用？¥1 加购 5 次</text>
     <view class="row-links">
       <text class="link" bindtap="goCollection">图鉴收集</text>
       <text class="sep">·</text>

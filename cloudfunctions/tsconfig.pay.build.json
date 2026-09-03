@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "pay",
+    "rootDir": "pay"
+  },
+  "include": ["pay/**/*.ts"],
+  "exclude": []
+}
