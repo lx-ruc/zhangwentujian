@@ -11,6 +11,8 @@ interface GlobalData {
   reportId: string;
   /** 刚生成的报告（analyzing → report 传递；历史复看时为空，从 storage 读） */
   pendingReport: ReportResult | null;
+  /** 掌纹形态测量结果（照片本机测量后即弃，仅传指标） */
+  pendingMorph: { id: string; metrics: { clarity: number; density: number; coherence: number } } | null;
 }
 
 App<{
@@ -21,6 +23,7 @@ App<{
     pendingHand: 'right',
     reportId: '',
     pendingReport: null,
+    pendingMorph: null,
   },
 
   onLaunch() {

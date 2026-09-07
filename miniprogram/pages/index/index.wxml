@@ -1,16 +1,16 @@
 <view class="page-index" style="padding-top:{{navTop}}px">
   <!-- 品牌头 -->
   <view class="hero">
-    <text class="eyebrow">SIGN SET · 趣味人格测试</text>
-    <view class="display">你的性格底稿\n收进一支<text class="em">签</text></view>
-    <text class="lede">拍一张今日留影，抽取你的专属人格签——12 型图鉴等你收集。趣味测试，仅供娱乐。</text>
+    <text class="eyebrow">PALM MORPHOLOGY · 掌纹形态图鉴</text>
+    <view class="display">你的掌纹形态\n收进一本<text class="em">图鉴</text></view>
+    <text class="lede">拍一张手掌照片，本机测量纹路形态——清晰度、密度、走向，十二形态型图鉴等你收集。照片不上传。</text>
   </view>
 
   <!-- 十二签宫格 plate -->
   <view class="plate">
     <view class="fig-row">
-      <text class="figtag">SIGN SET — 十二人格签</text>
-      <text class="fig-sub">每次抽取随机解锁一支</text>
+      <text class="figtag">MORPH SET — 十二掌纹形态型</text>
+      <text class="fig-sub">每测一次解锁一型 · 免费不限次</text>
     </view>
     <view class="sign-grid">
       <view class="sign-cell" wx:for="{{signs}}" wx:key="no">
@@ -23,13 +23,11 @@
   <!-- 底部操作区 -->
   <view class="foot">
     <!-- 快门式图标 CTA（呼应拍摄页）+ 中性文字副 CTA（3.2/3.3：明示功能，不藏） -->
-    <view wx:if="{{!exhausted}}" class="cta-icon" bindtap="goCapture" aria-label="开始抽签">
+    <view class="cta-icon" bindtap="goCapture" aria-label="拍照测量掌纹形态">
       <view class="cta-core" />
     </view>
-    <text wx:if="{{!exhausted}}" class="cta-text" bindtap="goCapture">开始抽签</text>
-    <button wx:else class="cta share-cta" open-type="share">分享解锁更多次数</button>
-    <text class="quota-chip" wx:if="{{!exhausted}}">今日还可测试 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
-    <text class="quota-chip" wx:else>{{exhaustedTip}}</text>
+    <text class="cta-text" bindtap="goCapture">拍照测形态 · 免费</text>
+    <text class="draw-entry" bindtap="goDraw">随机抽人格签 · 纯随机娱乐 · 今日 {{remaining}} 次</text>
     <text class="buy-chip" wx:if="{{payEnabled && exhausted}}" bindtap="onTapBuy">次数不够用？¥1 加购 5 次</text>
     <view class="row-links">
       <text class="link" bindtap="goCollection">图鉴收集</text>

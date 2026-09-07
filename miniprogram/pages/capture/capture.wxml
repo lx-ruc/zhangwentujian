@@ -2,7 +2,7 @@
   <!-- 顶部导航 -->
   <view class="nav">
     <text class="back" bindtap="goBack">‹ 返回</text>
-    <text class="title">今日留影</text>
+    <text class="title">拍摄手掌</text>
     <text class="back ghost">‹ 返回</text>
   </view>
 

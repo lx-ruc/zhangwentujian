@@ -1,0 +1,150 @@
+@import '../../report/report.wxss';
+
+/* ===== 形态报告页差异样式（基础卡片/头部继承报告页） ===== */
+.page-morph {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 0 40rpx 60rpx;
+  background: var(--paper);
+}
+
+.eyebrow {
+  display: block;
+  margin-top: 24rpx;
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-3);
+}
+
+.t1 {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+.t1-label {
+  font-size: 30rpx;
+  color: var(--ink-2);
+}
+.t1-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 52rpx;
+  color: var(--ink);
+}
+
+.pills {
+  margin-top: 20rpx;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  align-items: center;
+}
+.pill {
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid var(--rule);
+  color: var(--ink-2);
+}
+.pill.rare {
+  border-color: rgba(188, 63, 33, 0.4);
+  color: var(--cinnabar);
+}
+.type-seal {
+  margin-left: auto;
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  color: var(--cinnabar);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 40rpx;
+  transform: rotate(-6deg);
+}
+
+/* ===== 指标条 ===== */
+.bar-row { margin-top: 24rpx; }
+.bar-row:first-of-type { margin-top: 16rpx; }
+.bar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.bar-label {
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.bar-en {
+  font-family: var(--font-mono);
+  font-size: 18rpx;
+  color: var(--ink-3);
+}
+.bar-val {
+  font-family: var(--font-mono);
+  font-size: 26rpx;
+  color: var(--cinnabar);
+  font-weight: 700;
+}
+.bar-track {
+  margin-top: 10rpx;
+  height: 12rpx;
+  background: rgba(60, 51, 42, 0.08);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--cinnabar);
+  border-radius: 6rpx;
+}
+
+.tags {
+  margin-top: 24rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+.tag {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid var(--rule);
+  color: var(--ink-2);
+}
+
+.note {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* ===== 操作 ===== */
+.p {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+.disclaimer {
+  display: block;
+  margin-top: 40rpx;
+  text-align: center;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--ink-3);
+}
+.actions { margin-top: 48rpx; }
+.ghost {
+  margin-top: 20rpx;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2rpx solid var(--ink);
+}

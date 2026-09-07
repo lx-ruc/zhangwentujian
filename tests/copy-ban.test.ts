@@ -13,16 +13,27 @@ import { join } from 'path';
 
 const ROOT = join(__dirname, '..');
 
-/** 与 classify.test.ts / cloudfunctions/analyze/validate.ts 保持同步 */
-const BANNED_TERMS = [
-  // 玄学/命理类
-  '算命', '占卜', '手相', '面相', '大师', '运势', '运气', '好运', '转运', '旺',
-  '命运', '吉', '凶', '灾', '祸', '求签', '签文', '解签', '测运',
-  // 手部类（含单字「掌」，零例外）
-  '手掌', '掌纹', '掌心', '巴掌', '手纹', '掌',
+/**
+ * 三域规则（2026-09-08 定名「AI掌纹分析」后重写）：
+ * 1. 全域：算命/命理/占卜词 + AI 能力宣称——任何文件都禁
+ * 2. 人格签内容域（data/palm-types、data/report-content）：另禁掌系词——性格文案与掌纹彻底解耦
+ * 3. 形态内容域（data/morph-types、pages/morph/**）：另禁性格/推断词——掌纹只出事实
+ * 掌系词在形态/通用文件合法（产品就是掌纹形态分析）；品牌名「AI掌纹分析」全域合法。
+ */
+const FORTUNE_TERMS = [
+  '算命', '占卜', '手相', '面相', '大师', '风水', '运势', '运气', '好运', '转运', '旺',
+  '命运', '命中注定', '注定', '吉', '凶', '灾', '祸', '求签', '签文', '解签', '测运',
 ];
 const BANNED_AI = /AI生成|AI解读|AI分析|AI读取/;
-const BANNED_VISIBLE_EN = /palm/i;
+/** 人格签内容域追加：掌系词（解耦——性格不来自掌纹） */
+const PALM_TERMS = ['手掌', '掌纹', '掌心', '巴掌', '手纹', '掌'];
+/** 形态内容域追加：性格/推断词（掌纹不做推断） */
+const INFERENCE_TERMS = ['性格', '人格', '缘分', '姻缘', '倾向', '桃花', '财运', '注定'];
+/** 形态域豁免：跨模块功能名（导航按钮提及人格签≠性格推断） */
+const MORPH_ALLOW = '人格签';
+
+const PERSONALITY_FILES = ['miniprogram/data/palm-types.ts', 'miniprogram/data/report-content.ts'];
+const MORPH_FILES = ['miniprogram/data/morph-types.ts'];
 
 interface Hit {
   file: string;
@@ -30,19 +41,28 @@ interface Hit {
   snippet: string;
 }
 
+function termsFor(file: string): string[] {
+  const base = FORTUNE_TERMS;
+  if (PERSONALITY_FILES.some((f) => file.startsWith(f))) return [...base, ...PALM_TERMS];
+  if (MORPH_FILES.some((f) => file.startsWith(f)) || file.startsWith('miniprogram/pages/morph/')) {
+    return [...base, ...INFERENCE_TERMS];
+  }
+  return base;
+}
+
 function findBanned(file: string, texts: string[]): Hit[] {
+  const terms = termsFor(file);
+  const strip = file.startsWith('miniprogram/pages/morph/') ? MORPH_ALLOW : '';
   const hits: Hit[] = [];
   for (const text of texts) {
-    for (const term of BANNED_TERMS) {
-      if (text.includes(term)) {
+    const visible = strip ? text.split(strip).join('') : text;
+    for (const term of terms) {
+      if (visible.includes(term)) {
         hits.push({ file, term, snippet: text.trim().slice(0, 40) });
       }
     }
-    if (BANNED_AI.test(text)) {
+    if (BANNED_AI.test(visible)) {
       hits.push({ file, term: BANNED_AI.source, snippet: text.trim().slice(0, 40) });
-    }
-    if (BANNED_VISIBLE_EN.test(text)) {
-      hits.push({ file, term: 'palm(可见英文)', snippet: text.trim().slice(0, 40) });
     }
   }
   return hits;
@@ -159,14 +179,20 @@ function collectTargets(): { file: string; texts: string[] }[] {
 
 describe('copy-ban 违禁词回归守卫', () => {
   test('守卫自检：违禁样本必须被抓到（防扫描器失效假绿）', () => {
-    // 「手掌」复合词与单字「掌」各记 1 笔 → 2；注释不扫
-    expect(findBanned('x.ts', extractQuotedStrings(`const a = '今天手掌真好看'; // 手掌注释`))).toHaveLength(2);
+    // 全域：命理词；注释不扫
+    expect(findBanned('x.ts', extractQuotedStrings(`const a = '今天好运连连'; // 好运注释`))).toHaveLength(1);
     // wxml：注释剥除、{{绑定}}剥除，只扫文本节点
     expect(findBanned('x.wxml', extractMarkupText(`<view><!-- 手相 --><text>大师{{x}}</text></view>`))).toHaveLength(1);
     expect(findBanned('x.json', extractJsonStrings(`{"t":"好运连连"}`))).toHaveLength(1);
     expect(findBanned('x.wxss', extractQuotedStrings(`.a::after { content: '签文'; }`))).toHaveLength(1);
-    // html：style 块剥除；正文命中 AI解读 + 掌纹 + 掌 → 3
-    expect(findBanned('x.html', extractMarkupText(`<p>AI解读你的掌纹</p><style>.p{content:'占卜'}</style>`))).toHaveLength(3);
+    // html：style 块剥除；正文命中 AI解读 → 1（掌纹词已合法：产品即掌纹形态分析）
+    expect(findBanned('x.html', extractMarkupText(`<p>AI解读你的掌纹</p><style>.p{content:'占卜'}</style>`))).toHaveLength(1);
+    // 三域规则：人格签数据域禁掌系（手掌+掌=2）；通用文件掌系合法（0）
+    expect(findBanned('miniprogram/data/palm-types.ts', extractQuotedStrings(`const a = '今天手掌真好看';`))).toHaveLength(2);
+    expect(findBanned('x.ts', extractQuotedStrings(`const a = '今天手掌真好看';`))).toHaveLength(0);
+    // 形态域禁性格推断词；跨模块功能名「人格签」豁免
+    expect(findBanned('miniprogram/pages/morph/report.wxml', extractMarkupText(`<text>你的性格倾向如何</text>`))).toHaveLength(2);
+    expect(findBanned('miniprogram/pages/morph/report.wxml', extractMarkupText(`<button>抽一支人格签 · 纯随机</button>`))).toHaveLength(0);
     // 标识符与模块路径不误伤
     expect(findBanned('x.ts', extractQuotedStrings(`const palmType = getPalmTypeName(); // palm 标识符不误伤`))).toHaveLength(0);
     expect(findBanned('x.ts', extractQuotedStrings(`import { X } from '../data/palm-types'; const y = '可见文案';`))).toHaveLength(0);
@@ -179,7 +205,7 @@ describe('copy-ban 违禁词回归守卫', () => {
     expect(exts).toEqual(new Set(['ts', 'wxml', 'json', 'wxss', 'html']));
   });
 
-  test('全部可见文案零违禁词（含单字「掌」、AI 措辞、可见 palm）', () => {
+  test('全部可见文案合规（三域规则：全域禁算命/AI宣称；人格签域禁掌系；形态域禁性格推断）', () => {
     const targets = collectTargets();
     const hits = targets.flatMap((t) => findBanned(t.file, t.texts));
     if (hits.length > 0) {

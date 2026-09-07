@@ -74,6 +74,15 @@ export function shareHistory(count: number): ShareMessage {
 }
 
 /** 图鉴收集页分享（收集进度钩子） */
+/** 形态报告分享（事实层：只讲形态与趣味统计，不提性格） */
+export function shareMorph(typeName: string, rarity: number): ShareMessage {
+  return {
+    title: `我的掌纹形态是「${typeName}」，趣味统计约 ${rarity}% 的人是这一型`,
+    path: '/pages/index/index',
+    imageUrl: '',
+  };
+}
+
 export function shareCollection(unlockedCount: number): ShareMessage {
   const n = Math.max(1, unlockedCount);
   return {

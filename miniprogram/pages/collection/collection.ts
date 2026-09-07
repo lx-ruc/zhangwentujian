@@ -2,6 +2,7 @@ import { DISCLAIMER } from '../../config/index';
 import { clampScore } from '../../utils/format';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { PALM_TYPE_LIST } from '../../data/palm-types';
+import { MORPH_TYPE_LIST } from '../../data/morph-types';
 import { PalmType } from '../../data/palm-types';
 import { shareCollection, triggerShareBonus } from '../../utils/share';
 import { fetchHistory, getCachedHistory } from '../../utils/history-store';
@@ -18,12 +19,23 @@ Page({
     types: [] as TypeCard[],
     unlockedCount: 0,
     total: PALM_TYPE_LIST.length,
+    morphs: [] as Array<{ id: string; seal: string; name: string; rarity: number; unlocked: boolean }>,
+    morphUnlocked: 0,
+    morphTotal: MORPH_TYPE_LIST.length,
     showDetail: false,
     detail: null as TypeCard | null,
     disclaimer: DISCLAIMER,
   },
 
   onShow() {
+    // 形态图鉴解锁来源 = 本机测量记录（不上云）
+    const morphSeen: Record<string, true> = {};
+    const morphRecords = (wx.getStorageSync('morphRecords') || []) as Array<{ id: string }>;
+    for (const r of morphRecords) morphSeen[r.id] = true;
+    this.setData({
+      morphs: MORPH_TYPE_LIST.map((t) => ({ ...t, unlocked: !!morphSeen[t.id] })),
+      morphUnlocked: Object.keys(morphSeen).length,
+    });
     // 解锁来源 = 云端历史缓存（与历史页同源；分类保持本地确定性映射，模型不参与）
     this.renderUnlocks(getCachedHistory());
     fetchHistory()

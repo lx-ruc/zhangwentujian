@@ -112,7 +112,7 @@ Page({
     app.globalData.pendingImage = localPath; // 分析页预览用（本地路径，用后即弃）
     app.globalData.pendingHand = this.data.hand;
     wx.navigateTo({
-      url: '/pages/analyzing/analyzing',
+      url: '/pages/analyzing/analyzing?mode=morph',
       complete: () => this.setData({ submitting: false }),
     });
   },

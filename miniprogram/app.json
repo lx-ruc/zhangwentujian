@@ -6,13 +6,14 @@
     "pages/report/report",
     "pages/history/history",
     "pages/collection/collection",
+    "pages/morph/report",
     "pages/about/about"
   ],
   "entryPagePath": "pages/index/index",
   "window": {
     "navigationBarBackgroundColor": "#F9F5EC",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "十二人格签",
+    "navigationBarTitleText": "AI掌纹分析",
     "backgroundColor": "#EBE3D1",
     "backgroundTextStyle": "dark"
   },

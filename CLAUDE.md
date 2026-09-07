@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **2026-09-08**: a palm-era revert attempt (brand「AI掌纹分析」, commits 76c1a54..64aa033) was rejected a third time (算命内容) — the shape itself (palm photo + 3 scored palm lines) is the violation. Restored 0.2.2; see COMPLIANCE-AUDIT §5.3. Palm code stays archived; do not revive it on this AppID.
 
-Product: WeChat Mini Program **十二人格签** — a "fun personality test" (趣味测试) built as a closed 12-archetype sign-collection. Deliberately positioned as entertainment, NOT fortune-telling. (Renamed from 掌纹测运 on 2026-09-07 after a second review rejection; see Compliance below.)
+Product: WeChat Mini Program **AI掌纹分析** (name LOCKED 2026-09-08 — no rename quota left; name-function consistency is mandatory under 3.1). Two decoupled features: ① PRIMARY 掌纹形态图鉴 — palm photo measured ON-DEVICE (gradient metrics: clarity/density/coherence) into 12 factual morphology types (science + fun stats only, ZERO personality/fate inference); ② 人格签 — an explicitly-random entertainment draw, declared unrelated to palms. The banned causal link (palm → personality/destiny) must never reappear.
 
 ## Tech Stack (decided, do not change without discussion)
 
@@ -21,7 +21,9 @@ Commands: `npm run typecheck` (both ends), `npm test` (jest units), `npm run dep
 
 ## Architecture
 
-Data flow (2026-09-07 pivot): `index` (icon-only CTA) → `capture` (`wx.chooseMedia`, photo stays on device) → `analyzing` (local `drawReport` ~2.2s → cloud fn `analyze` action `draw`: quota check → `validateReport` shape+banned-term check → typeId whitelist → persist text-only report to `analyses` with `modelVersion:'local-draw-1'` → consume quota) → `report` (renders ALL body copy from `data/report-content.ts` via `REPORT_CONTENT[type.id]`).
+Data flow (2026-09-08 v2): `index` (拍照测形态 primary / 随机抽人格签 secondary) → `capture` (photo stays on device) → `analyzing?mode=morph` (hidden canvas 64×64 downsample → `utils/morphology.ts` pure metrics → classify → local `morphRecords` storage, free, NO cloud, NO quota) → `pages/morph/report` (measured bars + morphology type + science). Draw flow (`analyzing?mode=draw`, no photo needed): local `drawReport` → cloud `draw` action (quota+validate+persist) → `report` page with a 纯随机 badge.
+
+Legacy flow (2026-09-07 pivot): `index` (icon-only CTA) → `capture` (`wx.chooseMedia`, photo stays on device) → `analyzing` (local `drawReport` ~2.2s → cloud fn `analyze` action `draw`: quota check → `validateReport` shape+banned-term check → typeId whitelist → persist text-only report to `analyses` with `modelVersion:'local-draw-1'` → consume quota) → `report` (renders ALL body copy from `data/report-content.ts` via `REPORT_CONTENT[type.id]`).
 
 Key decisions that span multiple files:
 
@@ -39,7 +41,7 @@ Key decisions that span multiple files:
 
 WeChat bans 算命/占卜/看相 content as 封建迷信. Two review rejections so far (2026-08-24: 算命内容 + 深度合成/个人主体; 2026-09: customer service pointed at the homepage CTA 「拍摄手掌·开始测试」 and demanded full removal). Response (2026-09-07 decisions): keep the photo flow but make the CTA icon-only, scrub ALL palm vocabulary from every visible surface, rename to 十二人格签, and retire runtime AI entirely (local random draw; photo never uploaded — this also kills the 深度合成 ground).
 
-1. **Banned vocabulary** — single source of truth is `tests/copy-ban.test.ts` (`BANNED_TERMS`, synced with `cloudfunctions/analyze/validate.ts`): 算命 占卜 手相 面相 大师 运势 运气 好运 转运 旺 命运 吉 凶 灾 祸 求签 签文 解签 测运 + palm set 手掌 掌纹 掌心 巴掌 手纹 **and single char 掌 with zero exceptions** (鼓掌 was rewritten to 叫好, not allowlisted). The scanner sweeps every user-visible string in `miniprogram/**` + both design HTMLs; identifiers/comments/`{{bindings}}`/import paths are out of scope. UI copy must never claim AI 生成/读取/分析. 「签」 is fine as a noun (人格签/抽签); banned sign-verbs are 求签/解签 — use 抽取/解锁.
+1. **Banned vocabulary (three-domain, 2026-09-08 rewrite)** — single source of truth is `tests/copy-ban.test.ts`: ① GLOBAL: fortune/divination terms (算命 占卜 手相 面相 大师 风水 运势 运气 好运 转运 旺 命运 注定 吉 凶 灾 祸 求签 签文 解签 测运) + AI-capability claims (AI生成/解读/分析/读取). ② Personality-content domain (`data/palm-types.ts`, `data/report-content.ts`): palm words banned — personality copy must never reference palms (decoupling). ③ Morphology domain (`data/morph-types.ts`, `pages/morph/**`): personality/inference words banned (性格 人格 缘分 姻缘 倾向 桃花 财运) — palm output is facts only; the cross-module feature name 「人格签」 is allowlisted on morph pages. Palm words are LEGAL in general/morph files (the product IS palm morphology analysis). Cloud `validate.ts` still hard-bans palm words inside stored draw reports (unchanged).
 2. **Banned content** in reports: lifespan/death predictions, health diagnoses, absolute claims (必定/命中注定), disaster statements — enforced by prompt (dormant) and validate.ts filter (live).
 3. **Required disclaimer** on index, report page, and share poster: 趣味测试，仅供娱乐，不构成任何科学依据或决策建议.
 4. Reports use hedged phrasing only: 倾向于/可能/仅供参考.

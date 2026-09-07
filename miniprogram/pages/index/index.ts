@@ -5,13 +5,13 @@ import { shareDefault, isIOS } from '../../utils/share';
 import { isDevEnv } from '../../utils/env';
 import { getNavTopPx } from '../../utils/nav';
 import { buyQuotaPack, canUseVirtualPayment, PayError } from '../../utils/pay';
-import { PALM_TYPE_LIST } from '../../data/palm-types';
+import { MORPH_TYPE_LIST } from '../../data/morph-types';
 
 Page({
   data: {
     navTop: getNavTopPx(),
-    /** 十二签宫格（印章字 + 图鉴编号） */
-    signs: PALM_TYPE_LIST.map((t) => ({ no: t.no, seal: t.seal })),
+    /** 十二形态宫格（印章字 + 图鉴编号） */
+    signs: MORPH_TYPE_LIST.map((t) => ({ no: t.no, seal: t.seal })),
     remaining: Number(CONFIG.DAILY_QUOTA),
     disclaimer: DISCLAIMER,
     /** 配额用完时 CTA 切换为分享解锁 */
@@ -141,6 +141,10 @@ Page({
       const msg = e instanceof PayError ? e.userMessage : '支付未完成，请稍后再试';
       wx.showToast({ title: msg, icon: 'none', duration: 2500 });
     }
+  },
+
+  goDraw() {
+    wx.navigateTo({ url: '/pages/analyzing/analyzing?mode=draw' });
   },
 
   goCapture() {

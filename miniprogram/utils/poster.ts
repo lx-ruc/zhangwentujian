@@ -141,7 +141,7 @@ export function drawPoster(ctx: CanvasRenderingContextLike, data: PosterData): v
   // 引流
   ctx.fillStyle = C.ink2;
   ctx.font = `500 26px ${FONT_MONO}`;
-  drawTracked(ctx, '微信搜索「十二人格签」', W / 2, 1152, 6);
+  drawTracked(ctx, '微信搜索「AI掌纹分析」', W / 2, 1152, 6);
   ctx.textAlign = 'left';
 }
 

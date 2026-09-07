@@ -27,7 +27,28 @@
     </view>
   </view>
 
-  <button class="cta" bindtap="goCapture">再抽一支 · 解锁新类型</button>
+  <!-- 形态图鉴（主功能：本机测量解锁） -->
+  <view class="head" style="margin-top:48rpx">
+    <view class="head-text">
+      <text class="eyebrow">MORPH COLLECTION</text>
+      <text class="title">掌纹形态图鉴</text>
+      <text class="sub">已解锁 {{morphUnlocked}}/{{morphTotal}} · 每测一次解锁一型 · 免费</text>
+    </view>
+  </view>
+  <view class="track"><view class="fill" style="width: {{morphUnlocked / morphTotal * 100}}%" /></view>
+  <view class="grid">
+    <view
+      wx:for="{{morphs}}"
+      wx:key="id"
+      class="cell {{item.unlocked ? 'on' : 'off'}}"
+    >
+      <view class="cell-seal {{item.unlocked ? '' : 'ghost'}}">{{item.unlocked ? item.seal : '？'}}</view>
+      <text class="cell-name">{{item.unlocked ? item.name : '？？？'}}</text>
+      <text class="cell-rarity">{{item.unlocked ? '约' + item.rarity + '%' : ''}}</text>
+    </view>
+  </view>
+
+  <button class="cta" bindtap="goCapture">拍照测形态 · 解锁新类型</button>
   <text class="disclaimer">{{disclaimer}}</text>
 
   <!-- 类型详情弹层 -->

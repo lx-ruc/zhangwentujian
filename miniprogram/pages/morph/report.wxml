@@ -1,0 +1,59 @@
+<view class="page-morph" style="padding-top:{{navTop}}px">
+  <!-- 头部：形态型 -->
+  <view class="head">
+    <text class="eyebrow">MORPHOLOGY REPORT · 掌纹形态报告</text>
+    <view class="t1">
+      <text class="t1-label">你的掌纹形态型是：</text><text class="t1-name">{{type.name}}</text>
+    </view>
+    <view class="pills">
+      <text class="pill">{{type.no}} · {{type.name}}</text>
+      <text class="pill rare">趣味统计稀有度 · 约 {{type.rarity}}%</text>
+      <view class="type-seal">{{type.seal}}</view>
+    </view>
+  </view>
+
+  <!-- 三指标（本机实测） -->
+  <view class="card">
+    <text class="card-tag">本机实测 · MEASURED</text>
+    <view class="bar-row" wx:for="{{bars}}" wx:key="key">
+      <view class="bar-head">
+        <text class="bar-label">{{item.label}}<text class="bar-en"> {{item.en}}</text></text>
+        <text class="bar-val">{{item.pct}}</text>
+      </view>
+      <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%" /></view>
+    </view>
+    <view class="tags">
+      <text class="tag">{{type.clarityLabel}}</text>
+      <text class="tag">{{type.densityLabel}}</text>
+      <text class="tag">{{type.trendLabel}}</text>
+    </view>
+    <text class="note" wx:if="{{fromDemo}}">未检测到本次测量，以下为演示示例</text>
+  </view>
+
+  <!-- 形态描述 -->
+  <view class="card">
+    <text class="card-tag">形态描述 · PATTERN</text>
+    <text class="p">{{type.desc}}</text>
+  </view>
+
+  <!-- 手部科普 -->
+  <view class="card">
+    <text class="card-tag">手部科普 · SCIENCE</text>
+    <text class="p">{{type.science}}</text>
+  </view>
+
+  <!-- 操作 -->
+  <view class="actions">
+    <button class="cta" open-type="share" plain="{{false}}">分享我的形态型 · 趣味统计</button>
+    <button class="ghost" bindtap="goDraw">抽一支人格签 · 纯随机，与掌纹无关</button>
+    <view class="row-links">
+      <text class="link" bindtap="goCapture">再测一张</text>
+      <text class="sep">·</text>
+      <text class="link" bindtap="goCollection">形态图鉴</text>
+      <text class="sep">·</text>
+      <text class="link" bindtap="goIndex">回首页</text>
+    </view>
+  </view>
+
+  <text class="disclaimer">{{disclaimer}}本报告仅为纹路形态的趣味统计与科普描述。</text>
+</view>

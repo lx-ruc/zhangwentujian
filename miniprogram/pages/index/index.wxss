@@ -131,6 +131,17 @@
 }
 .cta-text:active { transform: scale(0.94); }
 
+/* 副入口：随机人格签（明示纯随机、与掌纹无关） */
+.draw-entry {
+  display: block;
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-2);
+  text-decoration: underline;
+}
+.draw-entry:active { transform: scale(0.94); }
+
 /* ===== 底部 ===== */
 .foot { margin-top: 48rpx; }
 .quota-chip {

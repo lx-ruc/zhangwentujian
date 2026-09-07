@@ -5,6 +5,22 @@ import { consumeQuota, normalizeQuotaState, QuotaState } from '../../utils/quota
 import { getNavTopPx } from '../../utils/nav';
 import { ReportResult, AnalysisRecord } from '../../types/index';
 import { drawReport } from '../../utils/draw';
+import { computeMetrics, classifyMorph } from '../../utils/morphology';
+
+/** 形态测量轮播（事实层文案） */
+const MORPH_FACTS = [
+  '测量只在本机进行：照片不会上传，测完即弃。',
+  '三个指标都是实测：纹路清晰度、细纹密度、走向聚合度。',
+  '十二形态型只是把实测结果分桶——形态没有好坏，只有不同。',
+  '掌部屈肌线在胎儿期约第 13 周成形，此后基本保持稳定。',
+  '稀有度是趣味统计估算，仅供收集参考。',
+];
+
+/** 形态测量结果 */
+interface MorphOutcome {
+  morphId: string;
+  metrics: { clarity: number; density: number; coherence: number };
+}
 
 /** 掩盖约 3s 等待的签语轮播（文案合规：封闭体系/趣味定位，无运/命/吉凶表述） */
 const FACTS = [
@@ -31,6 +47,7 @@ interface DrawOutcome {
 Page({
   data: {
     navTop: getNavTopPx(),
+    mode: 'draw' as 'draw' | 'morph',
     progress: 0,
     facts: FACTS,
     factIndex: 0,
@@ -47,9 +64,12 @@ Page({
   /** 页面存活标记：卸载后不再触发结算，防止死页 setData */
   alive: true as boolean,
 
-  onLoad() {
+  onLoad(options: { mode?: string }) {
     const app = getApp();
+    const mode = options && options.mode === 'morph' ? 'morph' : 'draw';
     this.setData({
+      mode,
+      facts: mode === 'morph' ? MORPH_FACTS : FACTS,
       handImage: app.globalData.pendingImage,
       handText: app.globalData.pendingHand === 'left' ? '左手' : '右手',
     });
@@ -71,7 +91,63 @@ Page({
       if (!this.settled) this.complete(Promise.reject(new RequestError('MODEL_TIMEOUT', '抽签超时了，请重试一次')));
     }, WATCHDOG_MS);
 
-    this.complete(this.runDraw());
+    this.complete(mode === 'morph' ? this.runMorph() : this.runDraw());
+  },
+
+  /** 形态测量：照片本机下采样 → 梯度三指标 → 分型（不上传、不计次数） */
+  async runMorph(): Promise<MorphOutcome> {
+    const app = getApp();
+    const path = app.globalData.pendingImage;
+    const [metrics] = await Promise.all([this.measureImage(path), this.sleep(1600)]);
+    const morphId = classifyMorph(metrics);
+    const record = { id: morphId, metrics, createdAt: Date.now() };
+    const list = (wx.getStorageSync('morphRecords') || []) as typeof record[];
+    list.unshift(record);
+    wx.setStorageSync('morphRecords', list.slice(0, 20));
+    app.globalData.pendingMorph = record;
+    return { morphId, metrics };
+  },
+
+  /** 隐藏 canvas 里做 64×64 下采样亮度网格（纯本机） */
+  measureImage(path: string): Promise<{ clarity: number; density: number; coherence: number }> {
+    return new Promise((resolve, reject) => {
+      wx.createSelectorQuery()
+        .in(this)
+        .select('#measure')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          const entry = res[0];
+          if (!entry || !entry.node) {
+            reject(new RequestError('MODEL_INVALID', '测量组件未就绪，请重试'));
+            return;
+          }
+          const canvas = entry.node;
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          const img = canvas.createImage();
+          img.onerror = () => reject(new RequestError('MODEL_INVALID', '照片读取失败，请重拍'));
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, 64, 64);
+            const data = ctx.getImageData(0, 0, 64, 64).data;
+            const luma: number[][] = [];
+            for (let y = 0; y < 64; y++) {
+              const row: number[] = [];
+              for (let x = 0; x < 64; x++) {
+                const i = (y * 64 + x) * 4;
+                row.push((0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255);
+              }
+              luma.push(row);
+            }
+            resolve(computeMetrics(luma));
+          };
+          img.src = path;
+        });
+    });
+  },
+
+  sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   },
 
   async runDraw(): Promise<DrawOutcome> {
@@ -111,7 +187,7 @@ Page({
   },
 
   /** 结算统一出口（成功/失败都走这里，进度拉满后跳转） */
-  async complete(promise: Promise<DrawOutcome>) {
+  async complete(promise: Promise<DrawOutcome | MorphOutcome>) {
     const outcome = await promise.then(
       (o) => o,
       (err: unknown) => {
@@ -131,16 +207,23 @@ Page({
     setTimeout(() => this.finish(outcome), 500);
   },
 
-  finish(outcome: DrawOutcome | null) {
+  finish(outcome: DrawOutcome | MorphOutcome | null) {
     if (this.data.done || !this.alive) return;
     this.setData({ done: true });
 
     const app = getApp();
     if (!outcome) {
       // 失败：不落假记录，回拍摄页并给出可读原因（配额/超时等具体信息）
-      wx.showToast({ title: this.failReason || '抽签失败了，请重试一次', icon: 'none', duration: 2500 });
+      wx.showToast({ title: this.failReason || (this.data.mode === 'morph' ? '测量失败了，请重试一次' : '抽签失败了，请重试一次'), icon: 'none', duration: 2500 });
       setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1400);
       this.clearPending();
+      return;
+    }
+
+    if ('morphId' in outcome) {
+      // 形态测量：不落签报告，直去形态报告页（照片已即焚）
+      this.clearPending();
+      wx.redirectTo({ url: '/pages/morph/report' });
       return;
     }
 
