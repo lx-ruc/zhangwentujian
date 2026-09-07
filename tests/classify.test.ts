@@ -4,6 +4,7 @@ import { REPORT_CONTENT } from '../miniprogram/data/report-content';
 import { demoReport } from '../miniprogram/utils/draw';
 
 // 禁词表与 copy-ban.test.ts 保持同步：运系/吉凶系/求签系/掌系（含单字「掌」）+ AI 措辞
+// 品牌名「AI掌纹分析」例外只在 copy-ban（展示层）生效；数据文案（本文件扫描对象）不含品牌名、零例外
 const BANNED_TERMS = [
   '算命', '占卜', '手相', '面相', '大师',
   '运势', '运气', '好运', '转运', '旺', '命运',

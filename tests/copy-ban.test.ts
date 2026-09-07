@@ -18,11 +18,15 @@ const BANNED_TERMS = [
   // 玄学/命理类
   '算命', '占卜', '手相', '面相', '大师', '运势', '运气', '好运', '转运', '旺',
   '命运', '吉', '凶', '灾', '祸', '求签', '签文', '解签', '测运',
-  // 手部类（含单字「掌」，零例外）
+  // 手部类（含单字「掌」；仅品牌名整串豁免，见 BRAND）
   '手掌', '掌纹', '掌心', '巴掌', '手纹', '掌',
 ];
 const BANNED_AI = /AI生成|AI解读|AI分析|AI读取/;
 const BANNED_VISIBLE_EN = /palm/i;
+
+/** 品牌名例外（2026-09-07 用户决策，告知全部风险后定名「AI掌纹分析」）：
+ *  仅这 5 个字的整串可含掌族字样，扫描前剥离；其余可见文案仍零例外。 */
+const BRAND = 'AI掌纹分析';
 
 interface Hit {
   file: string;
@@ -33,15 +37,16 @@ interface Hit {
 function findBanned(file: string, texts: string[]): Hit[] {
   const hits: Hit[] = [];
   for (const text of texts) {
+    const visible = text.split(BRAND).join('');
     for (const term of BANNED_TERMS) {
-      if (text.includes(term)) {
+      if (visible.includes(term)) {
         hits.push({ file, term, snippet: text.trim().slice(0, 40) });
       }
     }
-    if (BANNED_AI.test(text)) {
+    if (BANNED_AI.test(visible)) {
       hits.push({ file, term: BANNED_AI.source, snippet: text.trim().slice(0, 40) });
     }
-    if (BANNED_VISIBLE_EN.test(text)) {
+    if (BANNED_VISIBLE_EN.test(visible)) {
       hits.push({ file, term: 'palm(可见英文)', snippet: text.trim().slice(0, 40) });
     }
   }
@@ -170,6 +175,9 @@ describe('copy-ban 违禁词回归守卫', () => {
     // 标识符与模块路径不误伤
     expect(findBanned('x.ts', extractQuotedStrings(`const palmType = getPalmTypeName(); // palm 标识符不误伤`))).toHaveLength(0);
     expect(findBanned('x.ts', extractQuotedStrings(`import { X } from '../data/palm-types'; const y = '可见文案';`))).toHaveLength(0);
+    // 品牌名例外：仅豁免「AI掌纹分析」整串；同串之外的掌族词照抓（掌纹+掌=2）
+    expect(findBanned('x.ts', extractQuotedStrings(`const a = 'AI掌纹分析';`))).toHaveLength(0);
+    expect(findBanned('x.ts', extractQuotedStrings(`const a = 'AI掌纹分析'; const b = '你的掌纹很好看';`))).toHaveLength(2);
   });
 
   test('扫描范围覆盖足够文件（文件收集器未失效）', () => {

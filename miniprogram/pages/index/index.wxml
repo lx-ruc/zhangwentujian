@@ -9,7 +9,7 @@
   <!-- 十二签宫格 plate -->
   <view class="plate">
     <view class="fig-row">
-      <text class="figtag">SIGN SET — 十二人格签</text>
+      <text class="figtag">SIGN SET — AI掌纹分析</text>
       <text class="fig-sub">每次抽取随机解锁一支</text>
     </view>
     <view class="sign-grid">

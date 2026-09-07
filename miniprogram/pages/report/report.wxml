@@ -16,7 +16,7 @@
   <view class="sign-hero">
     <view class="sign-paper">
       <view class="sign-top">
-        <text class="sign-no">{{palmType.no}} · 十二人格签</text>
+        <text class="sign-no">{{palmType.no}} · AI掌纹分析</text>
         <text class="sign-code">{{palmType.code}}</text>
       </view>
       <view class="sign-body">

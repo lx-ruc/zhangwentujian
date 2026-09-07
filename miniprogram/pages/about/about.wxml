@@ -5,7 +5,7 @@
   </view>
 
   <view class="head">
-    <text class="title">关于「十二人格签」</text>
+    <text class="title">关于「AI掌纹分析」</text>
     <text class="ver">v{{version}}</text>
   </view>
 
@@ -20,7 +20,7 @@
   </view>
 
   <view class="card">
-    <text class="h">十二人格签是什么</text>
+    <text class="h">AI掌纹分析是什么</text>
     <text class="p">一套封闭的趣味人格图鉴：感受力、思考力、行动力三个维度组合出 12 支签，每次测试随机抽出一支。各支签的稀有度为趣味估算，仅供收集参考。</text>
   </view>
 
