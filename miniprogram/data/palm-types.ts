@@ -1,7 +1,7 @@
 /**
- * 掌纹性格图鉴 · 12 型全收录
- * 机制参考 MBTI 传播：封闭类型集合 + 画面感命名 + 掌纹稀有度 + 相性钩子
- * 合规：稀有度为趣味估算（非真实统计，文案需带"趣味估算"）；描述全部为性格倾向，无运/命/吉凶词
+ * 人格签图鉴 · 12 型全收录
+ * 机制参考 MBTI 传播：封闭类型集合 + 画面感命名 + 稀有度 + 相性钩子
+ * 合规：稀有度为趣味估算（非真实统计，展示需带"趣味估算"）；描述全部为性格倾向，无运/命/吉凶词
  */
 
 export type Dominant = 'heart' | 'head' | 'life';
@@ -10,7 +10,7 @@ export type TypeId = `${Dominant}-${Style}`;
 
 export interface PalmType {
   id: TypeId;
-  /** 巴掌TI 代码（MBTI 式：主导线字母+风格字母，如 HA/RD/VN） */
+  /** 人格签代码（MBTI 式：主导线字母+风格字母，如 HA/RD/VN） */
   code: string;
   /** 图鉴编号 No.01-12 */
   no: string;
@@ -22,7 +22,7 @@ export interface PalmType {
   /** 风格 */
   style: Style;
   styleLabel: string;
-  /** 掌纹稀有度（写死的趣味估算值，展示时带"趣味估算"） */
+  /** 稀有度（写死的趣味估算值，展示时带"趣味估算"） */
   rarity: string;
   /** 一句话人设（反差感/自嘲感，分享钩子） */
   tagline: string;
@@ -35,7 +35,7 @@ export interface PalmType {
 }
 
 export const PALM_TYPES: Record<TypeId, PalmType> = {
-  // ===== 心系 · 情感线主导 =====
+  // ===== 心系 · 感受力主导 =====
   'heart-calm': {
     id: 'heart-calm', code: 'HS', no: 'No.01', name: '深潭映月',
     dominant: 'heart', dominantLabel: '心系', style: 'calm', styleLabel: '沉稳',
@@ -68,12 +68,12 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'heart', dominantLabel: '心系', style: 'deep', styleLabel: '深沉',
     rarity: '2%',
     tagline: '嘴上说没事，心里已演完三部曲。',
-    desc: '情感线深而不露：情绪的全流域都在地下运行。别人以为你佛，其实你只是不爱直播。偶尔把暗河引出地面，会轻松很多。',
+    desc: '感受力深而不露：情绪的全流域都在地下运行。别人以为你佛，其实你只是不爱直播。偶尔把暗河引出地面，会轻松很多。',
     compat: ['春风拂面', '破壁先锋'],
     seal: '河',
   },
 
-  // ===== 脑系 · 思维线主导 =====
+  // ===== 脑系 · 思考力主导 =====
   'head-calm': {
     id: 'head-calm', code: 'RS', no: 'No.05', name: '磐石棋手',
     dominant: 'head', dominantLabel: '脑系', style: 'calm', styleLabel: '沉稳',
@@ -88,7 +88,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'head', dominantLabel: '脑系', style: 'bold', styleLabel: '进取',
     rarity: '4%',
     tagline: '难题是最好的兴奋剂。',
-    desc: '思维线带着冲锋属性：别人看到墙，你看到墙后面的路。越复杂的问题越上头，简单重复反而让你昏昏欲睡——你的字典里没有"无解"。',
+    desc: '思考力带着冲锋属性：别人看到墙，你看到墙后面的路。越复杂的问题越上头，简单重复反而让你昏昏欲睡——你的字典里没有"无解"。',
     compat: ['暗河涌动', '长途行者'],
     seal: '破',
   },
@@ -106,18 +106,18 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'head', dominantLabel: '脑系', style: 'deep', styleLabel: '深沉',
     rarity: '1.5%',
     tagline: '话少，但想的事比谁都远。',
-    desc: '思维线深得像观测深空：别人聊眼前，你在想五年后。安静不代表掉线——你在做长焦对焦。全图鉴最稀有的类型，物以稀为贵。',
+    desc: '思考力深得像观测深空：别人聊眼前，你在想五年后。安静不代表掉线——你在做长焦对焦。全图鉴最稀有的类型，物以稀为贵。',
     compat: ['磐石棋手', '蛰伏火山'],
     seal: '观',
   },
 
-  // ===== 身系 · 活力线主导 =====
+  // ===== 身系 · 行动力主导 =====
   'life-calm': {
     id: 'life-calm', code: 'VS', no: 'No.09', name: '长途行者',
     dominant: 'life', dominantLabel: '身系', style: 'calm', styleLabel: '沉稳',
     rarity: '8%',
     tagline: '起跑不快，但从不中途退场。',
-    desc: '活力线的耐力型选手：配速稳、补给稳、心态稳。短跑选手在你前面起哄也没用——这是场马拉松，而你天生就是跑这种的。',
+    desc: '行动力上的耐力型选手：配速稳、补给稳、心态稳。短跑选手在你前面起哄也没用——这是场马拉松，而你天生就是跑这种的。',
     compat: ['燎原星火', '破壁先锋'],
     seal: '行',
   },
@@ -126,7 +126,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'life', dominantLabel: '身系', style: 'bold', styleLabel: '进取',
     rarity: '5%',
     tagline: '能量过剩，闲下来反而难受。',
-    desc: '活力线满格供应：一天恨不得 48 小时。行动永远先于纠结，方向对了就一路奔流。要小心的事只有一件——记得偶尔上岸歇脚。',
+    desc: '行动力满格供应：一天恨不得 48 小时。行动永远先于纠结，方向对了就一路奔流。要小心的事只有一件——记得偶尔上岸歇脚。',
     compat: ['千面棱镜', '山间清风'],
     seal: '奔',
   },
@@ -135,7 +135,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'life', dominantLabel: '身系', style: 'agile', styleLabel: '灵动',
     rarity: '10%',
     tagline: '精力只花在好玩的事上。',
-    desc: '活力线的兴趣驱动型：对味的事可以连肝三天，不对味的一分钟都嫌长。效率意外地高——因为热爱就是你的外挂引擎。',
+    desc: '行动力上的兴趣驱动型：对味的事可以连肝三天，不对味的一分钟都嫌长。效率意外地高——因为热爱就是你的外挂引擎。',
     compat: ['奔流入海', '春风拂面'],
     seal: '清',
   },
@@ -144,7 +144,7 @@ export const PALM_TYPES: Record<TypeId, PalmType> = {
     dominant: 'life', dominantLabel: '身系', style: 'deep', styleLabel: '深沉',
     rarity: '2.5%',
     tagline: '平时省电模式，关键时刻倾尽全力。',
-    desc: '活力线的蓄能型：日常看起来安静低调，其实在悄悄充电。等真正在意的事出现——好家伙，原来你是火山。爆发力全图鉴第一。',
+    desc: '行动力上的蓄能型：日常看起来安静低调，其实在悄悄充电。等真正在意的事出现——好家伙，原来你是火山。爆发力全图鉴第一。',
     compat: ['深空观测者', '磐石棋手'],
     seal: '伏',
   },

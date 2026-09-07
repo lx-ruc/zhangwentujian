@@ -2,13 +2,13 @@
 
 export type Hand = 'left' | 'right';
 
-/** 三条主线（产品命名，勿用传统名，见 design/hand-paths.json _naming） */
+/** 三维强度（内部键名沿用旧主线命名；展示映射：heart→感受力 / head→思考力 / life→行动力） */
 export interface MainLines {
-  /** 情感线 0-100 */
+  /** 感受力 0-100 */
   heart: number;
-  /** 思维线 0-100 */
+  /** 思考力 0-100 */
   head: number;
-  /** 活力线 0-100 */
+  /** 行动力 0-100 */
   life: number;
 }
 
@@ -26,12 +26,9 @@ export interface ReportResult {
   archetype?: string;
   /** 性格关键词 3-5 个 */
   personality: string[];
-  /** 旧版三维预测字段（已停用，仅为历史记录兼容保留） */
-  career?: string;
-  love?: string;
-  wealth?: string;
-  /** 性格深度解读（替代旧三维预测） */
-  depth?: string;
+  career: string;
+  love: string;
+  wealth: string;
   /** 场景速读：工作 / 生活 / 身心（可选，模型未给则隐藏模块） */
   scenes?: {
     work: SceneNotes;

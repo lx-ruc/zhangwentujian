@@ -10,5 +10,5 @@
     "lib": ["ES2021", "DOM"],
     "types": ["node"]
   },
-  "include": ["analyze/**/*.ts"]
+  "include": ["analyze/**/*.ts", "pay/**/*.ts", "paynotify/**/*.ts"]
 }

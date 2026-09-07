@@ -35,40 +35,101 @@
   color: var(--ink-2);
 }
 
-/* ===== 手掌 plate ===== */
+/* ===== 十二签宫格 plate ===== */
 .plate {
   margin-top: 40rpx;
   position: relative;
   border-top: 1rpx solid var(--rule);
   border-bottom: 1rpx solid var(--rule);
-  padding: 28rpx 0 20rpx;
+  padding: 28rpx 0 24rpx;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+.fig-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 20rpx;
 }
 .figtag {
-  align-self: flex-start;
   font-family: var(--font-mono);
   font-size: 20rpx;
   letter-spacing: 2rpx;
   color: var(--ink-2);
-  padding-bottom: 16rpx;
 }
-.hand { width: 420rpx; height: 440rpx; }
-.line-legend {
-  margin-top: 12rpx;
+.fig-sub {
+  font-size: 20rpx;
+  color: var(--ink-3);
+}
+.sign-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx 16rpx;
+}
+.sign-cell {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8rpx;
-  font-size: 22rpx;
+}
+.cell-seal {
+  width: 108rpx;
+  height: 108rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid var(--rule);
+  border-radius: 12rpx;
+  background: var(--paper);
   color: var(--ink-2);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 52rpx;
+  transform: rotate(-4deg);
 }
-.legend-item { display: flex; align-items: center; gap: 12rpx; }
-.legend-item .dot {
-  width: 28rpx; height: 0;
-  border-top: 5rpx solid var(--cinnabar);
-  border-radius: 3rpx;
+.sign-cell:nth-child(3n) .cell-seal {
+  border-color: var(--cinnabar);
+  color: var(--cinnabar);
+  opacity: 0.85;
 }
+.cell-no {
+  font-family: var(--font-mono);
+  font-size: 18rpx;
+  color: var(--ink-3);
+}
+
+/* ===== 快门式图标 CTA（无文字，与拍摄页快门同语言） ===== */
+.cta-icon {
+  width: 132rpx;
+  height: 132rpx;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 10rpx solid rgba(188, 63, 33, 0.25);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cta-core {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--cinnabar);
+  box-shadow: 0 6rpx 24rpx rgba(188, 63, 33, 0.28);
+}
+.cta-icon:active { transform: scale(0.94); }
+/* 文字副 CTA：明示入口功能（合规 3.2/3.3），与图标同一跳转 */
+.cta-text {
+  display: block;
+  margin-top: 20rpx;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 32rpx;
+  letter-spacing: 8rpx;
+  color: var(--ink-1);
+}
+.cta-text:active { transform: scale(0.94); }
 
 /* ===== 底部 ===== */
 .foot { margin-top: 48rpx; }
@@ -83,6 +144,16 @@
   color: var(--cinnabar);
   font-weight: 700;
   font-size: 30rpx;
+}
+/* 购买入口（仅支付开关开启且配额用尽时渲染；朱砂色下划线轻提示） */
+.buy-chip {
+  display: block;
+  margin-top: 12rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--cinnabar);
+  text-decoration: underline;
+  text-underline-offset: 6rpx;
 }
 /* 配额用完：分享解锁 CTA（墨色描边版） */
 .share-cta {

@@ -2,7 +2,7 @@
   <!-- 顶部导航 -->
   <view class="nav">
     <text class="back" bindtap="goBack">‹ 返回</text>
-    <text class="title">拍摄手掌</text>
+    <text class="title">今日留影</text>
     <text class="back ghost">‹ 返回</text>
   </view>
 
@@ -27,13 +27,11 @@
         <text class="cam-tip-sub">开启后返回本页即可实时取景</text>
       </view>
 
-      <!-- 取景遮罩：轮廓外黑、轮廓内透明（露相机），洞缘虚线一体 -->
-      <image class="vf-mask {{hand === 'left' ? 'mirror' : ''}}" src="/assets/vf-mask.png" mode="scaleToFill" />
-
-      <!-- 顶部四角 + 扫描线（仅相机正常时） -->
+      <!-- 取景框：四角标 + 扫描线（无轮廓遮罩） -->
       <view class="corner tl" /><view class="corner tr" />
+      <view class="corner bl" /><view class="corner br" />
       <view class="scan" wx:if="{{!cameraBroken}}" />
-      <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
+      <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}} · 五指自然张开，完整入镜</text>
     </view>
   </view>
 

@@ -5,5 +5,8 @@
     "outDir": "analyze",
     "rootDir": "analyze"
   },
-  "exclude": []
+  "exclude": [],
+  "include": [
+    "analyze/**/*.ts"
+  ]
 }

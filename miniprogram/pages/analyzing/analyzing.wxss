@@ -38,16 +38,29 @@
   transition: width 0.4s linear;
 }
 
-/* ===== 手掌 ===== */
+/* ===== 留影 / 签纸卡 ===== */
 .plate { margin-top: 36rpx; }
-.hand {
-  width: 380rpx;
+/* 无照片直开时的签纸兜底（呼吸动画） */
+.sign-card {
+  width: 300rpx;
   height: 400rpx;
+  background: var(--paper-2);
+  border: 2rpx solid var(--rule);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: breathe 2.2s ease-in-out infinite;
 }
-.hand.settled { animation: none; }
+.sign-seal {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 140rpx;
+  color: var(--cinnabar);
+}
+.sign-card.settled { animation: none; }
 
-/* 用户手掌照片（扫描中）：与拍摄页取景框 654×664 严格 1:1（超出内容宽的 16rpx 借两侧 padding） */
+/* 用户留影（扫描中）：与拍摄页取景框 654×664 严格 1:1（超出内容宽的 16rpx 借两侧 padding） */
 .photo-wrap {
   position: relative;
   width: 654rpx;

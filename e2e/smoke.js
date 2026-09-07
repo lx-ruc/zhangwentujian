@@ -33,13 +33,15 @@ async function main() {
     let page = await mini.reLaunch('/pages/index/index');
     await sleep(1000);
     assert((await page.$('.display')), '首页：品牌大标题未渲染');
-    assert((await page.$('.cta')), '首页：CTA 未渲染');
+    assert((await page.$('.cta-icon')), '首页：图标 CTA 未渲染');
     const quota = await page.$('.quota-chip .num');
     assert(quota, '首页：剩余次数未渲染');
-    console.log('✓ 首页渲染正常');
+    const signCells = await page.$$('.sign-cell');
+    assert(signCells.length === 12, `首页 12 支签宫格应为 12 格，实际 ${signCells.length}`);
+    console.log('✓ 首页渲染正常（图标 CTA + 12 支签宫格）');
 
     // ---- ② 首页 → 拍摄页（真实路由跳转）----
-    await (await page.$('.cta')).tap();
+    await (await page.$('.cta-icon')).tap();
     await sleep(1000);
     page = await mini.currentPage();
     assert(page.path.includes('capture'), `路由跳转失败：${page.path}`);
@@ -53,26 +55,27 @@ async function main() {
     assert(cells.length === 12, `图鉴网格应为 12 格，实际 ${cells.length}`);
     console.log('✓ 图鉴收集页 12 型网格渲染');
 
-    // ---- ④ 报告页：mock 兜底 + 类型徽章（85/72/78 → 燎原星火）----
+    // ---- ④ 报告页：demoReport 兜底 + 签名（heart-bold → 燎原星火）----
     page = await mini.reLaunch('/pages/report/report');
     await sleep(1200);
-    const typeName = await page.$('.type-name');
-    assert(typeName, '报告页：类型徽章未渲染（mock 兜底失效？）');
-    const name = await typeName.text();
-    assert(name.includes('燎原星火'), `类型徽章应为「燎原星火」，实际「${name}」`);
+    const t1Name = await page.$('.t1-name');
+    assert(t1Name, '报告页：签名未渲染（demoReport 兜底失效？）');
+    const name = await t1Name.text();
+    assert(name.includes('燎原星火'), `签名应为「燎原星火」，实际「${name}」`);
     assert((await page.$('.scene')), '报告页：场景速读未渲染');
-    console.log(`✓ 报告页 mock 兜底 + 类型徽章（${name}）`);
+    assert((await page.$('.sign-hero')), '报告页：签纸卡未渲染');
+    console.log(`✓ 报告页 demoReport 兜底 + 签名（${name}）`);
 
     // ---- ⑤ 历史 / 关于 ----
     page = await mini.reLaunch('/pages/history/history');
     await sleep(800);
-    assert((await page.$('.h-head')), '历史页头部未渲染');
+    assert((await page.$('.head')), '历史页头部未渲染');
     page = await mini.reLaunch('/pages/about/about');
     await sleep(800);
-    assert((await page.$('.about-head')), '关于页头部未渲染');
+    assert((await page.$('.head')), '关于页头部未渲染');
     console.log('✓ 历史/关于页渲染正常');
 
-    console.log('\n✅ E2E 冒烟全部通过（6 页面 + 路由跳转 + mock 链路 + 图鉴分类）');
+    console.log('\n✅ E2E 冒烟全部通过（6 页面 + 路由跳转 + 兜底链路 + 图鉴分类）');
   } finally {
     await mini.close();
   }

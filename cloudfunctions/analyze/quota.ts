@@ -21,6 +21,8 @@ export interface UserQuota {
   bonus: number;
   /** 今日分享奖励记录日 */
   bonusDate: string;
+  /** 购买的永久加量（虚拟支付发货入账，不随日期重置） */
+  purchased?: number;
   /** 今日各渠道分享次数（防连点） */
   shareCounters?: { forward: number; timeline: number };
 }
@@ -30,15 +32,16 @@ export const initialUserQuota = (): UserQuota => ({
   lastUsedDate: '',
   bonus: 0,
   bonusDate: '',
+  purchased: 0,
 });
 
-/** 当日总额度 = 基础 + 分享奖励 */
+/** 当日总额度 = 基础 + 分享奖励 + 购买加量（永久） */
 export function capacityOf(q: UserQuota, now: Date = new Date()): number {
   const today = todayKey(now);
   const usedToday = q.lastUsedDate === today ? q.dailyCount : 0;
   const bonusToday = q.bonusDate === today ? q.bonus : 0;
   void usedToday;
-  return CONFIG.DAILY_QUOTA + bonusToday;
+  return CONFIG.DAILY_QUOTA + bonusToday + (q.purchased ?? 0);
 }
 
 /** 今日剩余 */

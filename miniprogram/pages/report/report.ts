@@ -1,12 +1,13 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
-import { clampScore } from '../../utils/format';
+import { toDimensions, clampScore } from '../../utils/format';
 import { callFunction } from '../../utils/request';
 import { getNavBelowPx } from '../../utils/nav';
-import { MOCK_REPORT } from '../../utils/mock-report';
+import { demoReport } from '../../utils/draw';
 import { shareReport, shareDefault, triggerShareBonus } from '../../utils/share';
-import { drawPoster, CanvasRenderingContextLike, CanvasImageLike } from '../../utils/poster';
+import { drawPoster, CanvasRenderingContextLike } from '../../utils/poster';
 import { classifyPalmType, classifyByScore } from '../../utils/classify';
 import { headFontSizes } from '../../utils/head-fit';
+import { REPORT_CONTENT } from '../../data/report-content';
 import { PalmType } from '../../data/palm-types';
 import { ReportResult, AnalysisRecord } from '../../types/index';
 
@@ -19,22 +20,21 @@ interface SceneView {
   cautions: string[];
 }
 
-function toScenes(r: ReportResult): SceneView[] {
-  if (!r.scenes) return [];
+function toScenes(body: { scenes?: ReportResult['scenes'] }): SceneView[] {
+  if (!body.scenes) return [];
   const meta: Array<Omit<SceneView, 'traits' | 'cautions'>> = [
     { key: 'work', icon: '工', title: '工作', en: 'WORK' },
     { key: 'life', icon: '生', title: '生活', en: 'LIFE' },
     { key: 'mind', icon: '心', title: '身心', en: 'MIND' },
   ];
   return meta
-    .map((m) => ({ ...m, traits: r.scenes![m.key].traits, cautions: r.scenes![m.key].cautions }))
+    .map((m) => ({ ...m, traits: body.scenes![m.key].traits, cautions: body.scenes![m.key].cautions }))
     .filter((s) => s.traits.length && s.cautions.length);
 }
 
 Page({
   data: {
     navTop: getNavBelowPx(),
-    isFallback: false,
     funScore: 0,
     summary: '',
     archetype: '',
@@ -42,37 +42,27 @@ Page({
     t1NameSize: '68rpx',
     t2Style: 'font-size:26rpx;letter-spacing:0rpx',
     t3Style: 'font-size:26rpx;letter-spacing:0rpx',
-    lines: [] as Array<{ key: string; name: string; desc: string; score: number }>,
-    depthText: '',
-    personalityText: '',
+    lines: [] as Array<{ key: string; name: string; score: number }>,
+    dimensions: [] as ReturnType<typeof toDimensions>,
     scenes: [] as SceneView[],
     advice: [] as string[],
-    handText: '右手',
-    hand: 'right' as 'left' | 'right',
     disclaimer: DISCLAIMER,
     showPoster: false,
     posterReady: false,
   },
 
   onLoad() {
-    // 数据源优先级：刚生成的（globalData）> 按 id 查历史（storage）> mock 兜底
+    // 数据源优先级：刚生成的（globalData）> 按 id 查历史（storage）> 演示报告兜底
     const app = getApp();
-    // 兜底标记一次性读取：本次为通用解读（云端未扣次数），顶部横幅提示重拍
-    const isFallback = app.globalData.pendingFallback;
-    app.globalData.pendingFallback = false;
-    let report: ReportResult = app.globalData.pendingReport || MOCK_REPORT;
-    let hand = app.globalData.pendingHand;
+    let report: ReportResult = app.globalData.pendingReport || demoReport();
     if (app.globalData.reportId) {
       const list: AnalysisRecord[] = wx.getStorageSync('reports') || [];
       const record = list.find((r) => r._id === app.globalData.reportId);
-      if (record) {
-        report = record.result;
-        hand = record.hand;
-      }
+      if (record) report = record.result;
     }
     app.globalData.pendingReport = null; // 一次性，防止复看旧数据
 
-    // 图鉴类型：三线数值 → 12 型（本地确定性分类，模型不参与）
+    // 图鉴类型：三维数值 → 12 型（本地确定性分类；旧记录无三线时按趣味评分兜底）
     const lineScores = {
       heart: clampScore(report.lines?.heart),
       head: clampScore(report.lines?.head),
@@ -81,28 +71,28 @@ Page({
     const palmType = report.lines
       ? classifyPalmType(lineScores)
       : classifyByScore(clampScore(report.funScore));
+
+    // 展示层全部取自内容库：记录只供 lines/funScore；
+    // 旧 AI 时代记录的存量文本（含过时措辞）从此不在任何页面渲染
+    const body = REPORT_CONTENT[palmType.id];
     // 头部四行铺满：按每行实际文案长度反推字号（占满内容宽、不换行）
     const fit = headFontSizes(palmType);
 
     this.setData({
-      isFallback,
       funScore: clampScore(report.funScore),
-      summary: report.summary,
-      archetype: report.archetype ?? '',
+      summary: body.summary,
+      archetype: body.archetype ?? '',
       palmType,
       t1NameSize: `${fit.t1Name}rpx`,
       t2Style: `font-size:${fit.t2}rpx;letter-spacing:${fit.t2Ls}rpx`,
       t3Style: `font-size:${fit.t3}rpx;letter-spacing:${fit.t3Ls}rpx`,
-      depthText: report.depth || '',
-      personalityText: report.personality?.length ? report.personality.join(' · ') : '',
-      scenes: toScenes(report),
-      advice: report.advice,
-      handText: hand === 'left' ? '左手' : '右手',
-      hand: hand ?? 'right',
+      dimensions: toDimensions(body),
+      scenes: toScenes(body),
+      advice: body.advice,
       lines: [
-        { key: 'heart', name: '情感线', desc: '情感表达', score: lineScores.heart },
-        { key: 'head', name: '思维线', desc: '思维风格', score: lineScores.head },
-        { key: 'life', name: '活力线', desc: '活力状态', score: lineScores.life },
+        { key: 'heart', name: '感受力', score: lineScores.heart },
+        { key: 'head', name: '思考力', score: lineScores.head },
+        { key: 'life', name: '行动力', score: lineScores.life },
       ],
     });
   },
@@ -145,27 +135,19 @@ Page({
       const ctx = node.getContext('2d') as unknown as CanvasRenderingContextLike;
       ctx.scale((width * dpr) / 750, (height * dpr) / 1200);
 
-      const draw = (image: CanvasImageLike | null) => {
-        const t = this.data.palmType;
-        drawPoster(ctx, {
-          type: t
-            ? { no: t.no, name: t.name, rarity: t.rarity, tagline: t.tagline, seal: t.seal, code: t.code }
-            : undefined,
-          archetype: this.data.archetype || '稳扎稳打的实干家',
-          funScore: this.data.funScore,
-          lines: this.data.lines.map((l) => ({ name: l.name, score: l.score })),
-          tags: this.data.personalityText
-            .split(' · ')
-            .filter(Boolean),
-          handImagePath: '/assets/hand-plate.png',
-        }, image);
-        this.setData({ posterReady: true });
-      };
-
-      const img = node.createImage() as unknown as HTMLImageElement & CanvasImageLike;
-      img.src = '/assets/hand-plate.png';
-      img.onload = () => draw(img);
-      img.onerror = () => draw(null);
+      const t = this.data.palmType;
+      drawPoster(ctx, {
+        type: t
+          ? { no: t.no, name: t.name, rarity: t.rarity, tagline: t.tagline, seal: t.seal, code: t.code }
+          : undefined,
+        archetype: this.data.archetype || '稳扎稳打的实干家',
+        funScore: this.data.funScore,
+        lines: this.data.lines.map((l) => ({ name: l.name, score: l.score })),
+        tags: (this.data.dimensions.find((d) => d.key === 'personality')?.text || '')
+          .split(' · ')
+          .filter(Boolean),
+      });
+      this.setData({ posterReady: true });
     });
   },
 
@@ -220,9 +202,6 @@ Page({
       wx.showToast({ title: '已保存到相册', icon: 'success' });
     }
   },
-
-  /** 兜底横幅的重拍入口：回到拍摄页（本次未扣次数，重试无心理负担） */
-  retake() { wx.redirectTo({ url: '/pages/capture/capture' }); },
 
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
   goCollection() { wx.navigateTo({ url: '/pages/collection/collection' }); },

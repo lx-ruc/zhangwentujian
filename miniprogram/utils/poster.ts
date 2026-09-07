@@ -1,24 +1,22 @@
 /**
- * 分享海报绘制（Canvas 2D，宣纸/墨/朱砂「图鉴」风）
+ * 分享海报绘制（Canvas 2D，宣纸/墨/朱砂「图鉴」风，纯文字无图片资产）
  * 合规：免责声明必须出现在海报角落（三处必放之一）
  */
 
 export interface PosterData {
   /** 图鉴类型（优先） */
   type?: { no: string; name: string; rarity: string; tagline: string; seal: string; code: string };
-  /** 兜底：模型称号（无类型时） */
+  /** 兜底：称号（无类型时） */
   archetype: string;
   funScore: number;
-  /** 三主线 [情感, 思维, 活力] 0-100 */
+  /** 三维 [感受力, 思考力, 行动力] 0-100 */
   lines: Array<{ name: string; score: number }>;
   tags: string[];
-  /** 底部手掌插画（透明/宣纸底 PNG 路径） */
-  handImagePath: string;
 }
 
 const C = {
   paper: '#F9F5EC',
-  paper2: '#F0E9EA'.replace('EA', 'DA'), // #F0E9DA
+  paper2: '#F0E9DA',
   ink: '#26211A',
   ink2: '#6F6759',
   ink3: '#A79D8B',
@@ -31,11 +29,7 @@ const FONT_MONO = 'Menlo, monospace';
 const FONT_BODY = '-apple-system, "PingFang SC", sans-serif';
 
 /** 逻辑尺寸 750×1200，外部负责 canvas.width = 750*dpr 并 ctx.scale(dpr,dpr) */
-export function drawPoster(
-  ctx: CanvasRenderingContextLike,
-  data: PosterData,
-  image: CanvasImageLike | null,
-): void {
+export function drawPoster(ctx: CanvasRenderingContextLike, data: PosterData): void {
   const W = 750;
   const H = 1200;
 
@@ -50,26 +44,30 @@ export function drawPoster(
   ctx.lineWidth = 1;
   strokeRect(ctx, 42, 42, W - 84, H - 84);
 
-  // 手掌设计：居中大水印（图鉴纸纹质感，海报核心视觉）
-  if (image) {
+  // 签纸设计：居中大印章字水印（图鉴纸纹质感，海报核心视觉）
+  if (data.type) {
     ctx.save();
-    ctx.globalAlpha = 0.09;
-    const mw = 640;
-    const mh = mw * (image.height / image.width);
-    ctx.drawImage(image as unknown as CanvasImageSource, (W - mw) / 2, (H - mh) / 2 - 40, mw, mh);
+    ctx.translate(W / 2, H / 2 - 40);
+    ctx.rotate((-8 * Math.PI) / 180);
+    ctx.globalAlpha = 0.08;
+    ctx.fillStyle = C.cinnabar;
+    ctx.font = `900 700px ${FONT_SERIF}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(data.type.seal, 0, 0);
     ctx.restore();
+    ctx.textAlign = 'left';
   }
 
   // eyebrow
   ctx.fillStyle = C.ink2;
   ctx.font = `500 24px ${FONT_MONO}`;
-  drawTracked(ctx, 'PALM INSIGHT · 趣味掌纹解读', W / 2, 116, 6);
+  drawTracked(ctx, 'SIGN COLLECTION · 趣味人格测试', W / 2, 116, 6);
 
   // 引题 + 图鉴编号
   ctx.fillStyle = C.ink3;
   ctx.font = `400 30px ${FONT_BODY}`;
-  drawTracked(ctx, '我的掌纹人格是', W / 2, 200, 10);
-
+  drawTracked(ctx, '我的人格签是', W / 2, 200, 10);
 
   // 类型名/称号（朱砂大字，自动缩字）
   const headline = data.type ? data.type.name : `「${data.archetype}」`;
@@ -85,14 +83,14 @@ export function drawPoster(
     ctx.fillStyle = C.ink2;
     ctx.font = `400 28px ${FONT_BODY}`;
     ctx.textAlign = 'center';
-    ctx.fillText(`掌纹稀有度 ${data.type.rarity} · "${data.type.tagline}"`, W / 2, 396);
+    ctx.fillText(`稀有度（趣味估算）${data.type.rarity} · "${data.type.tagline}"`, W / 2, 396);
     ctx.textAlign = 'left';
   }
 
   // 评分印章（旋转方章）
   drawSeal(ctx, W / 2, 470, data.funScore);
 
-  // 三主线
+  // 三维强度
   const linesTop = 640;
   data.lines.forEach((l, i) => {
     const y = linesTop + i * 84;
@@ -143,7 +141,7 @@ export function drawPoster(
   // 引流
   ctx.fillStyle = C.ink2;
   ctx.font = `500 26px ${FONT_MONO}`;
-  drawTracked(ctx, '微信搜索「AI掌纹分析」', W / 2, 1152, 6);
+  drawTracked(ctx, '微信搜索「十二人格签」', W / 2, 1152, 6);
   ctx.textAlign = 'left';
 }
 
@@ -201,7 +199,7 @@ function drawSeal(ctx: CanvasRenderingContextLike, cx: number, cy: number, score
   ctx.font = `900 64px ${FONT_SERIF}`;
   ctx.fillText(String(score), 0, -18);
   ctx.font = `400 24px ${FONT_BODY}`;
-  ctx.fillText('掌纹评分', 0, 38);
+  ctx.fillText('趣味评分', 0, 38);
   ctx.restore();
   ctx.textAlign = 'left';
 }
@@ -253,10 +251,4 @@ export interface CanvasRenderingContextLike {
   scale(x: number, y: number): void;
   save(): void;
   restore(): void;
-  drawImage(img: CanvasImageSource, x: number, y: number, w: number, h: number): void;
-}
-
-export interface CanvasImageLike {
-  width: number;
-  height: number;
 }

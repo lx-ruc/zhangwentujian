@@ -1,37 +1,39 @@
 <view class="page-report" style="padding-top:{{navTop}}px">
-  <!-- 兜底横幅：本次为通用解读，未扣次数 -->
-  <view wx:if="{{isFallback}}" class="fallback-banner">
-    <view class="fallback-copy">
-      <text class="fallback-title">照片没读清，本次未扣次数</text>
-      <text class="fallback-sub">以下为通用倾向描述，仅供参考</text>
-    </view>
-    <view class="fallback-btn" bindtap="retake">重拍一张</view>
-  </view>
-
-  <!-- 头部：四行式巴掌TI（四行均铺满内容宽，字号按文案长度反推） -->
+  <!-- 头部：四行式人格签（四行均铺满内容宽，字号按文案长度反推） -->
   <view class="head">
-    <view class="t1"><text class="t1-label">你的巴掌TI是：</text><text class="t1-name" style="font-size:{{t1NameSize}}">{{palmType.name}}</text></view>
-    <view class="t2" style="{{t2Style}}"><text class="t2-label">掌纹中蕴含的性格底稿：</text><text class="t2-text">{{palmType.tagline}}</text></view>
-    <view class="t3" style="{{t3Style}}"><text class="t3-label">和你最合拍的巴掌TI是：</text><text class="t3-text">{{palmType.compat[0]}}／{{palmType.compat[1]}}</text></view>
+    <text class="r-eyebrow">SIGN COLLECTION · 趣味人格测试</text>
+    <view class="t1"><text class="t1-label">你的人格签是：</text><text class="t1-name" style="font-size:{{t1NameSize}}">{{palmType.name}}</text></view>
+    <view class="t2" style="{{t2Style}}"><text class="t2-label">你的性格底稿：</text><text class="t2-text">{{palmType.tagline}}</text></view>
+    <view class="t3" style="{{t3Style}}"><text class="t3-label">和你最合拍的人格签是：</text><text class="t3-text">{{palmType.compat[0]}}／{{palmType.compat[1]}}</text></view>
     <view class="type-pills">
-      <text class="pill">掌纹属性·{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
-      <text class="pill rare">掌纹稀有度·{{palmType.rarity}}</text>
+      <text class="pill">人格属性·{{palmType.dominantLabel}}·{{palmType.styleLabel}}</text>
+      <text class="pill rare">稀有度·{{palmType.rarity}} · 趣味估算</text>
       <view class="type-seal">{{palmType.seal}}</view>
     </view>
   </view>
 
-  <!-- 手掌主视觉：图鉴式引线标注（锚点→引线→标签） -->
-  <view class="palm-hero">
-    <view class="palm-box {{hand === 'right' ? 'right-hand' : ''}}">
-      <image class="palm-img {{hand === 'right' ? 'mirror' : ''}}" src="/assets/hand-plate.png" mode="aspectFit" />
-      <view class="mark mk-heart">
-        <view class="dot" /><view class="leader" /><view class="tag"><text class="tag-name">情感线</text><text class="tag-score">{{lines[0].score}}</text></view>
+  <!-- 签纸主视觉：大印章字 + 图鉴编号 + 朱砂界线（纯 wxml，无图片资产） -->
+  <view class="sign-hero">
+    <view class="sign-paper">
+      <view class="sign-top">
+        <text class="sign-no">{{palmType.no}} · 十二人格签</text>
+        <text class="sign-code">{{palmType.code}}</text>
       </view>
-      <view class="mark mk-head">
-        <view class="dot" /><view class="leader" /><view class="tag"><text class="tag-name">思维线</text><text class="tag-score">{{lines[1].score}}</text></view>
+      <view class="sign-body">
+        <view class="seal-box"><text class="seal-char">{{palmType.seal}}</text></view>
+        <view class="sign-info">
+          <text class="sign-name">{{palmType.name}}</text>
+          <view class="sign-rule" />
+          <text class="sign-label">{{palmType.dominantLabel}} · {{palmType.styleLabel}}</text>
+        </view>
       </view>
-      <view class="mark mk-life">
-        <view class="dot" /><view class="leader" /><view class="tag"><text class="tag-name">活力线</text><text class="tag-score">{{lines[2].score}}</text></view>
+    </view>
+    <!-- 三维特质条 -->
+    <view class="line-bars">
+      <view class="line-bar" wx:for="{{lines}}" wx:key="key">
+        <text class="lb-name">{{item.name}}</text>
+        <view class="lb-track"><view class="lb-fill" style="width:{{item.score}}%" /></view>
+        <text class="lb-score">{{item.score}}</text>
       </view>
     </view>
   </view>
@@ -42,11 +44,15 @@
     <text class="summary-text">{{summary}}</text>
   </view>
 
-  <!-- 性格深度解读 -->
-  <view class="card depth" wx:if="{{depthText || personalityText}}">
-    <text class="card-tag">性格深度解读 · DEEP DIVE</text>
-    <text class="depth-keys" wx:if="{{personalityText}}">{{personalityText}}</text>
-    <text class="summary-text depth-body" wx:if="{{depthText}}">{{depthText}}</text>
+  <!-- 四维速读 -->
+  <view class="card dims">
+    <text class="card-tag">四维速读 · PROFILE</text>
+    <view class="dim-grid">
+      <view class="dim" wx:for="{{dimensions}}" wx:key="key">
+        <text class="dim-title">{{item.title}}<text class="dim-en"> {{item.en}}</text></text>
+        <text class="dim-text">{{item.text}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- 场景速读：工作 / 生活 / 身心 -->
@@ -66,7 +72,7 @@
 
   <!-- 建议 -->
   <view class="card advice" wx:if="{{advice.length}}">
-    <text class="card-tag">掌上锦囊 · ADVICE</text>
+    <text class="card-tag">小锦囊 · ADVICE</text>
     <view class="advice-item" wx:for="{{advice}}" wx:key="index">
       <text class="idx">{{index + 1}}</text>
       <text class="advice-text">{{item}}</text>

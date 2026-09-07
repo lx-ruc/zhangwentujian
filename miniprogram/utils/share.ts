@@ -49,17 +49,17 @@ interface ShareMessage {
 /** 默认分享（index / capture / analyzing / about 等无个性化数据时用） */
 export function shareDefault(): ShareMessage {
   return {
-    title: '我的掌纹里藏着什么性格密码？拍张照就知道了',
+    title: '我的性格底稿收在一支签里，你也来抽一支？',
     path: '/pages/index/index',
   };
 }
 
-/** 报告页分享（巴掌TI 代码 + 类型名 + 稀有度，制造好奇钩子） */
+/** 报告页分享（类型名 + 稀有度，制造好奇钩子） */
 export function shareReport(score: number, typeName: string, rarity?: string, code?: string): ShareMessage {
-  void code; const label = typeName;
-  const rare = rarity ? `，据说只有 ${rarity} 的手掌是这个型` : '';
+  void score; void code;
+  const rare = rarity ? `，据说只有 ${rarity} 的人抽到这支` : '';
   return {
-    title: `我的巴掌TI是「${label}」${rare}——你是什么型？`,
+    title: `我抽到了「${typeName}」${rare}——你是什么签？`,
     path: '/pages/index/index',
   };
 }
@@ -68,7 +68,7 @@ export function shareReport(score: number, typeName: string, rarity?: string, co
 export function shareHistory(count: number): ShareMessage {
   const n = Math.max(1, count);
   return {
-    title: `我已经玩了 ${n} 次掌纹解读，你也来测测？`,
+    title: `我已经抽了 ${n} 支人格签，你也来试试？`,
     path: '/pages/index/index',
   };
 }
@@ -79,8 +79,8 @@ export function shareCollection(unlockedCount: number): ShareMessage {
   return {
     title:
       n >= 10
-        ? `我收集了 ${n}/12 种掌纹人格，就差几个稀有款了`
-        : `我解锁了 ${n} 种掌纹性格图鉴，你是什么型？`,
+        ? `${n}/12 收集进度就差几支稀有签了，你抽到哪支？`
+        : `我解锁了 ${n} 种人格签，你抽到哪支？`,
     path: '/pages/index/index',
   };
 }

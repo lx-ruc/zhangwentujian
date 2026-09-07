@@ -79,6 +79,21 @@
   color: var(--ink-2);
   font-size: 28rpx;
 }
-.empty-hand { width: 280rpx; height: 300rpx; opacity: 0.5; }
+.empty-sign {
+  width: 200rpx;
+  height: 200rpx;
+  margin: 0 auto 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx dashed var(--rule);
+  border-radius: 16rpx;
+}
+.empty-seal-char {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 88rpx;
+  color: var(--ink-3);
+}
 .empty-sub { font-size: 23rpx; color: var(--ink-3); }
 .empty .cta { margin-top: 32rpx; width: 360rpx; }
