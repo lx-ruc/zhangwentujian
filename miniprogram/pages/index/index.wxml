@@ -3,7 +3,7 @@
   <view class="hero">
     <text class="eyebrow">Palm Insight · 趣味掌纹解读</text>
     <view class="display">你的性格底稿\n写在<text class="em">掌心</text></view>
-    <text class="lede">拍摄一张手掌照片，AI 读取三条主线的形态，为你生成一份性格倾向报告。</text>
+    <text class="lede">拍摄一张手掌照片，为你生成一份性格倾向报告。</text>
   </view>
 
   <!-- 手掌图鉴 plate -->
