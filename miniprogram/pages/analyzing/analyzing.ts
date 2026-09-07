@@ -4,27 +4,28 @@ import { callFunction, RequestError } from '../../utils/request';
 import { consumeQuota, normalizeQuotaState, QuotaState } from '../../utils/quota';
 import { getNavTopPx } from '../../utils/nav';
 import { ReportResult, AnalysisRecord } from '../../types/index';
-import { drawReport } from '../../utils/draw';
 
-/** 掩盖约 3s 等待的签语轮播（文案合规：封闭体系/趣味定位，无运/命/吉凶表述） */
+/** 掩盖 8-15s 等待的趣味知识轮播（文案合规：无运/命/吉凶表述） */
 const FACTS = [
-  'AI掌纹分析是封闭图鉴：无论怎么抽，结果一定落在十二支签之内，不会跑出边。',
-  '十二支签的稀有度各不相同——稀有度是趣味估算，供收集参考，抽到哪支全看随机。',
-  '每支签的文案预置且固定：同一支签人人拿到的解读一致，差异只在抽中哪支。',
-  '所有解读都用「倾向于」「可能」这类对冲措辞——这是趣味测试，不是结论，仅供娱乐。',
-  '结果当聊天素材最合适：发到群里比一比谁抽到了稀有签，才是正确打开方式。',
+  '掌纹在胎儿期约第 13 周就已成形，此后基本保持稳定——三条主线很早就开始陪着你。',
+  '世界上找不到两张完全相同的手掌：就算同卵双胞胎，掌纹也各不相同。',
+  '掌纹其实是皮肤为了方便手部弯曲产生的褶皱，长期握持工具的人，纹路通常更深。',
+  '三条主线的深浅长短因人而异，所谓解读，是把形态差异翻译成性格倾向的趣味描述。',
+  '民间常说"男左女右"，但两只手的掌纹并不相同，各自独一无二——想读得最清楚，拍你最灵活的那只手就好。',
 ];
 
-/** 进度节奏：2.2s 冲到 92%，云端 draw 落档返回后由 complete 拉满 */
-const FAST_MS = 2_200;
-const FAST_PCT = 92;
-/** 看门狗：本地抽签即时完成，超时基本只剩网络问题，10s 足够 */
-const WATCHDOG_MS = 10_000;
+/** 进度节奏：前 8s 冲到 85%，之后 30s 缓爬至 95% 封顶；云端返回后由 complete 拉满 */
+const FAST_MS = 8_000;
+const FAST_PCT = 85;
+const SLOW_MS = 30_000;
+const SLOW_PCT = 95;
+/** 看门狗：超过此时长云端未回按失败处理（云函数超时上限 60s，提前留量） */
+const WATCHDOG_MS = 45_000;
 
-/** 本地抽签结果（typeId 供云端白名单校验；id 为云端记录） */
-interface DrawOutcome {
+/** 云函数返回的分析结果信封（fallback 分流本地消费面；id 对齐云端记录） */
+interface AnalyzeOutcome {
   report: ReportResult;
-  typeId: string;
+  fallback: boolean;
   id?: string;
 }
 
@@ -37,6 +38,7 @@ Page({
     done: false,
     handImage: '',
     handText: '右手',
+    slowHint: '',
   },
 
   factTimer: 0 as unknown as ReturnType<typeof setInterval>,
@@ -57,10 +59,18 @@ Page({
     const startedAt = Date.now();
     this.progressTimer = setInterval(() => {
       const el = Date.now() - startedAt;
-      const pct = Math.min(FAST_PCT, (el / FAST_MS) * FAST_PCT);
-      // 只增不减；不触达 100（100 由完成回调驱动）
+      let pct: number;
+      if (el <= FAST_MS) {
+        pct = (el / FAST_MS) * FAST_PCT;
+      } else {
+        pct = FAST_PCT + Math.min(SLOW_PCT - FAST_PCT, ((el - FAST_MS) / SLOW_MS) * (SLOW_PCT - FAST_PCT));
+      }
+      // 只增不减；不触达 100（100 由云端回调驱动）
       if (Math.round(pct) > this.data.progress) this.setData({ progress: Math.round(pct) });
-    }, 200);
+      if (el > FAST_MS + 6_000 && !this.data.slowHint) {
+        this.setData({ slowHint: '这次读得有点慢，再等等…' });
+      }
+    }, 400);
 
     this.factTimer = setInterval(() => {
       this.setData({ factIndex: (this.data.factIndex + 1) % FACTS.length });
@@ -68,34 +78,31 @@ Page({
 
     // 看门狗：超时按失败处理，避免无限等待
     this.watchdogTimer = setTimeout(() => {
-      if (!this.settled) this.complete(Promise.reject(new RequestError('MODEL_TIMEOUT', '抽签超时了，请重试一次')));
+      if (!this.settled) this.complete(Promise.reject(new RequestError('MODEL_TIMEOUT', '解读超时了，请重试一次')));
     }, WATCHDOG_MS);
 
-    this.complete(this.runDraw());
+    this.complete(this.fetchReport());
   },
 
-  async runDraw(): Promise<DrawOutcome> {
+  async fetchReport(): Promise<AnalyzeOutcome> {
     const app = getApp();
-    // 1) 本地抽签：确定性引擎，时间+随机混合做 seed（同秒多次结果不同）
-    const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
-    const { report, type } = drawReport(seed);
-
-    // 2) 本地乐观消耗一次；云端权威值由首页 onShow 拉取修正
-    wx.setStorageSync('quota', consumeQuota(normalizeQuotaState(wx.getStorageSync('quota'))));
-
-    // 3) 云端落档（服务端权威配额 + 校验 + 持久化）；失败回滚乐观消耗并上抛
+    const fileID = app.globalData.pendingFileID;
     try {
-      const data = await callFunction<{ id?: string; remaining?: number }>(CONFIG.FN_ANALYZE, {
-        action: 'draw',
+      if (!fileID) throw new RequestError('UNKNOWN', '缺少图片，请重新拍摄');
+      const data = await callFunction<{ report: ReportResult; remaining?: number; fallback?: boolean; id?: string }>(CONFIG.FN_ANALYZE, {
+        action: 'analyze',
+        fileID,
         hand: app.globalData.pendingHand,
-        typeId: type.id,
-        report,
       });
-      return { report, typeId: type.id, id: data.id };
+      // 本地乐观消耗一次；云端权威值由首页 onShow 拉取修正；
+      // 兜底不扣配额（云端 users 零写入，spec: analysis-fallback）→ 本地回滚这次乐观消耗
+      wx.setStorageSync('quota', consumeQuota(normalizeQuotaState(wx.getStorageSync('quota'))));
+      if (data.fallback === true) this.rollbackOptimisticConsume();
+      return { report: data.report, fallback: data.fallback === true, id: data.id };
     } catch (err) {
-      this.rollbackOptimisticConsume();
+      // 配额用尽/服务异常：不降级 mock（真实数据才有意义），上抛给 complete 统一处理
       if (err instanceof RequestError) {
-        console.warn('[analyzing] 云端落档失败：', err.code);
+        console.warn('[analyzing] 云端返回错误：', err.code);
         throw err;
       }
       console.warn('[analyzing] 未知错误：', err);
@@ -103,19 +110,19 @@ Page({
     }
   },
 
-  /** 回滚：云端未扣，本地乐观消耗撤销（不可变，仅减当日计数；残留由首页权威拉取纠正） */
+  /** 兜底回滚：云端未扣，本地乐观消耗撤销（不可变，仅减当日计数；残留由首页权威拉取纠正） */
   rollbackOptimisticConsume() {
     const state = normalizeQuotaState(wx.getStorageSync('quota'));
     const rolledBack: QuotaState = { ...state, dailyCount: Math.max(0, state.dailyCount - 1) };
     wx.setStorageSync('quota', rolledBack);
   },
 
-  /** 结算统一出口（成功/失败都走这里，进度拉满后跳转） */
-  async complete(promise: Promise<DrawOutcome>) {
+  /** 云端回调统一出口（成功/失败都走这里，进度拉满后结算） */
+  async complete(promise: Promise<AnalyzeOutcome>) {
     const outcome = await promise.then(
       (o) => o,
       (err: unknown) => {
-        console.warn('[analyzing] 抽签失败：', err instanceof RequestError ? err.code : err);
+        console.warn('[analyzing] 云端失败：', err instanceof RequestError ? err.code : err);
         // 保留具体原因（配额用尽/超时/网络），别让通用文案吞掉
         this.failReason =
           err instanceof RequestError && err.userMessage ? err.userMessage : '';
@@ -126,44 +133,51 @@ Page({
     this.settled = true;
     clearTimeout(this.watchdogTimer);
     clearInterval(this.progressTimer);
-    this.setData({ progress: 100 });
+    this.setData({ progress: 100, slowHint: '' });
 
     setTimeout(() => this.finish(outcome), 500);
   },
 
-  finish(outcome: DrawOutcome | null) {
+  finish(outcome: AnalyzeOutcome | null) {
     if (this.data.done || !this.alive) return;
     this.setData({ done: true });
 
     const app = getApp();
     if (!outcome) {
       // 失败：不落假记录，回拍摄页并给出可读原因（配额/超时等具体信息）
-      wx.showToast({ title: this.failReason || '抽签失败了，请重试一次', icon: 'none', duration: 2500 });
+      wx.showToast({ title: this.failReason || '解读失败了，请重试一次', icon: 'none', duration: 2500 });
       setTimeout(() => wx.redirectTo({ url: '/pages/capture/capture' }), 1400);
       this.clearPending();
       return;
     }
 
     app.globalData.pendingReport = outcome.report;
-    const record: AnalysisRecord = {
-      // 云端记录 id 对齐缓存（云函数未回传时回退本地前缀）
-      _id: outcome.id || `local-${Date.now()}`,
-      hand: app.globalData.pendingHand,
-      result: outcome.report,
-      modelVersion: CONFIG.ENGINE_VERSION,
-      createdAt: Date.now(),
-    };
-    this.saveRecord(record);
-    app.globalData.reportId = record._id;
+    app.globalData.pendingFallback = outcome.fallback;
+    if (outcome.fallback) {
+      // 兜底不进本地消费面：不落历史（图鉴解锁随之无来源）；清掉旧 reportId 防止报告页按旧记录复看
+      app.globalData.reportId = '';
+    } else {
+      const record: AnalysisRecord = {
+        // 云端记录 id 对齐缓存（旧云函数未回传时回退本地前缀）
+        _id: outcome.id || `local-${Date.now()}`,
+        hand: app.globalData.pendingHand,
+        result: outcome.report,
+        modelVersion: CONFIG.MODEL_VERSION,
+        createdAt: Date.now(),
+      };
+      this.saveRecord(record);
+      app.globalData.reportId = record._id;
+    }
     this.clearPending();
 
     wx.redirectTo({ url: '/pages/report/report' });
   },
 
-  /** 留影即焚：本地预览路径清空（照片从未上传，也不落任何存储） */
+  /** 手掌图即焚：本地预览路径与云 fileID 引用一并清空 */
   clearPending() {
     const app = getApp();
     app.globalData.pendingImage = '';
+    app.globalData.pendingFileID = '';
     this.setData({ handImage: '' });
   },
 

@@ -4,44 +4,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-**`PLAN.md` is the source of truth** for architecture, milestones, and constraints — read it before starting any work. Current review status (third-round audit against 功能设置规范 §3, rectification checklist, B-line trigger): `COMPLIANCE-AUDIT-2026-09.md`.
+**2026-09-07 晚：整体回退至掌纹时代**。应用户最终决策，工作树从「十二人格签」合规改版（main 0.2.x）整体回退到 `origin/archive/palm-era-polish`（`627dc6b`，8/24 端到端验证过的 AI 掌纹拍照版），并做了三处移植：① 品牌名 13 处替换为「AI掌纹分析」（与后台注册名一致）；② `deploy:cloud` 改走 CloudBase CLI/tcb（IDE CLI 部署已坏，ret:41002）；③ 本状态说明。回退决策是在用户已知全部合规风险（9/7 违规通知、死线 09-08 14:20、深度合成个人主体、模型需充值）后拍板的。合规改版历史见 main 的 `6f394d2..a8b84fa` 与（已删除的）COMPLIANCE-AUDIT-2026-09.md。**`PLAN.md` is the source of truth** — read it before starting any work.
 
-Product: WeChat Mini Program **AI掌纹分析** — a "fun personality test" (趣味测试) built as a closed 12-archetype sign-collection. Deliberately positioned as entertainment, NOT fortune-telling. Naming history: 掌纹测运 → 十二人格签 (2026-09-07 compliance pivot) → **AI掌纹分析** (2026-09-07 evening, user's final decision after being fully informed of the 掌-family vocabulary risk and the 3.4 name/service-mismatch risk — see Compliance below). In-app product vocabulary (人格签/抽签/图鉴) is unchanged; only the brand string changed.
+Product: WeChat Mini Program for AI palm-line "fun personality analysis" (趣味测试). Deliberately positioned as entertainment, NOT fortune-telling.
 
 ## Tech Stack (decided, do not change without discussion)
 
 - **Frontend**: Native WeChat Mini Program + TypeScript, in `miniprogram/`
 - **Backend**: WeChat Cloud Development (云开发) — cloud functions in `cloudfunctions/`, Node.js 18
-- **Draw engine**: LOCAL, no runtime AI. `miniprogram/utils/draw.ts` (seeded mulberry32 → rarity-weighted pick → inverse-consistent scores). The Zhipu GLM-4.6V-Flash vision pipeline in `cloudfunctions/analyze` is DORMANT (kept as dead code, guarded by `tests/e2e-real-model.test.ts`); if ever revived, API key lives ONLY in cloud function env vars
+- **AI**: Zhipu GLM-4.6V-Flash (free vision model). API key lives ONLY in cloud function env vars, never in miniprogram code
 - **Tests**: jest for units (`tests/`), miniprogram-automator for E2E (`e2e/`)
 
-Commands: `npm run typecheck` (both ends), `npm test` (jest units), `npm run deploy:cloud` (compile TS → upload analyze, pay, paynotify via CloudBase CLI; first use needs `tcb login --flow device`; IDE CLI's cloud deploy is broken with ret:41002), `npm run e2e` / `e2e:full` (automator smoke / real-chain). Real-model unit E2E (dormant-path guard): `ZHIPU_API_KEY=xxx npx jest tests/e2e-real-model.test.ts` (auto-skips without key).
+Commands: `npm run typecheck` (both ends), `npm test` (jest units), `npm run deploy:cloud` (compile TS → upload analyze), `npm run e2e` / `e2e:full` (automator smoke / real-chain). Real-model unit E2E: `ZHIPU_API_KEY=xxx npx jest tests/e2e-real-model.test.ts` (auto-skips without key).
 
 ## Architecture
 
-Data flow (2026-09-07 pivot): `index` (icon-only CTA) → `capture` (`wx.chooseMedia`, photo stays on device) → `analyzing` (local `drawReport` ~2.2s → cloud fn `analyze` action `draw`: quota check → `validateReport` shape+banned-term check → typeId whitelist → persist text-only report to `analyses` with `modelVersion:'local-draw-1'` → consume quota) → `report` (renders ALL body copy from `data/report-content.ts` via `REPORT_CONTENT[type.id]`).
+Data flow: `wx.chooseMedia` → `wx.cloud.uploadFile` → cloud function `analyze` (quota check → fetch image → base64 → Zhipu API → JSON schema validation with 1 retry → persist text-only report to `analyses` collection → delete uploaded image).
 
 Key decisions that span multiple files:
 
-- **Photos never leave the phone**: capture keeps the image only as a local preview in `globalData.pendingImage`; nothing is ever uploaded. DB stores text reports only. Never add code that uploads or persists photos.
-- **Daily quota** (3/day per openid) enforced server-side in the cloud `draw` action, mirrored client-side in `miniprogram/utils/quota.ts` (optimistic consume + rollback on failure) — keep both pure functions with unit tests.
-- **Client-reported draw results are untrusted**: the cloud `draw` action re-validates the client's report JSON via `validate.ts` (schema + banned terms) and whitelists `typeId` against the 12-type set before persisting. Tampering can only pollute the attacker's own history.
-- **Sign collection (core viral asset)**: 12 archetypes in `miniprogram/data/palm-types.ts` (No.01-12, rarity, tagline, compat). Draw = LOCAL weighted random (`utils/draw.ts`, weights from rarity); `utils/classify.ts` maps scores back to type and is inverse-consistent with draw (test-locked). Full per-type copy lives in `miniprogram/data/report-content.ts` (`REPORT_CONTENT`, closed set). There is NO runtime AI anywhere in the live path.
-- **Share system**: all copy in `utils/share.ts` (hooks: type name + rarity). Canvas poster in `utils/poster.ts` (paper/ink/cinnabar style, seal-char watermark; disclaimer required on poster).
-- **Local data loop (until Phase 2)**: reports persist to storage `reports` (max 20), quota in storage `quota`; `demoReport()` in `utils/draw.ts` is the report-page fallback when opened with no record.
-- **Virtual payment (implemented 2026-08-24, gated OFF)**: master switch `PAY_ENABLED` in `miniprogram/config/index.ts` (default false — paid quota on compliance-sensitive content must not ship until review strategy settles; see VIRTUAL-PAYMENT-SETUP.md §5). SKU `add_quota_5` ¥1 → +5 permanent quota (`users.purchased`, never date-reset). Cloud fns: `pay` (order/query; server is price+productId authority, signs with OFFER_ID/PAY_APP_KEY/WX_APP_SECRET env vars from gitignored config.json) and `paynotify` (delivery/refund XML push via HTTP 云接入 with 集成响应, acks plain-text '0'). Idempotency: `pay_deliver_log` `_id`=wx_order_id + outTradeNo reverse-check, lock rolled back on partial failure. pay/paynotify config+deliver are intentional duplicates (separate packages can't cross-import) — sync both, enforced by `tests/pay-config-consistency.test.ts`; official signature vectors locked in `tests/pay-sign.test.ts`. Console setup steps + 13-item 官方检查清单对照: VIRTUAL-PAYMENT-SETUP.md.
-- **Dormant AI pipeline**: `cloudfunctions/analyze/prompt.ts` + the `analyze` action are kept but unused; treat any change to them as a product decision (see compliance rules).
-- **Visual design (sign-collection restyle 2026-09-07)**: 宣纸/墨/朱砂「签纸图鉴」风 — `design/preview.html` (design spec, 5 plates) and `design/app-preview.html` (pixel-mirror of the built pages, 1rpx=0.5px) are the sources of truth. No image assets: all seals/signs are wxml/wxss/Canvas. Legacy hand SVG paths in `design/hand-paths.json` are unused by the app.
+- **Images are ephemeral**: palm photos are deleted from cloud storage immediately after analysis. DB stores text reports only. Never add code that persists photos.
+- **Daily quota** (3/day per openid) enforced in cloud function `quota.ts`, mirrored client-side in `miniprogram/utils/quota.ts` — keep both pure functions with unit tests.
+- **Model output is untrusted**: `cloudfunctions/analyze/validate.ts` must schema-validate the LLM's JSON and keyword-filter banned terms before persistence. On failure: retry once, then serve fallback copy — never a blank screen.
+- **Palm-type collection (core viral asset)**: 12 archetypes in `miniprogram/data/palm-types.ts` (No.01-12, rarity, tagline, compat). Classification is a LOCAL deterministic pure function (`utils/classify.ts`: dominant line × style) — the model NEVER classifies; it only produces line scores + descriptions. Type set is closed and test-locked.
+- **Share system**: all copy in `utils/share.ts` (hooks: type name + rarity). Canvas poster in `utils/poster.ts` (paper/ink/cinnabar style; disclaimer required on poster).
+- **Local data loop (until Phase 2)**: reports persist to storage `reports` (max 20), quota in storage `quota`; `utils/mock-report.ts` is the fallback when cloud fn is undeployed.
+- **Prompt lives in `cloudfunctions/analyze/prompt.ts`** as a constant; changes to it are product decisions (see compliance rules below).
+- **Visual design (finalized 2026-08-17)**: 宣纸/墨/朱砂「图鉴」风 — `design/preview.html` is the source of truth for all 5 screens. Palm-line SVG paths + product↔traditional naming map (情感线/思维线/活力线) live in `design/hand-paths.json`. Product name: AI掌纹分析 (2026-09-07 起；曾用名 掌纹测运).
 
 ## Compliance Rules (critical — project-killing if violated)
 
-WeChat bans 算命/占卜/看相 content as 封建迷信. Rejection/enforcement history: 2026-08-24 rejection (算命内容 + 深度合成/个人主体); 2026-09 customer service pointed at the homepage CTA 「拍摄手掌·开始测试」; 2026-09-07 formal violation notice (user complaint → content classified as 未开放服务范围, deadline 2026-09-08 14:20, penalty: share+search ban). Response (2026-09-07 decisions): keep the photo flow but make the CTA icon-only + text sub-CTA, scrub ALL palm vocabulary from every visible surface, retire runtime AI entirely (local random draw; photo never uploaded — this also kills the 深度合成 ground). **Naming**: the 2026-09-07 compliance rename to 十二人格签 was OVERRIDDEN the same evening by the user's final decision 「AI掌纹分析」 (made after being fully informed that the name carries the flagged 掌-family vocabulary and a 3.4 name/service mismatch risk — AI is NOT actually used at runtime). This is the owner's call; do not relitigate it, but never extend the exception beyond the exact brand string.
+WeChat bans 算命/占卜/看相 content as 封建迷信. All user-facing copy and generated content must follow:
 
-1. **Banned vocabulary** — single source of truth is `tests/copy-ban.test.ts` (`BANNED_TERMS`, synced with `cloudfunctions/analyze/validate.ts`): 算命 占卜 手相 面相 大师 运势 运气 好运 转运 旺 命运 吉 凶 灾 祸 求签 签文 解签 测运 + palm set 手掌 掌纹 掌心 巴掌 手纹 **and single char 掌**, with ONE allowlist: the exact brand string 「AI掌纹分析」 (`BRAND` in copy-ban.test.ts strips it before scanning; 鼓掌 was rewritten to 叫好, not allowlisted). Report CONTENT (cloud validate.ts, classify.test.ts over `REPORT_CONTENT`/`PALM_TYPES`) has NO brand exception — zero 掌 anywhere in data. The scanner sweeps every user-visible string in `miniprogram/**` + both design HTMLs; identifiers/comments/`{{bindings}}`/import paths are out of scope. UI copy must never claim AI 生成/读取/分析 (the brand name itself is the owner-accepted exception; do not add MORE AI claims beyond it). 「签」 is fine as a noun (人格签/抽签); banned sign-verbs are 求签/解签 — use 抽取/解锁.
-2. **Banned content** in reports: lifespan/death predictions, health diagnoses, absolute claims (必定/命中注定), disaster statements — enforced by prompt (dormant) and validate.ts filter (live).
-3. **Required disclaimer** on index, report page, and share poster: 趣味测试，仅供娱乐，不构成任何科学依据或决策建议.
-4. Reports use hedged phrasing only: 倾向于/可能/仅供参考.
-5. **B-line contingency (documented, not implemented)**: if a future rejection still targets the photo flow itself, delete `capture`/`analyzing` and replace with a standalone draw page (no camera). Trigger: reviewer rejects on the shape of the flow (拍手照→性格报告) after this surface-clean version.
+1. **Banned vocabulary** in names, titles, UI copy: 手相、算命、占卜、大师、运势、命运、风水、吉凶 (and equivalents in share cards/posters). Product name is 「AI掌纹分析」 (2026-09-07 user decision, name-check passed; 曾用名 掌纹测运) — generated content and UI copy must additionally filter 运气、好运、转运、旺 (enforced in validate.ts). Fallback name if rejected at review: 掌纹性格测试.
+2. **Banned content** in reports (enforced via prompt + validate.ts filter): lifespan/death predictions, health diagnoses, absolute claims (必定/命中注定), disaster/凶险 statements
+3. **Required disclaimer** on index, report page, and share poster: content is 趣味解读, 仅供娱乐
+4. Reports use hedged phrasing only: 倾向于/可能/仅供参考
 
 When writing any user-facing string, report template, or prompt text — apply these rules proactively.
 

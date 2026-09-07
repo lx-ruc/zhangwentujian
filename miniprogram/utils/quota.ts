@@ -17,8 +17,6 @@ export interface QuotaState {
   /** 今日分享奖励次数 */
   bonus: number;
   bonusDate: string;
-  /** 购买的永久加量（虚拟支付发货入账，不随日期重置） */
-  purchased: number;
 }
 
 export const initialQuotaState = (): QuotaState => ({
@@ -26,10 +24,9 @@ export const initialQuotaState = (): QuotaState => ({
   lastUsedDate: '',
   bonus: 0,
   bonusDate: '',
-  purchased: 0,
 });
 
-/** 兼容旧缓存（缺 bonus/purchased 字段） */
+/** 兼容旧缓存（缺 bonus 字段） */
 export function normalizeQuotaState(raw: unknown): QuotaState {
   const s = (raw || {}) as Partial<QuotaState>;
   return {
@@ -37,11 +34,10 @@ export function normalizeQuotaState(raw: unknown): QuotaState {
     lastUsedDate: typeof s.lastUsedDate === 'string' ? s.lastUsedDate : '',
     bonus: typeof s.bonus === 'number' ? s.bonus : 0,
     bonusDate: typeof s.bonusDate === 'string' ? s.bonusDate : '',
-    purchased: typeof s.purchased === 'number' ? s.purchased : 0,
   };
 }
 
-/** 今日剩余次数（含分享奖励与购买加量；奖励跨日重置、购买永久） */
+/** 今日剩余次数（含分享奖励，跨日重置） */
 export function remainingQuota(
   state: QuotaState,
   now: Date = new Date(),
@@ -50,7 +46,7 @@ export function remainingQuota(
   const today = todayKey(now);
   const used = state.lastUsedDate === today ? state.dailyCount : 0;
   const bonus = state.bonusDate === today ? state.bonus : 0;
-  return Math.max(0, limit + bonus + state.purchased - used);
+  return Math.max(0, limit + bonus - used);
 }
 
 /** 消耗一次后的新状态（不可变，调用方负责先判断 remaining > 0） */

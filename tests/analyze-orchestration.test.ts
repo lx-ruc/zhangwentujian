@@ -1,8 +1,7 @@
 /**
  * analyze 云函数编排单测
  * mock 掉 wx-server-sdk 与 zhipu，只测 index.ts 的编排逻辑：
- * 主链路 draw：配额判定 → 校验客户端上报 → 落库 → 消耗配额（不碰模型/云存储）
- * 休眠链路 analyze：配额判定 → 下载 → 模型 → 校验重试 → 兜底 → 落库 → 消耗配额 → 删图
+ * 配额判定 → 下载 → 模型 → 校验重试 → 兜底 → 落库 → 消耗配额 → 删图
  */
 import type { ReportShape } from '../cloudfunctions/analyze/validate';
 
@@ -127,9 +126,9 @@ const today = () => {
   return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
 };
 
-/** 一份完全合法的上报报告（不触发违禁词；draw 与休眠 analyze 链路共用） */
+/** 一份完全合法的模型报告（不触发违禁词） */
 const GOOD_REPORT: ReportShape = {
-  summary: '节奏清晰稳健，你倾向于目标感较强的类型，情绪较稳，面对新事物先观察再行动。',
+  summary: '纹路清晰深长，你倾向于目标感较强的类型，情绪较稳，面对新事物先观察再行动。',
   archetype: '稳扎稳打的实干家',
   personality: ['谋定后动', '慢热长情'],
   career: '倾向稳步推进，不喜频繁变更方向，适合长线型任务。',
@@ -334,64 +333,5 @@ describe('analyze 编排', () => {
     expect(res.code).toBe(0);
     expect(res.data?.records).toHaveLength(20);
     expect(res.data?.records?.[0]._id).toBe('h24'); // 最新在前
-  });
-});
-
-describe('draw 编排（主链路：本地抽签落档）', () => {
-  const callDraw = (payload: Record<string, unknown> = {}) =>
-    (analyzeIndex.main as (e: Record<string, unknown>) => Promise<{ code: number; message?: string; data?: { id?: string; remaining?: number } }>)({
-      action: 'draw',
-      hand: 'right',
-      typeId: 'heart-bold',
-      report: { ...GOOD_REPORT, lines: { heart: 90, head: 72, life: 70 } },
-      ...payload,
-    });
-
-  it('配额未用时：校验通过 → 落库（fallback:false + local-draw-1）→ 扣减 → 返回 id/remaining', async () => {
-    const res = await callDraw();
-    expect(res.code).toBe(0);
-    expect(res.data).toMatchObject({ id: 'id-1', remaining: 2 });
-
-    const analyses = sdk.__test.collectionData.get('analyses') || [];
-    expect(analyses).toHaveLength(1);
-    // fallback:false 必须显式落库——history 按该字段过滤，缺字段会被排除
-    expect(analyses[0]).toMatchObject({ hand: 'right', fallback: false, modelVersion: 'local-draw-1' });
-    // 只存文本，无图片字段
-    expect(JSON.stringify(analyses[0])).not.toContain('fileID');
-
-    const users = sdk.__test.collectionData.get('users') || [];
-    expect(users[0]).toMatchObject({ dailyCount: 1, lastUsedDate: today() });
-  });
-
-  it('当日配额用尽：QUOTA_EXCEEDED，不落库不扣减', async () => {
-    sdk.__test.seedUser('openid-test', 3, today());
-    const res = await callDraw();
-    expect(res.code).toBe(1);
-    expect(res.message).toBe('QUOTA_EXCEEDED');
-    expect(sdk.__test.collectionData.get('analyses') || []).toHaveLength(0);
-    expect(sdk.__test.updates).not.toContain('users');
-  });
-
-  it('报告校验失败（违禁词「掌」）：拒收且不扣配额、不落库', async () => {
-    const res = await callDraw({
-      report: { ...GOOD_REPORT, summary: '你的掌纹清晰深长，性格倾向稳健，这句话足够长以通过长度校验。' },
-    });
-    expect(res.code).toBe(1);
-    expect(res.message).toBe('结果校验未通过');
-    expect(sdk.__test.collectionData.get('analyses') || []).toHaveLength(0);
-    expect(sdk.__test.collectionData.get('users') || []).toHaveLength(0);
-  });
-
-  it('typeId 不在白名单：拒收（防伪造类型 id）', async () => {
-    const res = await callDraw({ typeId: 'heart-lucky' });
-    expect(res.code).toBe(1);
-    expect(sdk.__test.collectionData.get('analyses') || []).toHaveLength(0);
-  });
-
-  it('整条链路不碰模型与云存储（照片不出手机的服务端侧证）', async () => {
-    await callDraw();
-    expect(zhipuMock.__zhipuImpl.calls).toBe(0);
-    expect(sdk.__test.downloads).toHaveLength(0);
-    expect(sdk.__test.deleted).toHaveLength(0);
   });
 });

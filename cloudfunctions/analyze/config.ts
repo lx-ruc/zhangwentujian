@@ -15,14 +15,6 @@ export const CONFIG = {
   MODEL_TIMEOUT: 45_000,
   /** JSON 解析失败重试次数 */
   MAX_RETRIES: 1,
-  /** 本地抽签引擎版本（draw action 落库 modelVersion；内容库改版时递增） */
-  DRAW_VERSION: 'local-draw-1',
-  /** 人格签类型 id 白名单（draw action 上报 typeId 校验用；与 palm-types.ts TypeId 集合一致，tests 锁定） */
-  TYPE_IDS: [
-    'heart-calm', 'heart-bold', 'heart-agile', 'heart-deep',
-    'head-calm', 'head-bold', 'head-agile', 'head-deep',
-    'life-calm', 'life-bold', 'life-agile', 'life-deep',
-  ] as const,
   /** 开发者白名单：不限次且不消耗（本地/真机/任意端测试用；真实用户不受影响） */
   DEV_OPENIDS: ['oodEvxi6gR7Dq6VURRnW6b7RhQjc'],
   /** 集合名 */

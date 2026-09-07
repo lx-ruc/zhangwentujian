@@ -42,9 +42,8 @@ Page({
           id: r._id,
           date: formatDateTime(r.createdAt),
           hand: r.hand === 'left' ? '左手' : '右手',
-          // 摘要与标签全部取自类型系统（tagline/维度标签）：旧记录的存量文本不再渲染
-          digest: t.tagline,
-          tags: [t.name, t.dominantLabel, t.styleLabel],
+          digest: (r.result.summary || '').slice(0, 52),
+          tags: [t.name, ...(r.result.personality || []).slice(0, 2)],
           score: clampScore(r.result.funScore),
         };
       }),

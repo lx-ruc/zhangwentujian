@@ -1,9 +1,9 @@
 <view class="page-collection" style="padding-top:{{navTop}}px">
   <view class="head">
     <view class="head-text">
-      <text class="eyebrow">SIGN COLLECTION</text>
-      <text class="title">人格签图鉴</text>
-      <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次抽签解锁一支</text>
+      <text class="eyebrow">PALM FIELD GUIDE</text>
+      <text class="title">掌纹人格图鉴</text>
+      <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次解读解锁一种</text>
     </view>
     <view class="progress-ring">
       <text class="pr-num">{{unlockedCount}}</text>
@@ -27,7 +27,7 @@
     </view>
   </view>
 
-  <button class="cta" bindtap="goCapture">再抽一支 · 解锁新类型</button>
+  <button class="cta" bindtap="goCapture">再测一次 · 解锁新类型</button>
   <text class="disclaimer">{{disclaimer}}</text>
 
   <!-- 类型详情弹层 -->
@@ -36,7 +36,7 @@
       <view class="detail-head">
         <view class="detail-left">
           <text class="d-name">{{detail.name}}</text>
-          <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 稀有度 {{detail.rarity}}（趣味估算）</text>
+          <text class="d-meta">{{detail.dominantLabel}}·{{detail.styleLabel}} · 掌纹稀有度 {{detail.rarity}}</text>
         </view>
         <view class="d-seal">{{detail.seal}}</view>
       </view>

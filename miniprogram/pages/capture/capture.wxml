@@ -2,7 +2,7 @@
   <!-- 顶部导航 -->
   <view class="nav">
     <text class="back" bindtap="goBack">‹ 返回</text>
-    <text class="title">今日留影</text>
+    <text class="title">拍摄手掌</text>
     <text class="back ghost">‹ 返回</text>
   </view>
 
@@ -27,11 +27,13 @@
         <text class="cam-tip-sub">开启后返回本页即可实时取景</text>
       </view>
 
-      <!-- 取景框：四角标 + 扫描线（无轮廓遮罩） -->
+      <!-- 取景遮罩：轮廓外黑、轮廓内透明（露相机），洞缘虚线一体 -->
+      <image class="vf-mask {{hand === 'left' ? 'mirror' : ''}}" src="/assets/vf-mask.png" mode="scaleToFill" />
+
+      <!-- 顶部四角 + 扫描线（仅相机正常时） -->
       <view class="corner tl" /><view class="corner tr" />
-      <view class="corner bl" /><view class="corner br" />
       <view class="scan" wx:if="{{!cameraBroken}}" />
-      <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}} · 五指自然张开，完整入镜</text>
+      <text class="vf-hint">{{hand === 'left' ? '左手' : '右手'}}掌心正对镜头 · 五指自然张开</text>
     </view>
   </view>
 
@@ -39,6 +41,12 @@
   <view class="hand-pick">
     <text class="pick {{hand === 'right' ? 'on' : ''}}" data-hand="right" bindtap="pickHand">右手 · 常用手</text>
     <text class="pick {{hand === 'left' ? 'on' : ''}}" data-hand="left" bindtap="pickHand">左手</text>
+  </view>
+
+  <!-- 拍摄提示 -->
+  <view class="tips">
+    <view class="tip good"><text class="tag">TIP · 宜</text>光线明亮均匀，掌心无阴影</view>
+    <view class="tip bad"><text class="tag">TIP · 忌</text>移开戒指、手表等饰品</view>
   </view>
 
   <!-- 快门：仅拍摄 -->

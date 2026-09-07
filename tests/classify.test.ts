@@ -1,32 +1,14 @@
 import { classifyPalmType, classifyByScore } from '../miniprogram/utils/classify';
 import { PALM_TYPES, PALM_TYPE_LIST } from '../miniprogram/data/palm-types';
-import { REPORT_CONTENT } from '../miniprogram/data/report-content';
-import { demoReport } from '../miniprogram/utils/draw';
 
-// 禁词表与 copy-ban.test.ts 保持同步：运系/吉凶系/求签系/掌系（含单字「掌」）+ AI 措辞
-// 品牌名「AI掌纹分析」例外只在 copy-ban（展示层）生效；数据文案（本文件扫描对象）不含品牌名、零例外
-const BANNED_TERMS = [
-  '算命', '占卜', '手相', '面相', '大师',
-  '运势', '运气', '好运', '转运', '旺', '命运',
-  '吉', '凶', '灾', '祸',
-  '求签', '签文', '解签', '测运',
-  '手掌', '掌纹', '掌心', '巴掌', '手纹', '掌',
-];
-const BANNED_AI = /AI生成|AI解读|AI分析|AI读取/;
-
-function expectNoBanned(text: string): void {
-  for (const b of BANNED_TERMS) expect(text.includes(b)).toBe(false);
-  expect(BANNED_AI.test(text)).toBe(false);
-}
-
-describe('人格签图鉴 · 数据完整性', () => {
+describe('掌纹人格图鉴 · 数据完整性', () => {
   test('12 型齐全且编号唯一', () => {
     expect(PALM_TYPE_LIST).toHaveLength(12);
     const nos = new Set(PALM_TYPE_LIST.map((t) => t.no));
     expect(nos.size).toBe(12);
   });
 
-  test('人格签代码：12 个且唯一，与主导线/风格字母一致', () => {
+  test('巴掌TI 代码：12 个且唯一，与主导线/风格字母一致', () => {
     const codes = PALM_TYPE_LIST.map((t) => t.code);
     expect(new Set(codes).size).toBe(12);
     const domLetter = { heart: 'H', head: 'R', life: 'V' } as const;
@@ -44,50 +26,22 @@ describe('人格签图鉴 · 数据完整性', () => {
   });
 
   test('全类型文案无违禁词', () => {
+    const banned = ['运势', '运气', '好运', '转运', '命运', '吉', '凶', '灾', '祸', '算命', '占卜', '手相', '大师'];
     for (const t of PALM_TYPE_LIST) {
-      expectNoBanned(JSON.stringify(t));
+      const text = JSON.stringify(t);
+      for (const b of banned) expect(text.includes(b)).toBe(false);
     }
-  });
-});
-
-describe('REPORT_CONTENT · 12 支签文案完备性', () => {
-  test('12 支全覆盖，无缺失无多余', () => {
-    expect(Object.keys(REPORT_CONTENT).sort()).toEqual(
-      PALM_TYPE_LIST.map((t) => t.id).sort(),
-    );
-  });
-
-  test('每支：summary 非空、personality 3 词、三维度非空、3 场景各 2+2、advice 2-4 条', () => {
-    for (const t of PALM_TYPE_LIST) {
-      const b = REPORT_CONTENT[t.id];
-      expect(b.summary.length).toBeGreaterThan(20);
-      expect(b.personality).toHaveLength(3);
-      for (const dim of [b.career, b.love, b.wealth] as const) {
-        expect(dim.length).toBeGreaterThan(10);
-      }
-      for (const key of ['work', 'life', 'mind'] as const) {
-        const s = b.scenes!;
-        expect(s[key].traits).toHaveLength(2);
-        expect(s[key].cautions).toHaveLength(2);
-      }
-      expect(b.advice.length).toBeGreaterThanOrEqual(2);
-      expect(b.advice.length).toBeLessThanOrEqual(4);
-    }
-  });
-
-  test('全部文案无违禁词', () => {
-    expectNoBanned(JSON.stringify(REPORT_CONTENT));
   });
 });
 
 describe('classifyPalmType · 主导线判定', () => {
-  test('感受力最高 → 心系', () => {
+  test('情感线最高 → 心系', () => {
     expect(classifyPalmType({ heart: 90, head: 60, life: 65 }).dominant).toBe('heart');
   });
-  test('思考力最高 → 脑系', () => {
+  test('思维线最高 → 脑系', () => {
     expect(classifyPalmType({ heart: 55, head: 88, life: 60 }).dominant).toBe('head');
   });
-  test('行动力最高 → 身系', () => {
+  test('活力线最高 → 身系', () => {
     expect(classifyPalmType({ heart: 60, head: 58, life: 92 }).dominant).toBe('life');
   });
   test('三线并列 → 优先序 heart', () => {
@@ -133,12 +87,11 @@ describe('classifyByScore · 兜底分桶', () => {
   });
 });
 
-describe('demoReport · 报告页直开兜底', () => {
-  test('三线判型 → 心系·进取「燎原星火」，文案取自内容库', () => {
-    const r = demoReport();
-    const t = classifyPalmType(r.lines!);
+describe('mock 数据一致性', () => {
+  test('MOCK_REPORT 三线 85/72/78 → 心系·进取「燎原星火」', async () => {
+    const { MOCK_REPORT } = await import('../miniprogram/utils/mock-report');
+    const t = classifyPalmType(MOCK_REPORT.lines!);
     expect(t.id).toBe('heart-bold');
     expect(t.name).toBe('燎原星火');
-    expect(r.summary).toBe(REPORT_CONTENT['heart-bold'].summary);
   });
 });

@@ -2,13 +2,13 @@
 
 export type Hand = 'left' | 'right';
 
-/** 三维强度（内部键名沿用旧主线命名；展示映射：heart→感受力 / head→思考力 / life→行动力） */
+/** 三条主线（产品命名，勿用传统名，见 design/hand-paths.json _naming） */
 export interface MainLines {
-  /** 感受力 0-100 */
+  /** 情感线 0-100 */
   heart: number;
-  /** 思考力 0-100 */
+  /** 思维线 0-100 */
   head: number;
-  /** 行动力 0-100 */
+  /** 活力线 0-100 */
   life: number;
 }
 

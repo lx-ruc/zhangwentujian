@@ -2,10 +2,6 @@
 project.private.config.json
 cloudfunctions/analyze/*.js
 cloudfunctions/analyze/config.json
-cloudfunctions/pay/*.js
-cloudfunctions/pay/config.json
-cloudfunctions/paynotify/*.js
-cloudfunctions/paynotify/config.json
 cloudbaserc.json
 *.png
 !design/preview.html

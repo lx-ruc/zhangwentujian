@@ -61,13 +61,3 @@
   color: var(--ink-2);
   white-space: pre-line;
 }
-/* 投诉邮箱：点击复制（合规 3.10/3.13 投诉渠道） */
-.mail {
-  display: block;
-  margin-top: 16rpx;
-  font-family: var(--font-mono);
-  font-size: 26rpx;
-  color: var(--cinnabar);
-  text-decoration: underline;
-}
-.mail:active { transform: scale(0.94); }
