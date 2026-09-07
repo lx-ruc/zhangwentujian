@@ -1,6 +1,6 @@
 /**
- * 掌纹人格分类 —— 三主线数值 → 12 型图鉴（确定性纯函数）
- * 类型集合封闭，模型不参与分类（集合可控、图鉴体系稳定）
+ * 人格签分类 —— 三维数值 → 12 型图鉴（确定性纯函数）
+ * 类型集合封闭（集合可控、图鉴体系稳定）；运行时由本地抽签引擎 utils/draw.ts 喂入
  */
 import { PALM_TYPES, Dominant, Style, TypeId, PalmType } from '../data/palm-types';
 
