@@ -70,4 +70,3 @@
   color: var(--cinnabar);
   text-decoration: underline;
 }
-.mail:active { transform: scale(0.94); }

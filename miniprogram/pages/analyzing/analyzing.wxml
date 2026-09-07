@@ -2,7 +2,7 @@
   <!-- 头部 -->
   <view class="head">
     <text class="title">{{mode === 'morph' ? '正在测量' : '正在抽签'}}</text>
-    <text class="eta">{{mode === 'morph' ? 'MEASURING · 本机进行' : 'DRAWING · 约 3 秒'}}</text>
+    <text class="eta">{{mode === 'morph' ? 'MEASURING · 约 3 秒' : 'DRAWING · 约 3 秒'}}</text>
   </view>
   <view class="progress"><view class="bar" style="width: {{progress}}%" /></view>
 

@@ -34,11 +34,11 @@ async function main() {
     await sleep(1000);
     assert((await page.$('.display')), '首页：品牌大标题未渲染');
     assert((await page.$('.cta-icon')), '首页：图标 CTA 未渲染');
-    const quota = await page.$('.quota-chip .num');
-    assert(quota, '首页：剩余次数未渲染');
+    const drawEntry = await page.$('.draw-entry');
+    assert(drawEntry, '首页：人格签副入口未渲染');
     const signCells = await page.$$('.sign-cell');
-    assert(signCells.length === 12, `首页 12 支签宫格应为 12 格，实际 ${signCells.length}`);
-    console.log('✓ 首页渲染正常（图标 CTA + 12 支签宫格）');
+    assert(signCells.length === 12, `首页 12 型宫格应为 12 格，实际 ${signCells.length}`);
+    console.log('✓ 首页渲染正常（图标 CTA + 副入口 + 12 型宫格）');
 
     // ---- ② 首页 → 拍摄页（真实路由跳转）----
     await (await page.$('.cta-icon')).tap();
@@ -52,8 +52,10 @@ async function main() {
     page = await mini.reLaunch('/pages/collection/collection');
     await sleep(1000);
     const cells = await page.$$('.cell');
-    assert(cells.length === 12, `图鉴网格应为 12 格，实际 ${cells.length}`);
-    console.log('✓ 图鉴收集页 12 型网格渲染');
+    assert(cells.length === 24, `图鉴双网格应为 24 格（签12+形态12），实际 ${cells.length}`);
+    const morphCells = await page.$$('.morphs .cell');
+    assert(morphCells.length === 12, `形态图鉴网格应为 12 格，实际 ${morphCells.length}`);
+    console.log('✓ 图鉴收集页双网格渲染（人格签 12 + 形态 12）');
 
     // ---- ④ 报告页：demoReport 兜底 + 签名（heart-bold → 燎原星火）----
     page = await mini.reLaunch('/pages/report/report');

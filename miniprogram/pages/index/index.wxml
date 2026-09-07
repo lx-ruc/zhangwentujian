@@ -3,7 +3,7 @@
   <view class="hero">
     <text class="eyebrow">PALM MORPHOLOGY · 掌纹形态图鉴</text>
     <view class="display">你的掌纹形态\n收进一本<text class="em">图鉴</text></view>
-    <text class="lede">拍一张手掌照片，本机测量纹路形态——清晰度、密度、走向，十二形态型图鉴等你收集。照片不上传。</text>
+    <text class="lede">拍一张手掌照片，测量纹路形态——清晰度、密度、走向，十二形态型图鉴等你收集。照片不上传。</text>
   </view>
 
   <!-- 十二签宫格 plate -->
@@ -26,7 +26,7 @@
     <view class="cta-icon" bindtap="goCapture" aria-label="拍照测量掌纹形态">
       <view class="cta-core" />
     </view>
-    <text class="cta-text" bindtap="goCapture">拍照测形态 · 免费</text>
+    <text class="cta-text" bindtap="goCapture">拍照测形态</text>
     <text class="draw-entry" bindtap="goDraw">随机抽人格签 · 纯随机娱乐 · 今日 {{remaining}} 次</text>
     <text class="buy-chip" wx:if="{{payEnabled && exhausted}}" bindtap="onTapBuy">次数不够用？¥1 加购 5 次</text>
     <view class="row-links">
