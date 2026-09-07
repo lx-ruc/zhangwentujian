@@ -1,4 +1,4 @@
-@import '../../report/report.wxss';
+@import '../../pages/report/report.wxss';
 
 /* ===== 形态报告页差异样式（基础卡片/头部继承报告页） ===== */
 .page-morph {
