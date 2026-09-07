@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-**`PLAN.md` is the source of truth** for architecture, milestones, and constraints — read it before starting any work.
+**`PLAN.md` is the source of truth** for architecture, milestones, and constraints — read it before starting any work. Current review status (third-round audit against 功能设置规范 §3, rectification checklist, B-line trigger): `COMPLIANCE-AUDIT-2026-09.md`.
 
 Product: WeChat Mini Program **十二人格签** — a "fun personality test" (趣味测试) built as a closed 12-archetype sign-collection. Deliberately positioned as entertainment, NOT fortune-telling. (Renamed from 掌纹测运 on 2026-09-07 after a second review rejection; see Compliance below.)
 
