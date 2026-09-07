@@ -2,7 +2,7 @@
   "name": "zhangwentujian",
   "version": "0.1.0",
   "private": true,
-  "description": "\u638c\u7eb9\u6d4b\u8fd0 \u2014 AI \u638c\u7eb9\u8da3\u5473\u6d4b\u8bd5\u5fae\u4fe1\u5c0f\u7a0b\u5e8f",
+  "description": "\u5341\u4e8c\u4eba\u683c\u7b7e \u2014 \u8da3\u5473\u4eba\u683c\u6d4b\u8bd5\u5fae\u4fe1\u5c0f\u7a0b\u5e8f",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p cloudfunctions/tsconfig.json",
     "test": "jest",
