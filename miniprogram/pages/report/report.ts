@@ -1,5 +1,5 @@
 import { CONFIG, DISCLAIMER } from '../../config/index';
-import { toDimensions, clampScore } from '../../utils/format';
+import { clampScore } from '../../utils/format';
 import { callFunction } from '../../utils/request';
 import { getNavBelowPx } from '../../utils/nav';
 import { MOCK_REPORT } from '../../utils/mock-report';
@@ -43,7 +43,8 @@ Page({
     t2Style: 'font-size:26rpx;letter-spacing:0rpx',
     t3Style: 'font-size:26rpx;letter-spacing:0rpx',
     lines: [] as Array<{ key: string; name: string; desc: string; score: number }>,
-    dimensions: [] as ReturnType<typeof toDimensions>,
+    depthText: '',
+    personalityText: '',
     scenes: [] as SceneView[],
     advice: [] as string[],
     handText: '右手',
@@ -92,7 +93,8 @@ Page({
       t1NameSize: `${fit.t1Name}rpx`,
       t2Style: `font-size:${fit.t2}rpx;letter-spacing:${fit.t2Ls}rpx`,
       t3Style: `font-size:${fit.t3}rpx;letter-spacing:${fit.t3Ls}rpx`,
-      dimensions: toDimensions(report),
+      depthText: report.depth || '',
+      personalityText: report.personality?.length ? report.personality.join(' · ') : '',
       scenes: toScenes(report),
       advice: report.advice,
       handText: hand === 'left' ? '左手' : '右手',
@@ -152,7 +154,7 @@ Page({
           archetype: this.data.archetype || '稳扎稳打的实干家',
           funScore: this.data.funScore,
           lines: this.data.lines.map((l) => ({ name: l.name, score: l.score })),
-          tags: (this.data.dimensions.find((d) => d.key === 'personality')?.text || '')
+          tags: this.data.personalityText
             .split(' · ')
             .filter(Boolean),
           handImagePath: '/assets/hand-plate.png',

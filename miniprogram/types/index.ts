@@ -26,9 +26,12 @@ export interface ReportResult {
   archetype?: string;
   /** 性格关键词 3-5 个 */
   personality: string[];
-  career: string;
-  love: string;
-  wealth: string;
+  /** 旧版三维预测字段（已停用，仅为历史记录兼容保留） */
+  career?: string;
+  love?: string;
+  wealth?: string;
+  /** 性格深度解读（替代旧三维预测） */
+  depth?: string;
   /** 场景速读：工作 / 生活 / 身心（可选，模型未给则隐藏模块） */
   scenes?: {
     work: SceneNotes;

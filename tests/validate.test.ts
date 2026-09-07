@@ -4,9 +4,7 @@ import { extractJson } from '../cloudfunctions/analyze/zhipu';
 const GOOD = {
   summary: '纹路清晰深长，稳中带劲的节奏感，想得清楚做得踏实，仅供参考。',
   personality: ['沉稳务实', '慢热长情'],
-  career: '思维线深长清晰，倾向于逻辑驱动型选手，遇到难题反而来劲。',
-  love: '情感线走势平缓，情感表达偏内敛，可能是细水长流型。',
-  wealth: '活力线弧度饱满，财务上倾向稳扎稳打。',
+  depth: '思维线深长清晰，倾向逻辑驱动：认准的事能沉下心推到底。情感线走势平缓，表达偏内敛，可能是细水长流型。活力线弧度饱满，后劲足，喜欢看得见的积累。',
   funScore: 87,
   advice: ['给自己留一段自由发挥的时间。'],
   lines: { heart: 85, head: 72, life: 78 },
@@ -25,7 +23,7 @@ describe('validateReport · schema', () => {
   test('缺字段拒绝', () => {
     const r = validateReport({ summary: '只有总评，其他都没有的非法输出' });
     expect(r.ok).toBe(false);
-    expect(r.errors.some((e) => e.includes('career'))).toBe(true);
+    expect(r.errors.some((e) => e.includes('depth'))).toBe(true);
   });
 
   test('personality 不足拒绝', () => {

@@ -33,9 +33,7 @@ export interface ReportShape {
   summary: string;
   archetype?: string;
   personality: string[];
-  career: string;
-  love: string;
-  wealth: string;
+  depth: string;
   scenes?: {
     work: SceneNotes;
     life: SceneNotes;
@@ -46,7 +44,7 @@ export interface ReportShape {
   lines: { heart: number; head: number; life: number };
 }
 
-const REQUIRED_TEXT_FIELDS = ['summary', 'career', 'love', 'wealth'] as const;
+const REQUIRED_TEXT_FIELDS = ['summary', 'depth'] as const;
 
 const clamp = (v: unknown, lo: number, hi: number): number => {
   const n = typeof v === 'number' ? v : Number(v);
@@ -129,9 +127,7 @@ export function validateReport(raw: unknown): ValidationResult {
     summary: (r.summary as string).trim(),
     archetype: typeof r.archetype === 'string' && r.archetype.trim() ? r.archetype.trim() : undefined,
     personality,
-    career: (r.career as string).trim(),
-    love: (r.love as string).trim(),
-    wealth: (r.wealth as string).trim(),
+    depth: (r.depth as string).trim(),
     scenes,
     funScore,
     advice,

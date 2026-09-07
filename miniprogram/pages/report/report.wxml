@@ -42,15 +42,11 @@
     <text class="summary-text">{{summary}}</text>
   </view>
 
-  <!-- 四维速读 -->
-  <view class="card dims">
-    <text class="card-tag">四维速读 · PROFILE</text>
-    <view class="dim-grid">
-      <view class="dim" wx:for="{{dimensions}}" wx:key="key">
-        <text class="dim-title">{{item.title}}<text class="dim-en"> {{item.en}}</text></text>
-        <text class="dim-text">{{item.text}}</text>
-      </view>
-    </view>
+  <!-- 性格深度解读 -->
+  <view class="card depth" wx:if="{{depthText || personalityText}}">
+    <text class="card-tag">性格深度解读 · DEEP DIVE</text>
+    <text class="depth-keys" wx:if="{{personalityText}}">{{personalityText}}</text>
+    <text class="summary-text depth-body" wx:if="{{depthText}}">{{depthText}}</text>
   </view>
 
   <!-- 场景速读：工作 / 生活 / 身心 -->

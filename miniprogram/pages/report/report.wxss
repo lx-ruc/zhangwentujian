@@ -147,6 +147,15 @@
 }
 
 /* 总评 */
+.depth-keys {
+  display: block;
+  margin-top: 20rpx;
+  font-weight: 700;
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+}
+.depth-body { margin-top: 16rpx; }
 .summary-text {
   display: block;
   margin-top: 20rpx;

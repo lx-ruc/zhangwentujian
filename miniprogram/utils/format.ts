@@ -1,5 +1,4 @@
 /** 报告数据格式化 —— 纯函数，可单测 */
-import { ReportResult } from '../types/index';
 
 /** 分数收敛到 [0,100] 整数（模型输出不可信，展示层兜底） */
 export function clampScore(n: unknown, fallback = 60): number {
@@ -17,20 +16,3 @@ export function formatDateTime(ts: number, now: Date = new Date()): string {
   return sameYear ? `${md} ${hm}` : `${d.getFullYear()}年${md} ${hm}`;
 }
 
-export interface DimensionView {
-  key: 'personality' | 'career' | 'love' | 'wealth';
-  title: string;
-  en: string;
-  text: string;
-}
-
-/** 四维卡片视图模型：文案兜底，绝不出空白 */
-export function toDimensions(r: ReportResult): DimensionView[] {
-  const fallback = '这一维暂未读到清晰纹路，仅供参考。';
-  return [
-    { key: 'personality', title: '性格', en: 'NATURE', text: r.personality?.join(' · ') || fallback },
-    { key: 'career', title: '事业', en: 'CAREER', text: r.career || fallback },
-    { key: 'love', title: '感情', en: 'AFFECTION', text: r.love || fallback },
-    { key: 'wealth', title: '财富', en: 'FORTUNE', text: r.wealth || fallback },
-  ];
-}
