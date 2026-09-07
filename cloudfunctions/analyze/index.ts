@@ -1,7 +1,9 @@
 /**
  * 云函数 analyze —— 入口编排
- * 链路：配额校验 → 下载图片 → base64 → 智谱 GLM-4V → 校验(重试1次) → 落库文本报告 → 删除图片
- * 原则：云端是配额权威判定方；模型输出不可信（必须过 validate）；图片即焚。
+ * 主链路 draw：配额校验 → 复用 validate 校验客户端本地抽签结果 → 落库文本报告 → 扣配额
+ *   （2026-09-07 去 AI 化：运行时不再调模型，照片不出手机，客户端只上报文字结果）
+ * 休眠链路 analyze：配额校验 → 下载图片 → base64 → 智谱 GLM-4V → 校验(重试1次) → 落库 → 删除图片
+ * 原则：云端是配额权威判定方；一切上报结果（模型或客户端）都不可信，必须过 validate。
  */
 import * as cloud from 'wx-server-sdk';
 import { CONFIG } from './config';
@@ -13,12 +15,16 @@ import { hasQuota, consume, grantShareBonus, remainingOf, initialUserQuota, type
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV as unknown as string });
 
 interface AnalyzeEvent {
-  action: 'analyze' | 'quota' | 'shareBonus' | 'history';
+  action: 'analyze' | 'draw' | 'quota' | 'shareBonus' | 'history';
   /** 开发版标记（小程序 envVersion=develop 传入）：不限次且不消耗；上传后 trial/release 无此标记自动恢复限次 */
   dev?: boolean;
   channel?: 'forward' | 'timeline';
   fileID?: string;
   hand?: 'left' | 'right';
+  /** draw：人格签类型 id（白名单校验） */
+  typeId?: string;
+  /** draw：客户端本地抽签组装的报告（同样不可信，过 validateReport） */
+  report?: unknown;
 }
 
 interface AnalyzeResult {
@@ -54,7 +60,7 @@ const analyses = db.collection(CONFIG.COLLECTION_ANALYSES);
 /** 兜底文案：模型两次都失败也不可白屏（无违禁词、无绝对化表述） */
 const FALLBACK_REPORT: ReportShape = {
   summary:
-    '这次的照片读起来有点吃力，纹路若隐若现。不如换个光线明亮的角度再拍一张，让三条主线看得更清楚些。以下是一份通用倾向描述，仅供参考。',
+    '这次的照片读起来有点吃力，画面若隐若现。不如换个光线明亮的角度再拍一张，让画面看得更清楚些。以下是一份通用倾向描述，仅供参考。',
   archetype: '雾里看花的潜力股',
   personality: ['神秘待读', '值得再试'],
   career: '照片清晰度不足，暂不妄下结论——你倾向先把事情看清楚再出手。',
@@ -62,20 +68,20 @@ const FALLBACK_REPORT: ReportShape = {
   wealth: '金钱观这次没读稳，仅供参考：你倾向稳中求进。',
   scenes: {
     work: {
-      traits: ['纹路暂未读清：倾向先把信息摸全再动工，是"谋定后动"型。'],
+      traits: ['画面暂未读清：倾向先把信息摸全再动工，是"谋定后动"型。'],
       cautions: ['留意：重要方案别只靠一次会议定生死，留个书面确认更稳。'],
     },
     life: {
-      traits: ['纹路暂未读清：你的社交电量可能偏有限，熟人小局更自在。'],
+      traits: ['画面暂未读清：你的社交电量可能偏有限，熟人小局更自在。'],
       cautions: ['留意：答应得太快容易把自己排满，学会留白。'],
     },
     mind: {
-      traits: ['纹路暂未读清：连续高压后，你可能需要一段彻底放空才回得来。'],
+      traits: ['画面暂未读清：连续高压后，你可能需要一段彻底放空才回得来。'],
       cautions: ['留意：以上是生活方式参考，如有身体不适请以专业人士意见为准。'],
     },
   },
   funScore: 66,
-  advice: ['在窗边自然光下重拍一张，掌心正对镜头。', '五指自然张开，避开戒指手表。'],
+  advice: ['在窗边自然光下重拍一张，正对镜头。', '手指自然张开，避开戒指手表。'],
   lines: { heart: 55, head: 55, life: 55 },
 };
 
@@ -104,7 +110,49 @@ exports.main = async (event: AnalyzeEvent): Promise<{ code: number; message?: st
       return ok({ records });
     }
 
-    // ---- analyze ----
+    // ---- draw：本地抽签落档（主链路；客户端不传图片，只上报文字结果） ----
+    if (event.action === 'draw') {
+      if (!event.hand || !event.typeId || !event.report) return err('PARAM_MISSING', '参数缺失');
+      if (!(CONFIG.TYPE_IDS as readonly string[]).includes(event.typeId)) {
+        return err('PARAM_MISSING', '类型不存在');
+      }
+
+      // 1) 配额（云端权威；开发者白名单 openid 或 dev 标记 → 不限次不消耗）
+      const devUnlimited = event.dev === true || (CONFIG.DEV_OPENIDS as readonly string[]).includes(OPENID);
+      const quota = await getUserQuota(OPENID);
+      if (!devUnlimited && !hasQuota(quota)) return err('QUOTA_EXCEEDED', '今日次数已用完');
+
+      // 2) 上报同样不可信：复用模型校验器（schema + 违禁词；篡改者只能污染自己 openid 的历史）
+      const v = validateReport(event.report);
+      if (!v.ok || !v.report) {
+        console.warn('[draw] 校验未通过:', v.errors.join('; '));
+        return err('DRAW_INVALID', '结果校验未通过');
+      }
+
+      // 3) 落库（fallback:false 必须显式写——history 按该字段过滤，缺字段会被排除）
+      const added = (await analyses.add({
+        data: {
+          _openid: OPENID,
+          hand: event.hand,
+          result: v.report,
+          fallback: false,
+          modelVersion: CONFIG.DRAW_VERSION,
+          createdAt: db.serverDate(),
+        },
+      })) as { _id?: string };
+
+      // 4) 消耗配额（不可变计算 + upsert；remaining 统一 remainingOf 口径）
+      let remaining = remainingOf(quota);
+      if (!devUnlimited) {
+        const next = consume(quota);
+        await upsertUserQuota(OPENID, next);
+        remaining = remainingOf(next);
+      }
+
+      return ok({ id: added._id, remaining });
+    }
+
+    // ---- analyze（休眠：保留链路与兜底，不再由客户端触发） ----
     if (!event.fileID || !event.hand) return err('PARAM_MISSING', '参数缺失');
 
     // 1) 配额（云端权威；开发者白名单 openid 或 dev 标记 → 不限次不消耗。真实用户照常限次）
