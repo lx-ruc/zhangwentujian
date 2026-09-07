@@ -118,6 +118,18 @@
   box-shadow: 0 6rpx 24rpx rgba(188, 63, 33, 0.28);
 }
 .cta-icon:active { transform: scale(0.94); }
+/* 文字副 CTA：明示入口功能（合规 3.2/3.3），与图标同一跳转 */
+.cta-text {
+  display: block;
+  margin-top: 20rpx;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 32rpx;
+  letter-spacing: 8rpx;
+  color: var(--ink-1);
+}
+.cta-text:active { transform: scale(0.94); }
 
 /* ===== 底部 ===== */
 .foot { margin-top: 48rpx; }

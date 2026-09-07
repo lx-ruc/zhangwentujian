@@ -30,10 +30,11 @@ npm run deploy:cloud
 ### ③ 推真机（免扫码）
 
 ```bash
-/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto-preview --project /Users/lixin/shouxiang
+/Applications/wechatwebdevtools.app/Contents/MacOS/cli auto-preview --project /Users/lixin/shouxiang/zhangwentujian
 ```
 
-- **`--project` 必须是仓库根目录** `/Users/lixin/shouxiang`（`zhangwentujian` 只是 projectname，不是目录；旧命令曾因无效路径解析出空入口，导致真机冷启动 `Page "" is not found` + `onPageNotFound(空路径)`）
+- **`--project` 必须指向含 `project.config.json` 的仓库目录**（2026-09-07 校正：DevTools 日志 213 处引用 `…/shouxiang/zhangwentujian/…`，项目注册在仓库目录；`shouxiang` 顶层无 project.config.json。历史空路径坑的本质是"传了无效/不存在的路径"，而非具体哪一层）
+- **报 `需要重新登录 (code 10)` 时**：先 `cli islogin` 确认；登录态过期只能让用户在 IDE 里扫码登录一次（微信强制，绕不过），之后 auto-preview 恢复免扫码
 - **auto-preview 推到用户已配对的手机**，自动拉起小程序，无需扫码
 - 走现有 IDE（HTTP 端口动态分配，如 53894），**不要 automator.launch 新实例**（会要求重新登录）；首次调用若报 core.wxvpkg 栈错误，多为 IDE server 冷启动，重跑一次即成功
 - `preview` 子命令是生成二维码给用户扫——用户已明确偏好 auto-preview，除非用户主动要二维码
