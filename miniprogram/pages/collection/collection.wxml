@@ -2,7 +2,7 @@
   <view class="head">
     <view class="head-text">
       <text class="eyebrow">PALM FIELD GUIDE</text>
-      <text class="title">掌纹人格图鉴</text>
+      <text class="title">掌纹性格图鉴</text>
       <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次解读解锁一种</text>
     </view>
     <view class="progress-ring">

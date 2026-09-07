@@ -80,7 +80,7 @@ export function shareCollection(unlockedCount: number): ShareMessage {
     title:
       n >= 10
         ? `我收集了 ${n}/12 种掌纹人格，就差几个稀有款了`
-        : `我解锁了 ${n} 种掌纹人格图鉴，你是什么型？`,
+        : `我解锁了 ${n} 种掌纹性格图鉴，你是什么型？`,
     path: '/pages/index/index',
   };
 }

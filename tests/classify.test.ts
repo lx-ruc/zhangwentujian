@@ -1,7 +1,7 @@
 import { classifyPalmType, classifyByScore } from '../miniprogram/utils/classify';
 import { PALM_TYPES, PALM_TYPE_LIST } from '../miniprogram/data/palm-types';
 
-describe('掌纹人格图鉴 · 数据完整性', () => {
+describe('掌纹性格图鉴 · 数据完整性', () => {
   test('12 型齐全且编号唯一', () => {
     expect(PALM_TYPE_LIST).toHaveLength(12);
     const nos = new Set(PALM_TYPE_LIST.map((t) => t.no));
