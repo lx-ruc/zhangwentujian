@@ -9,11 +9,9 @@ export const CONFIG = {
   DAILY_QUOTA: 3,
   /** 云函数名 */
   FN_ANALYZE: 'analyze',
-  /** 模型标识（展示用，实际调用在云端） */
-  MODEL_VERSION: 'glm-4.6v-flash',
-  /** 模型超时（ms），云函数侧同步配置 */
-  MODEL_TIMEOUT: 30_000,
-  /** 分析页趣味知识轮播间隔（ms） */
+  /** 抽签引擎版本（本地确定性随机；与云函数 DRAW_VERSION 一致，落库 modelVersion 用） */
+  ENGINE_VERSION: 'local-draw-1',
+  /** 抽签页签语轮播间隔（ms） */
   FACT_INTERVAL: 4_000,
   /**
    * 虚拟支付总闸门（个人主体·道具模式）。默认关闭：
@@ -26,8 +24,8 @@ export const CONFIG = {
   /** 售卖 SKU（价格单位分，须与服务端 PRODUCTS 一致，tests/pay-config-consistency.test.ts 校验） */
   PAY_SKU: {
     id: 'add_quota_5',
-    title: '解读加量包',
-    desc: '额外 5 次掌纹解读',
+    title: '抽签加量包',
+    desc: '额外 5 次抽签次数',
     priceFen: 100,
   },
 } as const;

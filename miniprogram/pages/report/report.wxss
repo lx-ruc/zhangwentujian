@@ -10,127 +10,132 @@
   width: 100%;
 }
 
-/* ===== 兜底横幅（提醒级：墨底 + 朱砂细节，非错误级） ===== */
-.fallback-banner {
+/* ===== 头部（四行式样式见文末「头部四行式」） ===== */
+/* ===== 签纸主视觉：大印章字 + 图鉴编号 + 朱砂界线（纯 wxml/wxss） ===== */
+.sign-hero {
+  margin-top: 24rpx;
+}
+.sign-paper {
+  background: var(--paper);
+  border: 2rpx solid var(--rule);
+  border-radius: 16rpx;
+  padding: 24rpx 32rpx 32rpx;
+  box-sizing: border-box;
+}
+.sign-top {
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  margin-bottom: 32rpx;
-  padding: 24rpx 28rpx;
-  background: var(--paper);
-  border: 1rpx solid var(--rule);
-  border-left: 6rpx solid var(--cinnabar);
-  border-radius: 12rpx;
+  justify-content: space-between;
+  padding-bottom: 18rpx;
+  border-bottom: 1rpx dashed var(--rule);
 }
-.fallback-copy {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.sign-no {
+  font-family: var(--font-mono);
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-2);
 }
-.fallback-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: var(--ink);
-}
-.fallback-sub {
-  margin-top: 6rpx;
+.sign-code {
+  font-family: var(--font-mono);
   font-size: 22rpx;
-  color: var(--ink-3);
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--cinnabar);
+  border: 2rpx solid var(--cinnabar);
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+  transform: rotate(-4deg);
 }
-.fallback-btn {
+.sign-body {
+  margin-top: 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 40rpx;
+}
+.seal-box {
   flex-shrink: 0;
+  width: 200rpx;
+  height: 200rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14rpx 28rpx;
-  font-size: 24rpx;
+  border: 5rpx solid var(--cinnabar);
+  border-radius: 20rpx;
+  transform: rotate(-5deg);
+  box-shadow: inset 0 0 0 3rpx rgba(188, 63, 33, 0.2);
+  background: rgba(188, 63, 33, 0.04);
+}
+.seal-char {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 116rpx;
+  color: var(--cinnabar);
   line-height: 1;
-  color: #fff;
-  background: var(--cinnabar);
-  border-radius: 999rpx;
+}
+.sign-info {
+  flex: 1;
+  min-width: 0;
+}
+.sign-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 56rpx;
+  line-height: 1.3;
+}
+.sign-rule {
+  margin: 18rpx 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, var(--cinnabar), rgba(188, 63, 33, 0.08));
+  border-radius: 2rpx;
+}
+.sign-label {
+  display: block;
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-2);
 }
 
-/* ===== 头部（四行式样式见文末「头部四行式」） ===== */
-/* ===== 手掌主视觉：三线分数标注在线上 ===== */
-.palm-hero {
-  position: relative;
-  width: 100%;
+/* 三维特质条 */
+.line-bars {
   margin-top: 24rpx;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20rpx;
 }
-.palm-box {
-  position: relative;
-  width: 560rpx;
-  height: 588rpx;
-}
-.palm-img {
-  width: 100%;
-  height: 100%;
-}
-/* 右手：插画镜像（拇指右，与拍摄页遮罩同一直觉视角） */
-.palm-img.mirror { transform: scaleX(-1); }
-/* 图鉴式引线标注：dot 锚点 → leader 细线 → tag 标签（两侧留白不遮线） */
-.mark { position: absolute; }
-.dot {
-  position: absolute;
-  width: 12rpx; height: 12rpx;
-  border-radius: 50%;
-  background: var(--cinnabar);
-  transform: translate(-50%, -50%);
-}
-.leader {
-  position: absolute;
-  height: 2rpx;
-  background: var(--ink-3);
-  transform-origin: 0 50%;
-}
-.tag {
-  position: absolute;
+.line-bar {
   display: flex;
-  align-items: baseline;
-  gap: 8rpx;
-  white-space: nowrap;
-  background: var(--paper);
-  border: 1rpx solid var(--rule);
-  border-radius: 8rpx;
-  padding: 6rpx 16rpx;  /* 两侧留白 */
+  align-items: center;
+  gap: 20rpx;
 }
-.tag-name {
+.lb-name {
+  flex-shrink: 0;
+  width: 132rpx;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 24rpx;
-  color: var(--ink);
+  font-size: 27rpx;
 }
-.tag-score {
+.lb-track {
+  flex: 1;
+  height: 16rpx;
+  background: var(--paper-2);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.lb-fill {
+  height: 100%;
+  background: var(--cinnabar);
+  border-radius: 8rpx;
+}
+.lb-score {
+  flex-shrink: 0;
+  width: 64rpx;
+  text-align: right;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 30rpx;
+  font-size: 28rpx;
   color: var(--cinnabar);
 }
-/* 三条线几何：水平引线（与首页 PLATE Ⅰ 同语言），标签边缘精确贴线端，y 错开不叠 */
-/* 情感线：向左引出（y 50.2%） */
-.mk-heart { left: 62.6%; top: 50.2%; }
-.mk-heart .leader { width: 228rpx; transform: rotate(198.4deg); }
-.mk-heart .tag { left: -216rpx; top: -72rpx; transform: translate(-100%, -50%); }
-/* 思维线：向右引出（y 56.5%，与情感线分居两侧） */
-.mk-head { left: 60.2%; top: 56.5%; }
-.mk-head .leader { width: 117rpx; transform: rotate(2.9deg); }
-.mk-head .tag { left: 116rpx; top: 6rpx; transform: translateY(-50%); }
-/* 活力线：向左下引出（y 65.4%，与情感线同侧但相隔 15% 高度） */
-.mk-life { left: 55.2%; top: 65.4%; }
-.mk-life .leader { width: 175rpx; transform: rotate(180deg); }
-.mk-life .tag { left: -175rpx; top: 0; transform: translate(-100%, -50%); }
-/* ===== 右手版标注几何（镜像后线位 x→100-x，引线方向反转） ===== */
-.right-hand .mk-heart { left: 37.4%; top: 50.2%; }
-.right-hand .mk-heart .leader { width: 236rpx; transform: rotate(-23.8deg); }
-.right-hand .mk-heart .tag { left: 216rpx; top: -95rpx; transform: translate(0, -50%); }
-.right-hand .mk-head { left: 39.8%; top: 56.5%; }
-.right-hand .mk-head .leader { width: 128rpx; transform: rotate(177.4deg); }
-.right-hand .mk-head .tag { left: -128rpx; top: 6rpx; transform: translate(-100%, -50%); }
-.right-hand .mk-life { left: 44.8%; top: 65.4%; }
-.right-hand .mk-life .leader { width: 208rpx; transform: rotate(0deg); }
-.right-hand .mk-life .tag { left: 208rpx; top: 0; transform: translateY(-50%); }
 /* ===== 卡片通用 ===== */
 .card {
   margin-top: 32rpx;
@@ -424,7 +429,7 @@
   border-color: var(--cinnabar);
   color: var(--cinnabar);
 }
-/* 掌纹印章：类型名代表字（燎原星火→燎），行尾方章 */
+/* 人格签印章：类型名代表字（燎原星火→燎），行尾方章 */
 .type-seal {
   flex-shrink: 0;
   width: 56rpx; height: 56rpx;

@@ -24,9 +24,9 @@ export interface DimensionView {
   text: string;
 }
 
-/** 四维卡片视图模型：文案兜底，绝不出空白 */
-export function toDimensions(r: ReportResult): DimensionView[] {
-  const fallback = '这一维暂未读到清晰纹路，仅供参考。';
+/** 四维卡片视图模型：文案兜底，绝不出空白（入参取内容库 ReportBody 即可） */
+export function toDimensions(r: Pick<ReportResult, 'personality' | 'career' | 'love' | 'wealth'>): DimensionView[] {
+  const fallback = '这一维暂未有清晰描述，仅供参考。';
   return [
     { key: 'personality', title: '性格', en: 'NATURE', text: r.personality?.join(' · ') || fallback },
     { key: 'career', title: '做事风格', en: 'WORK STYLE', text: r.career || fallback },

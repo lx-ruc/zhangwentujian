@@ -5,10 +5,13 @@ import { shareDefault, isIOS } from '../../utils/share';
 import { isDevEnv } from '../../utils/env';
 import { getNavTopPx } from '../../utils/nav';
 import { buyQuotaPack, canUseVirtualPayment, PayError } from '../../utils/pay';
+import { PALM_TYPE_LIST } from '../../data/palm-types';
 
 Page({
   data: {
     navTop: getNavTopPx(),
+    /** 十二签宫格（印章字 + 图鉴编号） */
+    signs: PALM_TYPE_LIST.map((t) => ({ no: t.no, seal: t.seal })),
     remaining: Number(CONFIG.DAILY_QUOTA),
     disclaimer: DISCLAIMER,
     /** 配额用完时 CTA 切换为分享解锁 */

@@ -4,7 +4,7 @@
   "compileType": "miniprogram",
   "appid": "wx3b8baf398bf449d2",
   "projectname": "zhangwentujian",
-  "libVersion": "3.5.0",
+  "libVersion": "3.15.3",
   "setting": {
     "es6": true,
     "enhance": true,

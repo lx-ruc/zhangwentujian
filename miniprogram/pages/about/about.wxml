@@ -5,7 +5,7 @@
   </view>
 
   <view class="head">
-    <text class="title">关于「掌纹测运」</text>
+    <text class="title">关于「十二人格签」</text>
     <text class="ver">v{{version}}</text>
   </view>
 
@@ -16,12 +16,12 @@
 
   <view class="card">
     <text class="h">隐私说明</text>
-    <text class="p">· 手掌照片仅在测试过程中临时使用，测试完成后立即删除，云端不保留任何照片。\n· 历史记录仅保存文字报告，可随时删除。\n· 我们不收集姓名、手机号等个人身份信息。\n· 相机与相册权限仅用于拍摄手掌照片，可在系统设置中随时关闭。</text>
+    <text class="p">· 留影照片仅保存在手机本地，不会上传，测试完成后即丢弃。\n· 历史记录仅保存文字结果，可随时删除。\n· 我们不收集姓名、手机号等个人身份信息。\n· 相机权限仅用于当场拍摄留念照片，可在系统设置中随时关闭。</text>
   </view>
 
   <view class="card">
-    <text class="h">三大主线小知识</text>
-    <text class="p">掌纹在胎儿期约第 13 周成形，此后基本保持稳定。产品中的三条主线为：情感线（情感表达）、思维线（思维风格）、活力线（活力状态）——均是对掌纹形态的趣味化描述。</text>
+    <text class="h">十二人格签是什么</text>
+    <text class="p">一套封闭的趣味人格图鉴：感受力、思考力、行动力三个维度组合出 12 支签，每次测试随机抽出一支。各支签的稀有度为趣味估算，仅供收集参考。</text>
   </view>
 
   <text class="disclaimer">{{disclaimer}}</text>

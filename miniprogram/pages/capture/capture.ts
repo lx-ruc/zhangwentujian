@@ -1,6 +1,5 @@
 import { DISCLAIMER } from '../../config/index';
 import { shareDefault, triggerShareBonus } from '../../utils/share';
-import { uploadPalmImage, UploadError } from '../../utils/upload';
 import { getNavTopPx } from '../../utils/nav';
 import { Hand } from '../../types/index';
 
@@ -10,7 +9,8 @@ Page({
     hand: 'right' as Hand,
     disclaimer: DISCLAIMER,
     privacyHint: '',
-    uploading: false,
+    /** 防快门双击重复进分析页 */
+    submitting: false,
     /** 相机异常（权限被拒/组件错误）→ 显示占位并回退系统拍摄 */
     cameraBroken: false,
     /** 明确被用户拒绝授权 → 显示"去开启"按钮 */
@@ -67,7 +67,7 @@ Page({
     }
     const ctx = wx.createCameraContext();
     ctx.takePhoto({
-      quality: 'normal', // high 原图过大：base64 后模型链路易超时
+      quality: 'normal', // 仅本页与分析页预览，不参与计算，无需原图
       success: (res) => {
         if (!res.tempImagePath) {
           wx.showToast({ title: '拍摄失败，请重试', icon: 'none' });
@@ -83,20 +83,13 @@ Page({
   },
 
   choose(sources: string[]) {
-    if (this.data.uploading) return;
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
       sourceType: sources as ('album' | 'camera')[],
       sizeType: ['compressed'],
       success: (res) => {
-        const file = res.tempFiles[0];
-        // 轻量前置质检：过暗/过小仅提示，不阻断（质检交给模型）
-        if (file.size < 20 * 1024) {
-          wx.showToast({ title: '图片过小，建议重拍', icon: 'none' });
-          return;
-        }
-        this.submit(file.tempFilePath);
+        this.submit(res.tempFiles[0].tempFilePath);
       },
       fail: (err) => {
         console.error('[chooseMedia]', err.errMsg);
@@ -111,24 +104,17 @@ Page({
     });
   },
 
-  /** 选图完成：上传云存储拿 fileID，成功后才进分析页（失败留在本页 toast） */
-  async submit(localPath: string) {
-    this.setData({ uploading: true });
-    wx.showLoading({ title: '正在上传…', mask: true });
-    try {
-      const fileID = await uploadPalmImage(localPath);
-      const app = getApp();
-      app.globalData.pendingImage = localPath; // 分析页预览用（本地路径，即焚）
-      app.globalData.pendingFileID = fileID; // 云函数入参
-      app.globalData.pendingHand = this.data.hand;
-      wx.navigateTo({ url: '/pages/analyzing/analyzing' });
-    } catch (err) {
-      const msg = err instanceof UploadError ? err.userMessage : '上传失败，请重试';
-      wx.showToast({ title: msg, icon: 'none', duration: 2500 });
-    } finally {
-      wx.hideLoading();
-      this.setData({ uploading: false });
-    }
+  /** 留影完成：照片只留在本机（预览用），直接进抽签页——不上传任何数据 */
+  submit(localPath: string) {
+    if (this.data.submitting) return;
+    this.setData({ submitting: true });
+    const app = getApp();
+    app.globalData.pendingImage = localPath; // 分析页预览用（本地路径，用后即弃）
+    app.globalData.pendingHand = this.data.hand;
+    wx.navigateTo({
+      url: '/pages/analyzing/analyzing',
+      complete: () => this.setData({ submitting: false }),
+    });
   },
 
   goBack() { wx.navigateBack(); },

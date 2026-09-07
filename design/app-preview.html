@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>掌纹测运 · 小程序页面预览（HTML 版）</title>
+<title>十二人格签 · 小程序页面预览（HTML 版）</title>
 <style>
 /* ============ tokens（与 miniprogram/app.wxss 一致，1rpx=0.5px） ============ */
 :root {
@@ -104,7 +104,7 @@ body {
 /* ============ ① 首页 ============ */
 .p-index {
   min-height: 100%; display: flex; flex-direction: column;
-  padding: 20px 24px 24px;
+  padding: 20px 28px 24px;
 }
 .eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--ink-2); }
 .display {
@@ -115,24 +115,45 @@ body {
   color: var(--cinnabar);
   text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px;
 }
-.lede { margin-top: 12px; max-width: 280px; font-size: 13px; color: var(--ink-2); }
+.lede { margin-top: 12px; max-width: 290px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
 .plate {
   margin-top: 20px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  padding: 14px 0 10px; display: flex; flex-direction: column; align-items: center;
+  padding: 14px 0 16px;
 }
-.figtag {
-  align-self: flex-start; font-family: var(--font-mono);
-  font-size: 10px; letter-spacing: 1px; color: var(--ink-2); padding-bottom: 8px;
+.fig-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: 10px;
 }
-.hand { width: 210px; height: 220px; }
-.line-legend { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--ink-2); }
-.legend-item { display: flex; align-items: center; gap: 6px; }
-.legend-item .dot { width: 14px; height: 0; border-top: 2.5px solid var(--cinnabar); border-radius: 1.5px; }
+.figtag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--ink-2); }
+.fig-sub { font-size: 10px; color: var(--ink-3); }
+.sign-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px;
+}
+.sign-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cell-seal {
+  width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--ink-3); border-radius: 10px; transform: rotate(-4deg);
+  color: var(--ink-2); font-family: var(--font-display); font-weight: 900; font-size: 27px;
+}
+.sign-cell:nth-child(3n) .cell-seal { border-color: var(--cinnabar); color: var(--cinnabar); opacity: 0.85; }
+.cell-no { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); }
 .foot { margin-top: 24px; }
-.quota-chip { display: block; margin-top: 10px; text-align: center; font-size: 12px; color: var(--ink-2); }
+.cta-icon {
+  width: 66px; height: 66px; margin: 0 auto;
+  border-radius: 50%; border: 5px solid rgba(188, 63, 33, 0.25);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.cta-core {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--cinnabar);
+  box-shadow: 0 3px 12px rgba(188, 63, 33, 0.28);
+}
+.cta-icon:active { transform: scale(0.94); }
+.quota-chip { display: block; margin-top: 12px; text-align: center; font-size: 12px; color: var(--ink-2); }
 .quota-chip .num { color: var(--cinnabar); font-weight: 700; font-size: 15px; }
 
-/* ============ ② 拍摄页 ============ */
+/* ============ ② 拍摄页（今日留影） ============ */
 .p-capture {
   height: 100%; display: flex; flex-direction: column;
   padding: 12px 24px 20px;
@@ -145,11 +166,6 @@ body {
   position: relative; width: 295px; height: 300px; margin: 6px auto;
   background: #14100C; border-radius: 10px; overflow: hidden;
 }
-.vf-mask {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  pointer-events: none;
-}
-.vf-mask.mirror { transform: scaleX(-1); }
 .corner { position: absolute; width: 22px; height: 22px; border: 0 solid var(--rule); }
 .corner.tl { top: 12px; left: 12px; border-top-width: 2px; border-left-width: 2px; }
 .corner.tr { top: 12px; right: 12px; border-top-width: 2px; border-right-width: 2px; }
@@ -161,19 +177,15 @@ body {
   animation: scan 2.6s ease-in-out infinite;
 }
 @keyframes scan { 0% { top: 12%; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
-.hand-guide { width: 220px; height: 230px; opacity: 0.9; }
 .vf-hint {
-  position: absolute; bottom: 18px; color: var(--paper);
+  position: absolute; bottom: 18px; left: 0; right: 0; text-align: center;
+  color: var(--paper);
   font-size: 12px; letter-spacing: 1px; opacity: 0.85;
 }
 .hand-pick { margin-top: 16px; display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
 .pick { flex: 1; text-align: center; padding: 10px 0; font-size: 13.5px; color: var(--ink-2); background: var(--paper); cursor: pointer; }
 .pick.on { background: var(--ink); color: var(--paper); font-weight: 600; }
 .shutter-row { margin-top: 20px; display: flex; align-items: center; justify-content: space-around; }
-.album, .flip {
-  width: 64px; text-align: center; font-size: 13.5px; color: var(--ink-2);
-  padding: 8px 0; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper-2); cursor: pointer;
-}
 .shutter {
   width: 66px; height: 66px; border-radius: 50%;
   background: var(--cinnabar); border: 5px solid rgba(188, 63, 33, 0.25);
@@ -181,7 +193,7 @@ body {
 }
 .shutter:active { transform: scale(0.94); }
 
-/* ============ ③ 分析中 ============ */
+/* ============ ③ 抽签中 ============ */
 .p-analyzing {
   min-height: 100%; display: flex; flex-direction: column; align-items: center;
   padding: 32px 28px 24px;
@@ -191,8 +203,18 @@ body {
 .eta { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); }
 .progress { margin-top: 14px; width: 100%; height: 3px; background: var(--paper-2); border-radius: 1.5px; overflow: hidden; }
 .bar { height: 100%; width: 0; background: var(--cinnabar); border-radius: 1.5px; transition: width 0.4s linear; }
-.breath-hand { margin-top: 18px; width: 190px; height: 200px; animation: breathe 2.2s ease-in-out infinite; }
+.sign-card {
+  margin-top: 18px; width: 150px; height: 200px;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  animation: breathe 2.2s ease-in-out infinite;
+}
 @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.03); opacity: 1; } }
+.sign-card.settled { animation: none; }
+.sign-seal {
+  font-family: var(--font-display); font-weight: 900; font-size: 70px;
+  color: var(--cinnabar);
+}
 .fact-card {
   margin-top: 22px; width: 100%; background: var(--paper-2);
   border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px;
@@ -209,29 +231,6 @@ body {
   min-height: 100%; display: flex; flex-direction: column;
   padding: 24px 28px 24px; position: relative;
 }
-.palm-hero { margin-top: 12px; display: flex; justify-content: center; }
-.palm-box { position: relative; width: 280px; height: 294px; }
-.palm-img { width: 100%; height: 100%; }
-.palm-img.mirror { transform: scaleX(-1); }
-.mark { position: absolute; }
-.dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--cinnabar); transform: translate(-50%, -50%); }
-.leader { position: absolute; height: 1px; background: var(--ink-3); transform-origin: 0 50%; }
-.tag {
-  position: absolute;
-  display: flex; align-items: baseline; gap: 4px; white-space: nowrap;
-  background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 3px 8px;
-}
-.tag-name { font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--ink); }
-.tag-score { font-family: var(--font-mono); font-weight: 700; font-size: 15px; color: var(--cinnabar); }
-.mk-heart { left: 62.6%; top: 50.2%; }
-.mk-heart .leader { width: 114px; transform: rotate(-161.6deg); }
-.mk-heart .tag { left: -108px; top: -36px; transform: translate(-100%, -50%); }
-.mk-head { left: 60.2%; top: 56.5%; }
-.mk-head .leader { width: 58px; left: 0; top: 0; transform: rotate(2.9deg); }
-.mk-head .tag { left: 58px; top: 3px; transform: translateY(-50%); }
-.mk-life { left: 55.2%; top: 65.4%; }
-.mk-life .leader { width: 88px; left: 0; top: 0; transform: rotate(180deg); }
-.mk-life .tag { left: -88px; top: 0; transform: translate(-100%,-50%); }
 .r-head { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
 .r-eyebrow { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; color: var(--ink-2); margin-bottom: 4px; }
 .t1 { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-weight: 700; line-height: 1.4; }
@@ -251,24 +250,52 @@ body {
   color: var(--cinnabar); font-family: var(--font-display); font-weight: 900; font-size: 15px;
   transform: rotate(-6deg); box-shadow: inset 0 0 0 1px rgba(188,63,33,.2); background: rgba(188,63,33,.04);
 }
-/* 左右手切换器（预览专用） */
-.hand-switch { display: flex; gap: 8px; margin-top: 10px; }
-.hs-btn { flex: 1; padding: 8px 0; font-size: 13px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); color: var(--ink-2); cursor: pointer; font-family: var(--font-body); }
-.hs-btn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+/* 签纸卡（人格签 hero） */
+.sign-hero { margin-top: 12px; }
+.sign-paper {
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 8px;
+  padding: 12px 16px 16px;
+}
+.sign-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 9px; border-bottom: 1px solid var(--rule);
+}
+.sign-no { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--ink-2); }
+.sign-code {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  color: var(--cinnabar); border: 1px solid var(--cinnabar); border-radius: 4px; padding: 2px 8px;
+}
+.sign-body { margin-top: 14px; display: flex; align-items: center; gap: 20px; }
+.seal-box {
+  flex-shrink: 0; width: 100px; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2.5px solid var(--cinnabar); border-radius: 10px;
+  transform: rotate(-5deg);
+  box-shadow: inset 0 0 0 1.5px rgba(188, 63, 33, 0.2);
+  background: rgba(188, 63, 33, 0.04);
+}
+.seal-char { font-family: var(--font-display); font-weight: 900; font-size: 58px; color: var(--cinnabar); line-height: 1; }
+.sign-info { flex: 1; min-width: 0; }
+.sign-name { display: block; font-family: var(--font-display); font-weight: 900; font-size: 28px; }
+.sign-rule {
+  margin: 9px 0; height: 1.5px;
+  background: linear-gradient(90deg, var(--cinnabar), rgba(188, 63, 33, 0.08));
+  border-radius: 1px;
+}
+.sign-label { display: block; font-size: 13px; letter-spacing: 2px; color: var(--ink-2); }
+.line-bars { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.lb-row { display: flex; align-items: center; gap: 10px; }
+.lb-name { width: 42px; font-family: var(--font-display); font-weight: 900; font-size: 14px; }
+.lb-track { flex: 1; height: 8px; background: var(--paper-2); border-radius: 4px; overflow: hidden; }
+.lb-fill { height: 100%; background: var(--cinnabar); border-radius: 4px; }
+.lb-score { width: 26px; text-align: right; font-family: var(--font-mono); font-size: 13px; color: var(--cinnabar); font-weight: 700; }
 .card {
   margin-top: 16px; background: var(--paper);
   border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px;
 }
 .card-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--ink-2); }
 .summary-text { display: block; margin-top: 10px; font-size: 14px; line-height: 1.9; }
-.line-row { margin-top: 14px; }
-.line-row:first-of-type { margin-top: 10px; }
-.line-head { display: flex; align-items: baseline; gap: 7px; }
-.line-name { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
-.line-desc { flex: 1; font-size: 11px; color: var(--ink-3); }
-.line-score { font-family: var(--font-mono); font-size: 14px; color: var(--cinnabar); font-weight: 700; }
-.line-track { margin-top: 6px; height: 5px; background: var(--paper-2); border-radius: 2.5px; overflow: hidden; }
-.line-fill { height: 100%; background: linear-gradient(90deg, var(--cinnabar-deep), var(--cinnabar)); border-radius: 2.5px; }
+.archetype { display: block; margin-top: 6px; font-size: 12px; color: var(--cinnabar); font-family: var(--font-display); font-weight: 600; }
 .dim-grid { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .dim { background: var(--paper-2); border-radius: 6px; padding: 12px; }
 .dim-title { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
@@ -278,18 +305,6 @@ body {
 .idx { font-family: var(--font-mono); font-size: 12px; color: var(--cinnabar); font-weight: 700; }
 .advice-text { flex: 1; font-size: 13px; line-height: 1.7; }
 .actions { margin-top: 22px; }
-.archetype { display: block; margin-top: 3px; font-size: 12px; color: var(--cinnabar); font-family: var(--font-display); font-weight: 600; }
-.type-badge { margin-top: 5px; display: flex; align-items: center; gap: 7px; }
-.type-no { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); letter-spacing: 0.5px; }
-.type-name { font-family: var(--font-display); font-weight: 900; font-size: 22px; color: var(--cinnabar); line-height: 1.2; }
-.type-seal {
-  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-  border: 1.2px solid var(--cinnabar); border-radius: 4px; color: var(--cinnabar);
-  font-family: var(--font-display); font-weight: 900; font-size: 14px; transform: rotate(-6deg);
-}
-.type-meta { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-2); letter-spacing: 0.4px; }
-.type-tagline { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 13px; color: var(--ink); letter-spacing: 0.4px; }
-.type-compat { display: block; margin-top: 3px; font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.4px; }
 .scene { margin-top: 13px; }
 .scene-head { display: flex; align-items: center; gap: 7px; }
 .scene-icon {
@@ -328,14 +343,15 @@ body {
 .digest { display: block; margin-top: 9px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
 .tags { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 6px; }
 .tag2 { font-size: 10.5px; color: var(--ink-2); background: var(--paper-2); border-radius: 3px; padding: 3px 8px; }
-
-/* ============ ⑥ 关于 ============ */
-.p-about { min-height: 100%; display: flex; flex-direction: column; padding: 24px 24px 24px; }
-.about-head { padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
-.about-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; }
-.about-ver { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); }
-.h { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
-.p { display: block; margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--ink-2); white-space: pre-line; }
+.empty { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--ink-2); font-size: 14px; }
+.empty-sign {
+  width: 100px; height: 100px; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px dashed var(--rule); border-radius: 8px;
+}
+.empty-seal-char { font-family: var(--font-display); font-weight: 900; font-size: 44px; color: var(--ink-3); }
+.empty-sub { font-size: 11.5px; color: var(--ink-3); }
+.empty .cta { margin-top: 16px; width: 180px; }
 
 /* ===== 图鉴收集 ===== */
 .p-collection { min-height: 100%; display: flex; flex-direction: column; padding: 24px 24px 24px; }
@@ -369,23 +385,23 @@ body {
 .cell-rarity { margin-top: 2px; font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-3); }
 .p-collection .cta { margin-top: 20px; }
 
+/* ============ ⑥ 关于 ============ */
+.p-about { min-height: 100%; display: flex; flex-direction: column; padding: 24px 24px 24px; }
+.about-head { padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.about-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; }
+.about-ver { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); }
+.h { font-family: var(--font-display); font-weight: 900; font-size: 15px; }
+.p { display: block; margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--ink-2); white-space: pre-line; }
+
 /* toast */
 #toast {
   position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%);
   background: rgba(38, 33, 26, 0.88); color: var(--paper);
   font-size: 12px; padding: 9px 16px; border-radius: 8px;
   opacity: 0; pointer-events: none; transition: opacity 0.25s; max-width: 300px; text-align: center;
+  white-space: pre-line;
 }
 #toast.show { opacity: 1; }
-.right-hand .mk-heart { left: 37.4%; top: 50.2%; }
-.right-hand .mk-heart .leader { width: 118px; transform: rotate(-23.8deg); }
-.right-hand .mk-heart .tag { left: 108px; top: -48px; transform: translate(0, -50%); }
-.right-hand .mk-head { left: 39.8%; top: 56.5%; }
-.right-hand .mk-head .leader { width: 64px; transform: rotate(177.4deg); }
-.right-hand .mk-head .tag { left: -64px; top: 3px; transform: translate(-100%, -50%); }
-.right-hand .mk-life { left: 44.8%; top: 65.4%; }
-.right-hand .mk-life .leader { width: 104px; transform: rotate(0deg); }
-.right-hand .mk-life .tag { left: 104px; top: 0; transform: translateY(-50%); }
 </style>
 </head>
 <body>
@@ -393,13 +409,13 @@ body {
 <div class="switcher" id="switcher">
   <button data-p="index" class="on">首页</button>
   <button data-p="capture">拍摄</button>
-  <button data-p="analyzing">分析中</button>
+  <button data-p="analyzing">抽签中</button>
   <button data-p="report">报告</button>
   <button data-p="history">历史</button>
   <button data-p="collection">图鉴</button>
   <button data-p="about">关于</button>
 </div>
-<div class="hint">壳内按钮可真实跳转（快门→分析→报告）；顶部可直达任意页</div>
+<div class="hint">壳内按钮可真实跳转（快门→抽签→报告）；顶部可直达任意页</div>
 
 <div class="phone">
   <div class="statusbar"><span>9:41</span><span>··· ᯤ ▮</span></div>
@@ -408,22 +424,33 @@ body {
   <div class="screen on" id="s-index">
     <div class="p-index">
       <div class="hero">
-        <span class="eyebrow">Palm Test · 趣味人格测试</span>
+        <span class="eyebrow">SIGN SET · 趣味人格测试</span>
         <div class="display">你的性格底稿
-写在<span class="em">掌心</span></div>
-        <span class="lede">拍一张手掌照片，抽取你的专属掌纹人格签——12 型人格图鉴等你收集。趣味测试，仅供娱乐。</span>
+收进一支<span class="em">签</span></div>
+        <span class="lede">拍一张今日留影，抽取你的专属人格签——12 型图鉴等你收集。趣味测试，仅供娱乐。</span>
       </div>
       <div class="plate">
-        <span class="figtag">PLATE Ⅰ — 三大主线</span>
-        <img class="hand" src="../miniprogram/assets/hand-plate.png" />
-        <div class="line-legend">
-          <div class="legend-item"><span class="dot"></span>情感线 · 情感表达</div>
-          <div class="legend-item"><span class="dot"></span>思维线 · 思维风格</div>
-          <div class="legend-item"><span class="dot"></span>活力线 · 活力状态</div>
+        <div class="fig-row">
+          <span class="figtag">SIGN SET — 十二人格签</span>
+          <span class="fig-sub">每次抽取随机解锁一支</span>
+        </div>
+        <div class="sign-grid">
+          <div class="sign-cell"><div class="cell-seal">潭</div><span class="cell-no">No.01</span></div>
+          <div class="sign-cell"><div class="cell-seal">燎</div><span class="cell-no">No.02</span></div>
+          <div class="sign-cell"><div class="cell-seal">风</div><span class="cell-no">No.03</span></div>
+          <div class="sign-cell"><div class="cell-seal">河</div><span class="cell-no">No.04</span></div>
+          <div class="sign-cell"><div class="cell-seal">磐</div><span class="cell-no">No.05</span></div>
+          <div class="sign-cell"><div class="cell-seal">破</div><span class="cell-no">No.06</span></div>
+          <div class="sign-cell"><div class="cell-seal">棱</div><span class="cell-no">No.07</span></div>
+          <div class="sign-cell"><div class="cell-seal">观</div><span class="cell-no">No.08</span></div>
+          <div class="sign-cell"><div class="cell-seal">行</div><span class="cell-no">No.09</span></div>
+          <div class="sign-cell"><div class="cell-seal">奔</div><span class="cell-no">No.10</span></div>
+          <div class="sign-cell"><div class="cell-seal">清</div><span class="cell-no">No.11</span></div>
+          <div class="sign-cell"><div class="cell-seal">伏</div><span class="cell-no">No.12</span></div>
         </div>
       </div>
       <div class="foot">
-        <button class="cta" onclick="go('capture')">拍摄手掌 · 开始测试</button>
+        <div class="cta-icon" onclick="go('capture')" aria-label="开始抽签"><div class="cta-core"></div></div>
         <span class="quota-chip">今日还可测试 <span class="num">3</span> 次 · 每日 0 点重置</span>
         <div class="row-links">
           <span class="link" onclick="go('history')">历史记录</span>
@@ -435,19 +462,19 @@ body {
     </div>
   </div>
 
-  <!-- ② 拍摄 -->
+  <!-- ② 拍摄（今日留影） -->
   <div class="screen" id="s-capture">
     <div class="p-capture">
       <div class="nav">
         <span class="back" onclick="go('index')">‹ 返回</span>
-        <span class="title">拍摄手掌</span>
+        <span class="title">今日留影</span>
         <span class="back ghost">‹ 返回</span>
       </div>
       <div class="viewfinder">
         <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
         <span class="scan"></span>
-        <img class="vf-mask" id="vf-mask-img" src="../miniprogram/assets/vf-mask.png" />
-        <span class="vf-hint" id="vf-hint">右手掌心正对镜头 · 五指自然张开</span>
+        <span class="vf-hint" id="vf-hint">右手 · 五指自然张开，完整入镜</span>
       </div>
       <div class="hand-pick">
         <span class="pick on" data-hand="right" onclick="pickHand(this)">右手 · 常用手</span>
@@ -459,21 +486,21 @@ body {
     </div>
   </div>
 
-  <!-- ③ 分析中 -->
+  <!-- ③ 抽签中 -->
   <div class="screen" id="s-analyzing">
     <div class="p-analyzing">
       <div class="a-head">
-        <span class="a-title">正在解读</span>
-        <span class="eta">READING · 约 10 秒</span>
+        <span class="a-title">正在抽签</span>
+        <span class="eta">DRAWING · 约 3 秒</span>
       </div>
       <div class="progress"><div class="bar" id="bar"></div></div>
-      <img class="breath-hand" src="../miniprogram/assets/hand-plate.png" />
+      <div class="sign-card" id="draw-card"><span class="sign-seal">签</span></div>
       <div class="fact-card">
-        <span class="fact-tag" id="fact-tag">掌纹小议 · 1/4</span>
+        <span class="fact-tag" id="fact-tag">签中小议 · 1/5</span>
         <span class="fact-text" id="fact-text"></span>
         <div class="dots" id="fact-dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
       </div>
-      <span class="burn-note">解读完成后手掌照片立即删除，仅保留文字报告</span>
+      <span class="burn-note">照片只保存在本机，不会上传；仅保留文字结果</span>
     </div>
   </div>
 
@@ -481,39 +508,49 @@ body {
   <div class="screen" id="s-report">
     <div class="p-report">
       <div class="r-head">
-        <span class="r-eyebrow">PALM FIELD GUIDE · 趣味掌纹解读</span>
-        <div class="t1"><b class="t1-label">你的巴掌TI是：</b><b class="t1-name" style="font-size:41.25px">燎原星火</b></div>
-        <div class="t2" style="font-size:15.15px;letter-spacing:0px"><span class="t2-label">掌纹中蕴含的性格底稿：</span><b class="t2-text">爱的时候，是真的烫。</b></div>
-        <div class="t3" style="font-size:15.15px;letter-spacing:0.7px"><span class="t3-label">和你最合拍的巴掌TI是：</span><b class="t3-text">磐石棋手／长途行者</b></div>
+        <span class="r-eyebrow">SIGN COLLECTION · 趣味人格测试</span>
+        <div class="t1"><b class="t1-label">你的人格签是：</b><b class="t1-name" style="font-size:35.75px">燎原星火</b></div>
+        <div class="t2" style="font-size:15.95px;letter-spacing:2.75px"><span class="t2-label">你的性格底稿：</span><b class="t2-text">爱的时候，是真的烫。</b></div>
+        <div class="t3" style="font-size:15.95px;letter-spacing:0px"><span class="t3-label">和你最合拍的人格签是：</span><b class="t3-text">磐石棋手／长途行者</b></div>
         <div class="type-pills">
-          <span class="pill">掌纹属性·心系·进取</span>
-          <span class="pill rare">掌纹稀有度·6%</span>
+          <span class="pill">人格属性·心系·进取</span>
+          <span class="pill rare">稀有度·6% · 趣味估算</span>
           <span class="type-seal">燎</span>
         </div>
       </div>
-      <div class="hand-switch">
-        <button class="hs-btn on" data-hand="right">右手报告</button>
-        <button class="hs-btn" data-hand="left">左手报告</button>
-      </div>
-      <div class="palm-hero">
-        <div class="palm-box right-hand" id="palm-box">
-          <img class="palm-img mirror" id="palm-img" src="../miniprogram/assets/hand-plate.png" />
-          <div class="mark mk-heart"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">情感线</b><b class="tag-score">85</b></span></div>
-          <div class="mark mk-head"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">思维线</b><b class="tag-score">72</b></span></div>
-          <div class="mark mk-life"><i class="dot"></i><i class="leader"></i><span class="tag"><b class="tag-name">活力线</b><b class="tag-score">78</b></span></div>
+      <div class="sign-hero">
+        <div class="sign-paper">
+          <div class="sign-top">
+            <span class="sign-no">No.02 · 十二人格签</span>
+            <span class="sign-code">HA</span>
+          </div>
+          <div class="sign-body">
+            <div class="seal-box"><span class="seal-char">燎</span></div>
+            <div class="sign-info">
+              <span class="sign-name">燎原星火</span>
+              <div class="sign-rule"></div>
+              <span class="sign-label">心系 · 进取</span>
+            </div>
+          </div>
+        </div>
+        <div class="line-bars">
+          <div class="lb-row"><span class="lb-name">感受力</span><div class="lb-track"><div class="lb-fill" style="width:85%"></div></div><span class="lb-score">85</span></div>
+          <div class="lb-row"><span class="lb-name">思考力</span><div class="lb-track"><div class="lb-fill" style="width:72%"></div></div><span class="lb-score">72</span></div>
+          <div class="lb-row"><span class="lb-name">行动力</span><div class="lb-track"><div class="lb-fill" style="width:78%"></div></div><span class="lb-score">78</span></div>
         </div>
       </div>
       <div class="card">
         <span class="card-tag">总评 · SUMMARY</span>
-        <span class="summary-text">整体纹路清晰深长，三条主线走向分明。你的掌心透着一股稳中带劲的节奏感：想得清楚、做得踏实，情绪来得慢去得也慢，是朋友圈里公认的"靠谱担当"。以上为趣味解读，仅供参考。</span>
+        <span class="summary-text">这支签火力全开：你的感受开关大概率只有"开"和"关"两档——喜欢就大方靠近，不对味就干脆走开。情绪来得快去得也快，行动常常抢在纠结前面。朋友们多半会被你的热度感染，你可能是圈子里的点火器。以上为趣味解读，仅供参考。</span>
+        <span class="archetype">全情投入的点火器</span>
       </div>
       <div class="card">
         <span class="card-tag">四维速读 · PROFILE</span>
         <div class="dim-grid">
-          <div class="dim"><span class="dim-title">性格 <span class="dim-en">NATURE</span></span><span class="dim-text">沉稳务实 · 慢热长情 · 暗中较劲</span></div>
-          <div class="dim"><span class="dim-title">做事风格 <span class="dim-en">WORK STYLE</span></span><span class="dim-text">思维线深长清晰，倾向逻辑驱动型选手：适合需要专注与规划的工作，遇到难题反而来劲。</span></div>
-          <div class="dim"><span class="dim-title">相处风格 <span class="dim-en">BONDING</span></span><span class="dim-text">情感线走势平缓，情感表达偏内敛：不擅长甜言蜜语，但认定了就很少动摇，属于细水长流型。</span></div>
-          <div class="dim"><span class="dim-title">金钱观 <span class="dim-en">MONEY VIEW</span></span><span class="dim-text">活力线弧度饱满，行动力在线：财务上倾向稳扎稳打，比起一夜暴富更喜欢看得见的积累。</span></div>
+          <div class="dim"><span class="dim-title">性格 <span class="dim-en">NATURE</span></span><span class="dim-text">热烈直接 · 行动派 · 感染力强</span></div>
+          <div class="dim"><span class="dim-title">做事风格 <span class="dim-en">WORK STYLE</span></span><span class="dim-text">倾向于高节奏、要打开新局面的事：启动、开拓、打头阵你可能最带劲，重复维护型工作容易让你昏昏欲睡。</span></div>
+          <div class="dim"><span class="dim-title">相处风格 <span class="dim-en">BONDING</span></span><span class="dim-text">表达倾向于直给：喜欢就说、不满也写在脸上，相处不费脑子猜；可能需要留意火气的收放节奏。</span></div>
+          <div class="dim"><span class="dim-title">金钱观 <span class="dim-en">MONEY VIEW</span></span><span class="dim-text">消费倾向跟着热情走：为热爱买单不手软，冲动下单的概率可能偏高，不妨给自己设一个隔夜冷静期。</span></div>
         </div>
       </div>
       <div class="card">
@@ -521,36 +558,36 @@ body {
         <div class="scene">
           <div class="scene-head"><span class="scene-icon">工</span><span class="scene-title">工作 <span class="scene-en">WORK</span></span></div>
           <div class="scene-body">
-            <span class="scene-trait">思维线深长平直：线性执行力强，拿到清晰目标能一路推到底，开会习惯先听后说、后发制人。</span>
-            <span class="scene-trait">活力线后劲足：适合长周期项目，起跑不快但越到后半程越稳，是接"烂尾盘"的人选。</span>
-            <span class="scene-caution">留意：临时插队的需求会打乱你的节奏，学着说"可以排进来，但先挪掉一件"。</span>
-            <span class="scene-caution">留意：你在会上太安静，好点子容易被嗓门大的同事截胡——重要方案提前一对一铺垫。</span>
+            <span class="scene-trait">接到新任务时你的启动速度可能比多数人快，适合探路和打头阵。</span>
+            <span class="scene-trait">遇到拖沓的流程容易上头：推进力是优势，但可能显得急。</span>
+            <span class="scene-caution">留意：冲锋前留三十秒对齐目标，能省掉不少返工。</span>
+            <span class="scene-caution">留意：把"再想想"也当成选项，不是每扇门都要立刻撞开。</span>
           </div>
         </div>
         <div class="scene">
           <div class="scene-head"><span class="scene-icon">生</span><span class="scene-title">生活 <span class="scene-en">LIFE</span></span></div>
           <div class="scene-body">
-            <span class="scene-trait">情感线平缓内敛：社交电量有限，两三好友深聊胜过十人饭局，散场后需要独处回血。</span>
-            <span class="scene-trait">消费风格偏"看得见的积累"：冲动购物理你很远，但为质感买单从不手软。</span>
-            <span class="scene-caution">留意：慢热长情是优点，但别把"再看看"拖成"来不及说"——想念谁就直接讲。</span>
-            <span class="scene-caution">留意：周末躺着刷手机并不算回血，出门走走、动手做点东西对你更有效。</span>
+            <span class="scene-trait">聚会里你多半是暖场的人，社交电量足，散场了还剩一半。</span>
+            <span class="scene-trait">兴趣来得猛：一段时间猛练一样东西，热情来了挡不住。</span>
+            <span class="scene-caution">留意：热情分给太多事容易每件都做一半，不妨排个优先级。</span>
+            <span class="scene-caution">留意：留一段"什么都不干"的空档，对你是必需品不是浪费。</span>
           </div>
         </div>
         <div class="scene">
           <div class="scene-head"><span class="scene-icon">心</span><span class="scene-title">身心 <span class="scene-en">MIND</span></span></div>
           <div class="scene-body">
-            <span class="scene-trait">纹路组合偏"高压运转型"：连续冲刺没问题，但断电也断得干脆，半天彻底放空才回得来。</span>
-            <span class="scene-trait">压力上来的先兆是"话变少"：当你开始只回"嗯"，其实是内心在满负荷运转。</span>
-            <span class="scene-caution">留意：情绪往里收、攒久了容易在小事上爆发，找个出口定期清空（写下来/说出来都行）。</span>
-            <span class="scene-caution">留意：以上是生活方式参考，如有身体不适，请以专业人士意见为准。</span>
+            <span class="scene-trait">情绪像天气，来得快去得快，很少隔夜积压。</span>
+            <span class="scene-trait">压力上来时你可能倾向先动起来，动起来反而冷静。</span>
+            <span class="scene-caution">留意：火气上来先深呼吸三次，出口的话收不回。</span>
+            <span class="scene-caution">留意：以上是生活方式参考，如有持续不适，请以专业人士意见为准。</span>
           </div>
         </div>
       </div>
       <div class="card">
-        <span class="card-tag">掌上锦囊 · ADVICE</span>
-        <div class="advice-item"><span class="idx">1</span><span class="advice-text">给自己留一段"不务正业"的时间，灵感往往从那里来。</span></div>
-        <div class="advice-item"><span class="idx">2</span><span class="advice-text">重要决定睡一觉再做，你的第二天判断力通常更准。</span></div>
-        <div class="advice-item"><span class="idx">3</span><span class="advice-text">情绪内敛是优点，但偶尔把话说出口，关系会更近一步。</span></div>
+        <span class="card-tag">小锦囊 · ADVICE</span>
+        <div class="advice-item"><span class="idx">1</span><span class="advice-text">重要决定睡一觉再做，第二天的判断通常更稳。</span></div>
+        <div class="advice-item"><span class="idx">2</span><span class="advice-text">给热情排个档期：一次烧透一件事，胜过同时点五堆火。</span></div>
+        <div class="advice-item"><span class="idx">3</span><span class="advice-text">偶尔让别人也点个火，你负责叫好就好。</span></div>
       </div>
       <div class="actions">
         <button class="cta" onclick="toast('HTML 预览：此处为微信原生分享（真机可用）')">分享给朋友 · 看看准不准</button>
@@ -568,37 +605,37 @@ body {
   <div class="screen" id="s-history">
     <div class="p-history">
       <div class="h-head">
-        <span class="h-title">解读记录</span>
-        <span class="privacy-chip">照片即焚 · 仅存文字</span>
+        <span class="h-title">抽签记录</span>
+        <span class="privacy-chip">照片不出手机 · 仅存文字</span>
       </div>
       <div class="record card">
-        <div class="record-head"><span class="date">8月17日 19:24</span><span class="hand-tag">右手</span><span class="mini-seal">87</span></div>
-        <span class="digest">纹路清晰深长，稳中带劲的节奏感：想得清楚、做得踏实，靠谱担当。</span>
-        <div class="tags"><span class="tag2">沉稳务实</span><span class="tag2">慢热长情</span></div>
+        <div class="record-head"><span class="date">9月7日 19:24</span><span class="hand-tag">右手</span><span class="mini-seal">87</span></div>
+        <span class="digest">爱的时候，是真的烫。</span>
+        <div class="tags"><span class="tag2">燎原星火</span><span class="tag2">心系</span><span class="tag2">进取</span></div>
       </div>
       <div class="record card">
-        <div class="record-head"><span class="date">8月16日 20:11</span><span class="hand-tag">左手</span><span class="mini-seal">81</span></div>
-        <span class="digest">情感线平缓内敛，细水长流型；活力线饱满，行动力在线。</span>
-        <div class="tags"><span class="tag2">细水长流</span><span class="tag2">行动派</span></div>
+        <div class="record-head"><span class="date">9月6日 20:11</span><span class="hand-tag">左手</span><span class="mini-seal">81</span></div>
+        <span class="digest">精力只花在好玩的事上。</span>
+        <div class="tags"><span class="tag2">山间清风</span><span class="tag2">身系</span><span class="tag2">灵动</span></div>
       </div>
       <span class="disclaimer">本内容为趣味测试，测试结果仅供娱乐，不构成任何科学依据或决策建议。</span>
     </div>
   </div>
 
-  <!-- ⑥b 图鉴收集 -->
+  <!-- ⑤b 图鉴收集 -->
   <div class="screen" id="s-collection">
     <div class="p-collection">
       <div class="col-head">
         <div>
-          <span class="eyebrow">PALM FIELD GUIDE</span>
-          <span class="h-title">掌纹人格图鉴</span>
-          <span class="col-sub">已解锁 <b id="col-count">3</b>/12 · 每次解读解锁一种</span>
+          <span class="eyebrow">SIGN COLLECTION</span>
+          <span class="h-title">人格签图鉴</span>
+          <span class="col-sub">已解锁 <b id="col-count">3</b>/12 · 每次抽签解锁一支</span>
         </div>
         <div class="progress-ring"><span class="pr-num">3</span><span class="pr-label">已收集</span></div>
       </div>
       <div class="col-track"><div class="col-fill" style="width:25%"></div></div>
       <div class="col-grid" id="col-grid"></div>
-      <button class="cta" onclick="go('capture')">再测一次 · 解锁新类型</button>
+      <button class="cta" onclick="go('capture')">再抽一支 · 解锁新类型</button>
       <span class="disclaimer">本内容为趣味测试，测试结果仅供娱乐，不构成任何科学依据或决策建议。</span>
     </div>
   </div>
@@ -607,7 +644,7 @@ body {
   <div class="screen" id="s-about">
     <div class="p-about">
       <div class="about-head">
-        <span class="about-title">关于「掌纹测运」</span>
+        <span class="about-title">关于「十二人格签」</span>
         <span class="about-ver">v0.1.0</span>
       </div>
       <div class="card">
@@ -616,14 +653,14 @@ body {
       </div>
       <div class="card">
         <span class="h">隐私说明</span>
-        <span class="p">· 手掌照片仅在测试过程中临时使用，测试完成后立即删除，云端不保留任何照片。
-· 历史记录仅保存文字报告，可随时删除。
+        <span class="p">· 留影照片仅保存在手机本地，不会上传，测试完成后即丢弃。
+· 历史记录仅保存文字结果，可随时删除。
 · 我们不收集姓名、手机号等个人身份信息。
-· 相机与相册权限仅用于拍摄手掌照片，可在系统设置中随时关闭。</span>
+· 相机权限仅用于当场拍摄留念照片，可在系统设置中随时关闭。</span>
       </div>
       <div class="card">
-        <span class="h">三大主线小知识</span>
-        <span class="p">掌纹在胎儿期约第 13 周成形，终生基本不变。产品中的三条主线为：情感线（情感表达）、思维线（思维风格）、活力线（活力状态）——均是对掌纹形态的趣味化描述。</span>
+        <span class="h">十二人格签是什么</span>
+        <span class="p">一套封闭的趣味人格图鉴：感受力、思考力、行动力三个维度组合出 12 支签，每次测试随机抽出一支。各支签的稀有度为趣味估算，仅供收集参考。</span>
       </div>
       <span class="disclaimer">本内容为趣味测试，测试结果仅供娱乐，不构成任何科学依据或决策建议。</span>
     </div>
@@ -636,11 +673,11 @@ body {
 <script>
 const PAGES = ['index', 'capture', 'analyzing', 'report', 'history', 'collection', 'about'];
 const FACTS = [
-  '掌纹在胎儿期约第 13 周就已成形，此后终生基本不变——你的三条主线是名副其实的"出厂设置"。',
-  '世界上找不到两张完全相同的手掌：就算同卵双胞胎，掌纹也各不相同。',
-  '掌纹其实是皮肤为了方便手部弯曲产生的褶皱，长期握持工具的人，纹路通常更深。',
-  '三条主线的深浅长短因人而异，所谓解读，是把形态差异翻译成性格倾向的趣味描述。',
-  '民间常说"男左女右"，但两只手的掌纹并不相同，各自独一无二——想读得最清楚，拍你最灵活的那只手就好。',
+  '十二人格签是封闭图鉴：无论怎么抽，结果一定落在十二支签之内，不会跑出边。',
+  '十二支签的稀有度各不相同——稀有度是趣味估算，供收集参考，抽到哪支全看随机。',
+  '每支签的文案预置且固定：同一支签人人拿到的解读一致，差异只在抽中哪支。',
+  '所有解读都用「倾向于」「可能」这类对冲措辞——这是趣味测试，不是结论，仅供娱乐。',
+  '结果当聊天素材最合适：发到群里比一比谁抽到了稀有签，才是正确打开方式。',
 ];
 let factIdx = 0, factTimer = null, progTimer = null;
 
@@ -654,22 +691,6 @@ function stopTimers() { clearInterval(factTimer); clearInterval(progTimer); }
 
 document.getElementById('switcher').addEventListener('click', e => {
   if (e.target.dataset.p) go(e.target.dataset.p);
-});
-
-// 报告页左右手切换（预览专用）
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.hs-btn');
-  if (!btn) return;
-  document.querySelectorAll('.hs-btn').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  const isRight = btn.dataset.hand === 'right';
-  const box = document.getElementById('palm-box');
-  const img = document.getElementById('palm-img');
-  if (box) box.classList.toggle('right-hand', isRight);
-  if (img) img.classList.toggle('mirror', isRight);
-  const label = isRight ? '右手' : '左手';
-  document.getElementById('hand-pill').textContent = label;
-  document.getElementById('hand-meta').textContent = label;
 });
 
 // URL hash 直达（如 app-preview.html#report）
@@ -688,10 +709,13 @@ function startAnalyze() {
   factTimer = setInterval(() => showFact((factIdx + 1) % FACTS.length), 4000);
   const bar = document.getElementById('bar');
   bar.style.width = '0%';
-  const t0 = Date.now(), TOTAL = 6000; // 预览版加速至 6s
+  const card = document.getElementById('draw-card');
+  if (card) card.classList.remove('settled');
+  const t0 = Date.now(), TOTAL = 2600; // 预览版与真机节奏一致（约 2.6s）
   progTimer = setInterval(() => {
     const pct = Math.min(100, ((Date.now() - t0) / TOTAL) * 100);
     bar.style.width = pct + '%';
+    if (pct >= 92 && card) card.classList.add('settled');
     if (pct >= 100) {
       clearInterval(progTimer);
       setTimeout(() => { stopTimers(); go('report'); }, 500);
@@ -701,7 +725,7 @@ function startAnalyze() {
 function showFact(i) {
   factIdx = i;
   document.getElementById('fact-text').textContent = FACTS[i];
-  document.getElementById('fact-tag').textContent = `掌纹小议 · ${i + 1}/${FACTS.length}`;
+  document.getElementById('fact-tag').textContent = `签中小议 · ${i + 1}/${FACTS.length}`;
   document.querySelectorAll('#fact-dots i').forEach((d, j) => d.classList.toggle('on', j === i));
 }
 
@@ -709,9 +733,8 @@ function pickHand(el) {
   [...el.parentElement.children].forEach(p => p.classList.remove('on'));
   el.classList.add('on');
   const isLeft = el.dataset.hand === 'left';
-  document.getElementById('vf-mask-img').classList.toggle('mirror', isLeft);
   document.getElementById('vf-hint').textContent =
-    (isLeft ? '左手' : '右手') + '掌心正对镜头 · 五指自然张开';
+    (isLeft ? '左手' : '右手') + ' · 五指自然张开，完整入镜';
 }
 
 let toastTimer;
@@ -724,7 +747,7 @@ function toast(msg) {
 }
 
 // ===== 图鉴收集页 =====
-const PALM_TYPES = [
+const SIGN_TYPES = [
   { no: 'No.01·HS', name: '深潭映月', seal: '潭', rarity: '9%', on: false, tag: '表面平静，底下全是戏。', meta: '心系·沉稳' },
   { no: 'No.02·HA', name: '燎原星火', seal: '燎', rarity: '6%', on: true, tag: '爱的时候，是真的烫。', meta: '心系·进取' },
   { no: 'No.03·HN', name: '春风拂面', seal: '风', rarity: '12%', on: false, tag: '谁都处得来，走心的没几个。', meta: '心系·灵动' },
@@ -741,7 +764,7 @@ const PALM_TYPES = [
 (function renderGrid() {
   const grid = document.getElementById('col-grid');
   if (!grid) return;
-  grid.innerHTML = PALM_TYPES.map((t, i) => `
+  grid.innerHTML = SIGN_TYPES.map((t, i) => `
     <div class="col-cell ${t.on ? '' : 'off'}" data-i="${i}">
       <span class="cell-seal ${t.on ? '' : 'ghost'}">${t.on ? t.seal : '？'}</span>
       <span class="cell-name">${t.on ? t.name : '？？？'}</span>
@@ -750,9 +773,9 @@ const PALM_TYPES = [
   grid.addEventListener('click', (e) => {
     const cell = e.target.closest('.col-cell');
     if (!cell) return;
-    const t = PALM_TYPES[+cell.dataset.i];
+    const t = SIGN_TYPES[+cell.dataset.i];
     if (t.on) toast(`${t.no} ${t.name} · ${t.meta}\n"${t.tag}"（真机此处为详情弹层）`);
-    else toast(`尚未解锁 · 掌纹稀有度 ${t.rarity}`);
+    else toast(`尚未解锁 · 稀有度 ${t.rarity}（趣味估算）`);
   });
 })();
 </script>
