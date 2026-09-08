@@ -3,6 +3,9 @@
  * 轮廓与三条主线取自 design/hand-paths.json（freesvg.org #36174，CC0 Public Domain），
  * 路径字符串内嵌本文件；运行时解析 SVG path → 折线 → 形态变体 → canvas 2d 描线。
  * 交互约定：选中选项的「所问线」描朱砂红，未选中为墨色；衬底线恒为淡墨。
+ * 收界约定：所有掌纹线（含衬底线）先经 trimInside 几何裁剪回轮廓内，绘制时再以轮廓
+ * nonzero clip 兜底——线条任何情况下不允许画到掌外/指缝里（轮廓有自重叠，判内必须用
+ * nonzero 环绕数，与 canvas fill/clip 默认规则一致）。
  */
 import { QuestionId } from '../data/quiz-questions';
 
@@ -196,6 +199,83 @@ export function synthStroke(a: Pt, bump: Pt, b: Pt): Pt[] {
   return parseSvgPath(`M${a.x} ${a.y}Q${bump.x} ${bump.y} ${b.x} ${b.y}`)[0];
 }
 
+/** 折线总弧长 */
+function arcLen(pts: Pt[]): number {
+  let sum = 0;
+  for (let k = 1; k < pts.length; k++) {
+    sum += Math.hypot(pts[k].x - pts[k - 1].x, pts[k].y - pts[k - 1].y);
+  }
+  return sum;
+}
+
+/** 环绕数（nonzero 规则，与 canvas fill/clip 默认一致）：≠0 即在轮廓内 */
+export function windingNumber(poly: Pt[], p: Pt): number {
+  let w = 0;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i];
+    const b = poly[j];
+    const cross = (b.x - a.x) * (p.y - a.y) - (p.x - a.x) * (b.y - a.y);
+    if (a.y <= p.y) {
+      if (b.y > p.y && cross > 0) w++;
+    } else if (b.y <= p.y && cross < 0) w--;
+  }
+  return w;
+}
+
+const lerpPt = (a: Pt, b: Pt, t: number): Pt => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+
+/** 线段 a→b 与多边形全部边的最近交点参数 t∈(0,1)；无交点返回 -1 */
+function firstCrossT(a: Pt, b: Pt, poly: Pt[]): number {
+  let best = -1;
+  const r = b.x - a.x;
+  const s = b.y - a.y;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const c = poly[j];
+    const d = poly[i];
+    const u = d.x - c.x;
+    const v = d.y - c.y;
+    const denom = r * v - s * u;
+    if (Math.abs(denom) < 1e-12) continue;
+    const t = ((c.x - a.x) * v - (c.y - a.y) * u) / denom;
+    const q = ((c.x - a.x) * s - (c.y - a.y) * r) / denom;
+    if (t > 1e-6 && t < 1 - 1e-6 && q >= 0 && q <= 1 && (best < 0 || t < best)) best = t;
+  }
+  return best;
+}
+
+/** 沿轮廓把折线裁回掌内：保留「在轮廓内」的连续段，端头外延到边界交点再沿方向内缩 inset；短于 minLen 的碎段丢弃 */
+export function trimInside(pts: Pt[], poly: Pt[], inset = 12, minLen = 15): Pt[][] {
+  const inside = (p: Pt) => windingNumber(poly, p) !== 0;
+  const runs: Array<{ i: number; j: number }> = [];
+  let i = 0;
+  while (i < pts.length) {
+    if (!inside(pts[i])) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j + 1 < pts.length && inside(pts[j + 1])) j++;
+    if (j - i + 1 >= 2) runs.push({ i, j });
+    i = j + 1;
+  }
+  /** 边界交点（edge→inPt 路上）向内收缩 inset，交点离 inPt 太近则直接用 inPt */
+  const extend = (edge: Pt, inPt: Pt): Pt => {
+    const t = firstCrossT(edge, inPt, poly);
+    if (t < 0) return inPt;
+    const c = lerpPt(edge, inPt, t);
+    const d = Math.hypot(inPt.x - c.x, inPt.y - c.y);
+    return d <= inset ? inPt : lerpPt(c, inPt, inset / d);
+  };
+  const out: Pt[][] = [];
+  for (const { i: lo, j: hi } of runs) {
+    const head = lo > 0 ? extend(pts[lo - 1], pts[lo]) : pts[lo];
+    const tail = hi < pts.length - 1 ? extend(pts[hi + 1], pts[hi]) : pts[hi];
+    const seg = [head, ...pts.slice(lo + 1, hi), tail];
+    if (seg.length >= 2 && arcLen(seg) >= minLen) out.push(seg);
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- 选项图组装
 
 export interface ChartSpec {
@@ -217,42 +297,65 @@ const GEOM = {
   life: parseSvgPath(PATH_LIFE)[0],
 };
 
-/** 主线形态 → 折线（与 quiz-questions.ts 四档一一对应：0 深长 / 1 明快 / 2 平缓 / 3 浅淡） */
+/** 轮廓闭环（freesvg 轮廓为单条 1318 点自闭合折线） */
+const OUTLINE_LOOP = GEOM.outline[0];
+
+/** 主线形态 → 折线（与 quiz-questions.ts 四档一一对应：0 深长 / 1 明快 / 2 平缓 / 3 浅淡）；统一裁回掌内 */
 export function mainLineVariant(lineKey: 'heart' | 'head' | 'life', variant: number): Pt[][] {
   const base = GEOM[lineKey];
+  let polys: Pt[][];
   switch (variant) {
     case 0:
-      return [base];
+      polys = [base];
+      break;
     case 1:
-      return [slicePolyline(base, 0, 0.74)];
+      polys = [slicePolyline(base, 0, 0.74)];
+      break;
     case 2:
-      return [flattenY(base, 0.5)];
+      polys = [flattenY(base, 0.5)];
+      break;
     case 3:
-      return [slicePolyline(base, 0.06, 0.62)];
+      polys = [slicePolyline(base, 0.06, 0.62)];
+      break;
     default:
       throw new Error(`[chart] bad variant: ${variant}`);
   }
+  return polys.flatMap((p) => trimInside(p, OUTLINE_LOOP));
 }
 
-/** 辅线基线：缘分线（小指下方短横）、灵感线（自中部斜向上） */
+/** 衬底线固定用主线 0 档（已裁剪），三条主线题与辅线题共用 */
+const MAIN_TRIMMED: Record<'heart' | 'head' | 'life', Pt[][]> = {
+  heart: mainLineVariant('heart', 0),
+  head: mainLineVariant('head', 0),
+  life: mainLineVariant('life', 0),
+};
+
+/** 辅线基线：缘分线（小指下方短横）、灵感线（自中部斜向上）。控制点取自掌内实测安全区：小指侧指缝空腔（x≈375-400）下探到 y≈270+，须避开；小指柱 x≈405-450 自 y≈210 起全在掌内，可放短横 */
 function auxBase(qid: 'bond' | 'insight'): Pt[] {
-  if (qid === 'bond') return synthStroke({ x: 344, y: 233 }, { x: 384, y: 224 }, { x: 424, y: 228 });
-  return synthStroke({ x: 356, y: 302 }, { x: 372, y: 262 }, { x: 398, y: 230 });
+  if (qid === 'bond') return synthStroke({ x: 405, y: 272 }, { x: 422, y: 248 }, { x: 440, y: 256 });
+  return synthStroke({ x: 330, y: 332 }, { x: 350, y: 302 }, { x: 370, y: 280 });
 }
 
-/** 辅线形态 → 折线（0 深长清晰 / 1 断续错落 / 2 浅短若隐） */
+/** 辅线形态 → 折线（0 深长清晰 / 1 断续错落 / 2 浅短若隐）；统一裁回掌内 */
 export function auxLineVariant(qid: 'bond' | 'insight', variant: number): Pt[][] {
   const base = auxBase(qid);
+  let polys: Pt[][];
   switch (variant) {
     case 0:
-      return [base];
+      polys = [base];
+      break;
     case 1:
-      return [slicePolyline(base, 0, 0.42), slicePolyline(base, 0.55, 1)];
+      polys = [slicePolyline(base, 0, 0.42), slicePolyline(base, 0.55, 1)];
+      break;
     case 2:
-      return [slicePolyline(base, 0.12, 0.6)];
+      // 浅短档要短于 v0 但仍可辨走向（端头贴近边界，trim 内缩会再吃掉一截，切片须放宽）
+      polys = [slicePolyline(base, 0.05, 0.8)];
+      break;
     default:
       throw new Error(`[chart] bad variant: ${variant}`);
   }
+  // 辅线本就是短横，断续档碎片更短：minLen 放宽到 8，只滤真实碎渣
+  return polys.flatMap((p) => trimInside(p, OUTLINE_LOOP, 12, 8));
 }
 
 /** 惯用手题不画焦点线，只看轮廓方向 */
@@ -264,7 +367,7 @@ export function chartForOption(qid: QuestionId, optionIndex: number): ChartSpec 
     case 'heart':
     case 'head':
     case 'life': {
-      const other = (['heart', 'head', 'life'] as const).filter((k) => k !== qid).map((k) => GEOM[k]);
+      const other = (['heart', 'head', 'life'] as const).filter((k) => k !== qid).map((k) => MAIN_TRIMMED[k]).flat();
       const width = [9, 7, 6.5, 4.5][optionIndex] ?? 6;
       return { mirror, outline: GEOM.outline, context: other, focus: mainLineVariant(qid, optionIndex), focusWidth: width };
     }
@@ -274,7 +377,7 @@ export function chartForOption(qid: QuestionId, optionIndex: number): ChartSpec 
       return {
         mirror,
         outline: GEOM.outline,
-        context: [GEOM.heart, GEOM.head, GEOM.life],
+        context: [MAIN_TRIMMED.heart, MAIN_TRIMMED.head, MAIN_TRIMMED.life].flat(),
         focus: auxLineVariant(qid, optionIndex),
         focusWidth: width,
       };
@@ -290,7 +393,9 @@ export interface ChartCtx {
   beginPath(): void;
   moveTo(x: number, y: number): void;
   lineTo(x: number, y: number): void;
+  closePath(): void;
   stroke(): void;
+  clip(): void;
   save(): void;
   restore(): void;
   translate(x: number, y: number): void;
@@ -342,10 +447,21 @@ export function renderOptionChart(
   ctx.translate(ox, oy);
   ctx.scale(s, s);
   strokeGroup(spec.outline, CHART_COLORS.ink, 5, 0.9);
+  // 掌纹线一律裁在轮廓内（nonzero clip，兜底线宽/圆头外溢）
+  ctx.save();
+  ctx.beginPath();
+  for (const poly of spec.outline) {
+    if (poly.length < 2) continue;
+    ctx.moveTo(poly[0].x, poly[0].y);
+    for (let k = 1; k < poly.length; k++) ctx.lineTo(poly[k].x, poly[k].y);
+    ctx.closePath();
+  }
+  ctx.clip();
   strokeGroup(spec.context, CHART_COLORS.ink, 5, 0.16);
   if (spec.focus.length > 0 && spec.focusWidth > 0) {
     const color = selected ? CHART_COLORS.cinnabar : CHART_COLORS.ink;
     strokeGroup(spec.focus, color, spec.focusWidth, 1);
   }
+  ctx.restore();
   ctx.restore();
 }
