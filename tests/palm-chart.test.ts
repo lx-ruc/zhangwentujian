@@ -56,6 +56,35 @@ describe('收界：掌纹线全面收在掌内', () => {
   });
 });
 
+describe('凹向：情感线为凹弧（中段下凹，两端偏高）', () => {
+  /** 凹弧判据：最高点落在两端 18% 内（凸拱的最高点在中段），且最低点比两端各自至少低 8 */
+  const concave = (focus: Pt[][]) => {
+    const pts = focus.flat();
+    const xs = pts.map((p) => p.x);
+    const lo = Math.min(...xs);
+    const hi = Math.max(...xs);
+    const highest = pts.reduce((a, b) => (b.y < a.y ? b : a));
+    const deepest = pts.reduce((a, b) => (b.y > a.y ? b : a));
+    const ends = [focus[0][0], focus[focus.length - 1][focus[focus.length - 1].length - 1]];
+    return {
+      topAtEnd: highest.x - lo <= (hi - lo) * 0.18 || hi - highest.x <= (hi - lo) * 0.18,
+      sagOk: ends.every((e) => deepest.y - e.y >= 8),
+      deepestMidFrac: (deepest.x - lo) / (hi - lo),
+    };
+  };
+
+  test('情感线全档位保持凹向（2026-09-08 用户纠正：凸拱→凹弧）', () => {
+    // 整线档：最高点在端部 + 最低点比两端各深 ≥8（完整凹弧）
+    const full = concave(chartForOption('heart', 0).focus);
+    expect(full.topAtEnd).toBe(true);
+    expect(full.sagOk).toBe(true);
+    // 截取/压扁档右端可能就切在凹底：只锁「最高点在端部」（凸拱最高点在中段，必挂）
+    for (let v = 1; v < 4; v++) {
+      expect(concave(chartForOption('heart', v).focus).topAtEnd).toBe(true);
+    }
+  });
+});
+
 describe('可辨性：焦点线弧长下限', () => {
   test('主线 ≥80、灵感线 ≥30、缘分线 ≥20（viewBox 单位）', () => {
     const MIN: Record<string, number> = { heart: 80, head: 80, life: 80, insight: 30, bond: 20 };
