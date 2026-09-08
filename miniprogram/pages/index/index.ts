@@ -143,13 +143,13 @@ Page({
     }
   },
 
-  goCapture() {
+  goQuiz() {
     if (this.data.exhausted) {
       // 配额用完：CTA 是分享按钮（open-type=share），不会走到这；防御兜底
       wx.showToast({ title: '今日次数已用完，分享可解锁更多', icon: 'none' });
       return;
     }
-    wx.navigateTo({ url: '/pages/capture/capture' });
+    wx.navigateTo({ url: '/pages/quiz/quiz' });
   },
   goCollection() { wx.navigateTo({ url: '/pages/collection/collection' }); },
   goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },

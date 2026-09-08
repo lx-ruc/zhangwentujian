@@ -24,8 +24,8 @@ export class RequestError extends Error {
 }
 
 const FRIENDLY: Record<RequestErrorCode, string> = {
-  QUOTA_EXCEEDED: '今日抽签次数已用完，明天再来吧',
-  MODEL_TIMEOUT: '抽签超时了，请重试一次',
+  QUOTA_EXCEEDED: '今日测试次数已用完，明天再来吧',
+  MODEL_TIMEOUT: '匹配超时了，请重试一次',
   MODEL_INVALID: '结果生成异常，请重试一次',
   PAY_NOT_CONFIGURED: '支付暂未配置完成，请稍后再试',
   NETWORK: '网络不给力，请检查后重试',

@@ -3,7 +3,7 @@
     <view class="head-text">
       <text class="eyebrow">SIGN COLLECTION</text>
       <text class="title">人格签图鉴</text>
-      <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次抽签解锁一支</text>
+      <text class="sub">已解锁 {{unlockedCount}}/{{total}} · 每次答题解锁一支</text>
     </view>
     <view class="progress-ring">
       <text class="pr-num">{{unlockedCount}}</text>
@@ -27,7 +27,7 @@
     </view>
   </view>
 
-  <button class="cta" bindtap="goCapture">再抽一支 · 解锁新类型</button>
+  <button class="cta" bindtap="goQuiz">再测一次 · 解锁新类型</button>
   <text class="disclaimer">{{disclaimer}}</text>
 
   <!-- 类型详情弹层 -->

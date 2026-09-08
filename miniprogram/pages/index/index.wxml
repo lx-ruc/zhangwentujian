@@ -3,14 +3,14 @@
   <view class="hero">
     <text class="eyebrow">SIGN SET · 趣味人格测试</text>
     <view class="display">你的性格底稿\n收进一支<text class="em">签</text></view>
-    <text class="lede">拍一张今日留影，抽取你的专属人格签——12 型图鉴等你收集。趣味测试，仅供娱乐。</text>
+    <text class="lede">几道掌纹问答，匹配你的专属人格签——12 型图鉴等你收集。趣味测试，仅供娱乐。</text>
   </view>
 
   <!-- 十二签宫格 plate -->
   <view class="plate">
     <view class="fig-row">
       <text class="figtag">SIGN SET — 十二人格签</text>
-      <text class="fig-sub">每次抽取随机解锁一支</text>
+      <text class="fig-sub">每次答题解锁一支</text>
     </view>
     <view class="sign-grid">
       <view class="sign-cell" wx:for="{{signs}}" wx:key="no">
@@ -22,10 +22,8 @@
 
   <!-- 底部操作区 -->
   <view class="foot">
-    <!-- 快门式图标 CTA（无文字，呼应拍摄页） -->
-    <view wx:if="{{!exhausted}}" class="cta-icon" bindtap="goCapture" aria-label="开始抽签">
-      <view class="cta-core" />
-    </view>
+    <!-- 文字 CTA（答题流程，无相机） -->
+    <button wx:if="{{!exhausted}}" class="cta" bindtap="goQuiz">开始测试</button>
     <button wx:else class="cta share-cta" open-type="share">分享解锁更多次数</button>
     <text class="quota-chip" wx:if="{{!exhausted}}">今日还可测试 <text class="num">{{remaining}}</text> 次 · 每日 0 点重置</text>
     <text class="quota-chip" wx:else>{{exhaustedTip}}</text>

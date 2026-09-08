@@ -58,7 +58,7 @@ Page({
     wx.navigateTo({ url: '/pages/report/report' });
   },
 
-  goCapture() { wx.redirectTo({ url: '/pages/capture/capture' }); },
+  goQuiz() { wx.redirectTo({ url: '/pages/quiz/quiz' }); },
 
   onShareAppMessage() { triggerShareBonus('forward'); return shareHistory((wx.getStorageSync('reports') || []).length); },
 });

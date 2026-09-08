@@ -76,14 +76,18 @@ export function scoresFor(t: Pick<PalmType, 'dominant' | 'style'>, rand: () => n
   return scores;
 }
 
-/** 组装完整报告：内容库文案 + 反向一致分数 + 带微小抖动的趣味评分 */
-export function buildReport(t: PalmType, rand: () => number): ReportResult {
-  const lines = scoresFor(t, rand);
+/** 组装报告（分数由外部喂入；随机源续用于趣味评分抖动，保持调用序确定） */
+export function assembleReport(t: PalmType, lines: LineScores, rand: () => number): ReportResult {
   const body = REPORT_CONTENT[t.id];
   const mean = (lines.heart + lines.head + lines.life) / 3;
   const jitter = Math.floor(rand() * 7) - 3; // ±3，同型不同次略有差异
   const funScore = Math.min(100, Math.max(0, Math.round(mean) + jitter));
   return { ...body, funScore, lines };
+}
+
+/** 组装完整报告：内容库文案 + 反向一致分数 + 带微小抖动的趣味评分 */
+export function buildReport(t: PalmType, rand: () => number): ReportResult {
+  return assembleReport(t, scoresFor(t, rand), rand);
 }
 
 export interface DrawOutcome {

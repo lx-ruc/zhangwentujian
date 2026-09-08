@@ -3,13 +3,11 @@ import { CONFIG } from './config/index';
 import { ReportResult } from './types/index';
 
 interface GlobalData {
-  /** 本次留影（本地路径，仅分析页预览用；照片不出手机，用后即弃） */
-  pendingImage: string;
-  /** 本次抽签用手别 */
+  /** 本次答题选的惯用手（quiz → 落档用；无照片流程） */
   pendingHand: 'left' | 'right';
-  /** 当前查看的报告 id（analyzing/history → report 传递） */
+  /** 当前查看的报告 id（quiz/history → report 传递） */
   reportId: string;
-  /** 刚生成的报告（analyzing → report 传递；历史复看时为空，从 storage 读） */
+  /** 刚生成的报告（quiz → report 传递；历史复看时为空，从 storage 读） */
   pendingReport: ReportResult | null;
 }
 
@@ -17,7 +15,6 @@ App<{
   globalData: GlobalData;
 }>({
   globalData: {
-    pendingImage: '',
     pendingHand: 'right',
     reportId: '',
     pendingReport: null,

@@ -98,27 +98,6 @@
   color: var(--ink-3);
 }
 
-/* ===== 快门式图标 CTA（无文字，与拍摄页快门同语言） ===== */
-.cta-icon {
-  width: 132rpx;
-  height: 132rpx;
-  margin: 0 auto;
-  border-radius: 50%;
-  border: 10rpx solid rgba(188, 63, 33, 0.25);
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cta-core {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 50%;
-  background: var(--cinnabar);
-  box-shadow: 0 6rpx 24rpx rgba(188, 63, 33, 0.28);
-}
-.cta-icon:active { transform: scale(0.94); }
-
 /* ===== 底部 ===== */
 .foot { margin-top: 48rpx; }
 .quota-chip {

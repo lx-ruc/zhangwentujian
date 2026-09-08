@@ -11,8 +11,6 @@ export const CONFIG = {
   FN_ANALYZE: 'analyze',
   /** 抽签引擎版本（本地确定性随机；与云函数 DRAW_VERSION 一致，落库 modelVersion 用） */
   ENGINE_VERSION: 'local-draw-1',
-  /** 抽签页签语轮播间隔（ms） */
-  FACT_INTERVAL: 4_000,
   /**
    * 虚拟支付总闸门（个人主体·道具模式）。默认关闭：
    * 待 MP 后台开通虚拟支付、道具 add_quota_5 发布、pay/paynotify 云函数配置部署后置 true。
@@ -24,8 +22,8 @@ export const CONFIG = {
   /** 售卖 SKU（价格单位分，须与服务端 PRODUCTS 一致，tests/pay-config-consistency.test.ts 校验） */
   PAY_SKU: {
     id: 'add_quota_5',
-    title: '抽签加量包',
-    desc: '额外 5 次抽签次数',
+    title: '测试加量包',
+    desc: '额外 5 次测试次数',
     priceFen: 100,
   },
 } as const;

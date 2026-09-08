@@ -13,14 +13,16 @@ import { join } from 'path';
 
 const ROOT = join(__dirname, '..');
 
-/** 与 classify.test.ts / cloudfunctions/analyze/validate.ts 保持同步 */
+/** 与 classify.test.ts 保持同步；cloudfunctions/analyze/validate.ts 服务端更严（报告正文合法内容不含任何掌部词） */
 const BANNED_TERMS = [
   // 玄学/命理类
   '算命', '占卜', '手相', '面相', '大师', '运势', '运气', '好运', '转运', '旺',
   '命运', '吉', '凶', '灾', '祸', '求签', '签文', '解签', '测运',
-  // 手部类（含单字「掌」，零例外）
-  '手掌', '掌纹', '掌心', '巴掌', '手纹', '掌',
+  // 手部类（2026-09-08 政策：仅放行「掌纹」一词，其余全禁；单字「掌」见下方正则）
+  '手掌', '掌心', '巴掌', '手纹',
 ];
+/** 单字「掌」仅当后面不接「纹」时违禁（掌纹=掌纹问答产品的合法核心词） */
+const BANNED_LONE_ZHANG = /掌(?!纹)/;
 const BANNED_AI = /AI生成|AI解读|AI分析|AI读取/;
 const BANNED_VISIBLE_EN = /palm/i;
 
@@ -37,6 +39,9 @@ function findBanned(file: string, texts: string[]): Hit[] {
       if (text.includes(term)) {
         hits.push({ file, term, snippet: text.trim().slice(0, 40) });
       }
+    }
+    if (BANNED_LONE_ZHANG.test(text)) {
+      hits.push({ file, term: '掌(单字)', snippet: text.trim().slice(0, 40) });
     }
     if (BANNED_AI.test(text)) {
       hits.push({ file, term: BANNED_AI.source, snippet: text.trim().slice(0, 40) });
@@ -161,12 +166,14 @@ describe('copy-ban 违禁词回归守卫', () => {
   test('守卫自检：违禁样本必须被抓到（防扫描器失效假绿）', () => {
     // 「手掌」复合词与单字「掌」各记 1 笔 → 2；注释不扫
     expect(findBanned('x.ts', extractQuotedStrings(`const a = '今天手掌真好看'; // 手掌注释`))).toHaveLength(2);
+    // 「掌纹」是 2026-09-08 政策唯一放行的掌部词，不得误伤
+    expect(findBanned('x.ts', extractQuotedStrings(`const a = '几道掌纹问答';`))).toHaveLength(0);
     // wxml：注释剥除、{{绑定}}剥除，只扫文本节点
     expect(findBanned('x.wxml', extractMarkupText(`<view><!-- 手相 --><text>大师{{x}}</text></view>`))).toHaveLength(1);
     expect(findBanned('x.json', extractJsonStrings(`{"t":"好运连连"}`))).toHaveLength(1);
     expect(findBanned('x.wxss', extractQuotedStrings(`.a::after { content: '签文'; }`))).toHaveLength(1);
-    // html：style 块剥除；正文命中 AI解读 + 掌纹 + 掌 → 3
-    expect(findBanned('x.html', extractMarkupText(`<p>AI解读你的掌纹</p><style>.p{content:'占卜'}</style>`))).toHaveLength(3);
+    // html：style 块剥除；正文命中 AI解读 + 单字掌（鼓掌）→ 2；「掌纹」放行不计
+    expect(findBanned('x.html', extractMarkupText(`<p>AI解读你的掌纹</p><p>先鼓掌</p><style>.p{content:'占卜'}</style>`))).toHaveLength(2);
     // 标识符与模块路径不误伤
     expect(findBanned('x.ts', extractQuotedStrings(`const palmType = getPalmTypeName(); // palm 标识符不误伤`))).toHaveLength(0);
     expect(findBanned('x.ts', extractQuotedStrings(`import { X } from '../data/palm-types'; const y = '可见文案';`))).toHaveLength(0);
@@ -179,7 +186,7 @@ describe('copy-ban 违禁词回归守卫', () => {
     expect(exts).toEqual(new Set(['ts', 'wxml', 'json', 'wxss', 'html']));
   });
 
-  test('全部可见文案零违禁词（含单字「掌」、AI 措辞、可见 palm）', () => {
+  test('全部可见文案零违禁词（手掌系除「掌纹」外、单字「掌」、AI 措辞、可见 palm）', () => {
     const targets = collectTargets();
     const hits = targets.flatMap((t) => findBanned(t.file, t.texts));
     if (hits.length > 0) {

@@ -1,0 +1,45 @@
+<view class="page-quiz" style="padding-top:{{navTop}}px">
+  <!-- 进度头 -->
+  <view class="quiz-head">
+    <text class="q-eyebrow">SIGN QUIZ · 趣味人格测试</text>
+    <view class="q-progress"><view class="q-progress-bar" style="width:{{(qIndex + 1) * 100 / total}}%" /></view>
+    <text class="q-step">{{qIndex + 1}} / {{total}}</text>
+  </view>
+
+  <!-- 题卡 -->
+  <view class="q-card">
+    <text class="q-title">{{question.title}}</text>
+    <text class="q-sub">{{question.sub}}</text>
+    <view class="q-options">
+      <view
+        wx:for="{{question.options}}"
+        wx:key="id"
+        class="opt {{answers[question.id] === item.id ? 'selected' : ''}}"
+        data-index="{{index}}"
+        bindtap="onPickOption"
+      >
+        <canvas type="2d" class="opt-canvas" id="cv{{index}}" />
+        <text class="opt-label">{{item.label}}</text>
+        <text class="opt-hint">{{item.hint}}</text>
+      </view>
+    </view>
+    <text class="q-note">凭第一眼作答即可，没有标准答案</text>
+  </view>
+
+  <!-- 底部导航 -->
+  <view class="q-foot">
+    <text wx:if="{{qIndex > 0}}" class="q-nav prev" bindtap="onPrev">上一题</text>
+    <view class="q-spacer" />
+    <view class="q-nav next {{canNext ? '' : 'disabled'}}" bindtap="onNext">
+      {{isLast ? '查看匹配结果' : '下一题'}}
+    </view>
+  </view>
+
+  <!-- 匹配中遮罩 -->
+  <view wx:if="{{submitting}}" class="q-mask">
+    <view class="q-mask-box">
+      <view class="q-spinner" />
+      <text class="q-mask-text">正在匹配你的人格签…</text>
+    </view>
+  </view>
+</view>

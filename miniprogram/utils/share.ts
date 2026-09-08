@@ -4,7 +4,6 @@
 import { CONFIG } from '../config/index';
 import { callFunction } from './request';
 
-/** 分享奖励触发（fire-and-forget：任何页面分享都应调用，云端记账防刷） */
 /** 平台判断：iOS 无"分享到朋友圈"菜单入口（平台限制），相关文案需隐藏 */
 export function isIOS(): boolean {
   try {
@@ -15,6 +14,7 @@ export function isIOS(): boolean {
   }
 }
 
+/** 分享奖励触发（fire-and-forget：任何页面分享都应调用，云端记账防刷） */
 export async function triggerShareBonus(channel: 'forward' | 'timeline'): Promise<void> {
   try {
     const data = await callFunction<{ granted: number; remaining: number }>(CONFIG.FN_ANALYZE, {
@@ -46,10 +46,10 @@ interface ShareMessage {
   imageUrl?: string;
 }
 
-/** 默认分享（index / capture / analyzing / about 等无个性化数据时用） */
+/** 默认分享（index / quiz / about 等无个性化数据时用） */
 export function shareDefault(): ShareMessage {
   return {
-    title: '我的性格底稿收在一支签里，你也来抽一支？',
+    title: '我的性格底稿收在一支签里，你也来测一测？',
     path: '/pages/index/index',
   };
 }
@@ -57,9 +57,9 @@ export function shareDefault(): ShareMessage {
 /** 报告页分享（类型名 + 稀有度，制造好奇钩子） */
 export function shareReport(score: number, typeName: string, rarity?: string, code?: string): ShareMessage {
   void score; void code;
-  const rare = rarity ? `，据说只有 ${rarity} 的人抽到这支` : '';
+  const rare = rarity ? `，据说只有 ${rarity} 的人测到这支` : '';
   return {
-    title: `我抽到了「${typeName}」${rare}——你是什么签？`,
+    title: `我测到了「${typeName}」${rare}——你是什么签？`,
     path: '/pages/index/index',
   };
 }
@@ -68,7 +68,7 @@ export function shareReport(score: number, typeName: string, rarity?: string, co
 export function shareHistory(count: number): ShareMessage {
   const n = Math.max(1, count);
   return {
-    title: `我已经抽了 ${n} 支人格签，你也来试试？`,
+    title: `我已经测了 ${n} 次人格签，你也来试试？`,
     path: '/pages/index/index',
   };
 }
@@ -79,8 +79,8 @@ export function shareCollection(unlockedCount: number): ShareMessage {
   return {
     title:
       n >= 10
-        ? `${n}/12 收集进度就差几支稀有签了，你抽到哪支？`
-        : `我解锁了 ${n} 种人格签，你抽到哪支？`,
+        ? `${n}/12 收集进度就差几支稀有签了，你测到了哪支？`
+        : `我解锁了 ${n} 种人格签，你测到了哪支？`,
     path: '/pages/index/index',
   };
 }

@@ -1,8 +1,7 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/capture/capture",
-    "pages/analyzing/analyzing",
+    "pages/quiz/quiz",
     "pages/report/report",
     "pages/history/history",
     "pages/collection/collection",

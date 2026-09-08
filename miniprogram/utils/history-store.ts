@@ -2,7 +2,7 @@
  * 历史数据模块：云端权威 + 本地缓存
  * - fetchHistory：云端拉取 → 校验映射 → 整表替换 storage `reports`（上限 20），返回列表
  * - getCachedHistory：读缓存（0 延迟渲染；断网/云端失败时即全部数据）
- * 本地不再有独立写入路径（analyzing 的即时写入仅作缓存预热，id 用云端记录 id）
+ * 本地写入仅作缓存预热（quiz 页即时写入，id 优先用云端记录 id）
  */
 import { CONFIG } from '../config/index';
 import { callFunction } from './request';

@@ -66,7 +66,7 @@ Page({
 
   closeDetail() { this.setData({ showDetail: false }); },
   noop() { /* 阻止弹层冒泡 */ },
-  goCapture() { wx.redirectTo({ url: '/pages/capture/capture' }); },
+  goQuiz() { wx.redirectTo({ url: '/pages/quiz/quiz' }); },
 
   onShareAppMessage() {
     triggerShareBonus('forward');

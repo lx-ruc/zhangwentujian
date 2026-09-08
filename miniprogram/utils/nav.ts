@@ -6,7 +6,7 @@
  * 同步调用，可直接用于 Page data 初始化（无 setData 闪烁）。
  */
 
-/** 内容顶边 = 胶囊顶边（平行胶囊：index/capture/analyzing/about） */
+/** 内容顶边 = 胶囊顶边（平行胶囊：index/quiz/about） */
 export function getNavTopPx(): number {
   try {
     const menu = wx.getMenuButtonBoundingClientRect();

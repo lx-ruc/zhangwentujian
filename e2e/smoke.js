@@ -33,20 +33,21 @@ async function main() {
     let page = await mini.reLaunch('/pages/index/index');
     await sleep(1000);
     assert((await page.$('.display')), '首页：品牌大标题未渲染');
-    assert((await page.$('.cta-icon')), '首页：图标 CTA 未渲染');
+    assert((await page.$('.cta')), '首页：开始测试 CTA 未渲染');
     const quota = await page.$('.quota-chip .num');
     assert(quota, '首页：剩余次数未渲染');
     const signCells = await page.$$('.sign-cell');
     assert(signCells.length === 12, `首页 12 支签宫格应为 12 格，实际 ${signCells.length}`);
-    console.log('✓ 首页渲染正常（图标 CTA + 12 支签宫格）');
+    console.log('✓ 首页渲染正常（文字 CTA + 12 支签宫格）');
 
-    // ---- ② 首页 → 拍摄页（真实路由跳转）----
-    await (await page.$('.cta-icon')).tap();
+    // ---- ② 首页 → 问答页（真实路由跳转）----
+    await (await page.$('.cta')).tap();
     await sleep(1000);
     page = await mini.currentPage();
-    assert(page.path.includes('capture'), `路由跳转失败：${page.path}`);
-    assert((await page.$('.viewfinder')), '拍摄页：取景框未渲染');
-    console.log('✓ 首页→拍摄页跳转 + 取景框正常');
+    assert(page.path.includes('quiz'), `路由跳转失败：${page.path}`);
+    assert((await page.$('.q-card')), '问答页：题卡未渲染');
+    assert((await page.$$('.opt')).length >= 2, '问答页：选项未渲染');
+    console.log('✓ 首页→问答页跳转 + 题卡正常');
 
     // ---- ③ 图鉴收集页：12 格网格 ----
     page = await mini.reLaunch('/pages/collection/collection');
